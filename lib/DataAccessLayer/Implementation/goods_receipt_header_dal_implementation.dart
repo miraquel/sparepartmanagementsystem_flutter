@@ -88,4 +88,28 @@ class GoodsReceiptHeaderDALImplementation implements GoodsReceiptHeaderDAL {
     var responseBody = response.data as Map<String, dynamic>;
     return ApiResponseDto<GoodsReceiptHeaderDto>.fromJson(responseBody, (json) => GoodsReceiptHeaderDto.fromJson(json as Map<String, dynamic>));
   }
+
+  @override
+  Future<ApiResponseDto<GoodsReceiptHeaderDto>> addGoodsReceiptHeaderWithLines(GoodsReceiptHeaderDto goodsReceiptHeader) async {
+    final dio = await loadDio();
+    final response = await dio.post(ApiPath.addGoodsReceiptHeaderWithLines, data: goodsReceiptHeader);
+    var responseBody = response.data as Map<String, dynamic>;
+    return ApiResponseDto<GoodsReceiptHeaderDto>.fromJson(responseBody, (json) => GoodsReceiptHeaderDto.fromJson(json as Map<String, dynamic>));
+  }
+
+  @override
+  Future<ApiResponseDto<GoodsReceiptHeaderDto>> getGoodsReceiptHeaderByIdWithLines(int goodsReceiptHeaderId) async {
+    final dio = await loadDio();
+    final response = await dio.get("${ApiPath.getGoodsReceiptHeaderByIdWithLines}/$goodsReceiptHeaderId");
+    var responseBody = response.data as Map<String, dynamic>;
+    return ApiResponseDto<GoodsReceiptHeaderDto>.fromJson(responseBody, (json) => GoodsReceiptHeaderDto.fromJson(json as Map<String, dynamic>));
+  }
+
+  @override
+  Future<ApiResponseDto<GoodsReceiptHeaderDto>> postToAX(GoodsReceiptHeaderDto goodsReceiptHeader) async {
+    final dio = await loadDio();
+    final response = await dio.post(ApiPath.postToAX, data: goodsReceiptHeader);
+    var responseBody = response.data as Map<String, dynamic>;
+    return ApiResponseDto<GoodsReceiptHeaderDto>.fromJson(responseBody, (json) => GoodsReceiptHeaderDto.fromJson(json as Map<String, dynamic>));
+  }
 }

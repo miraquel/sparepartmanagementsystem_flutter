@@ -40,9 +40,9 @@ class GoodsReceiptLineDALImplementation implements GoodsReceiptLineDAL {
   }
 
   @override
-  Future<ApiResponseDto<List<GoodsReceiptLineDto>>> getGoodsReceiptLineByParams() async {
+  Future<ApiResponseDto<List<GoodsReceiptLineDto>>> getGoodsReceiptLineByParams(GoodsReceiptLineDto goodsReceiptLineDto) async {
     final dio = await loadDio();
-    final response = await dio.get(ApiPath.getGoodsReceiptLineByParams);
+    final response = await dio.post(ApiPath.getGoodsReceiptLineByParams, data: goodsReceiptLineDto);
     return ApiResponseDto<List<GoodsReceiptLineDto>>.fromJson(response.data as Map<String, dynamic>,
         (json) => List<GoodsReceiptLineDto>.from(json.map((e) => GoodsReceiptLineDto.fromJson(e as Map<String, dynamic>)).toList()));
   }

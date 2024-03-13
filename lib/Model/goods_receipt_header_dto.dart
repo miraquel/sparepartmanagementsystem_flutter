@@ -1,6 +1,7 @@
 
 import '../Helper/date_time_helper.dart';
 import 'base_model_dto.dart';
+import 'goods_receipt_line_dto.dart';
 
 class GoodsReceiptHeaderDto extends BaseModelDto
 {
@@ -11,8 +12,10 @@ class GoodsReceiptHeaderDto extends BaseModelDto
   final String orderAccount;
   final String invoiceAccount;
   final String purchStatus;
+  final bool? isSubmitted;
   final DateTime submittedDate;
   final String submittedBy;
+  final List<GoodsReceiptLineDto> goodsReceiptLines;
 
   GoodsReceiptHeaderDto({
     this.goodsReceiptHeaderId = 0,
@@ -22,13 +25,15 @@ class GoodsReceiptHeaderDto extends BaseModelDto
     this.orderAccount = '',
     this.invoiceAccount = '',
     this.purchStatus = '',
+    this.isSubmitted,
     DateTime? submittedDate,
     this.submittedBy = '',
     super.createdBy = '',
     DateTime? createdDateTime,
     super.modifiedBy = '',
     DateTime? modifiedDateTime,
-  }) : submittedDate = submittedDate ?? DateTimeHelper.minDateTime, super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
+    List<GoodsReceiptLineDto>? goodsReceiptLines,
+  }) : submittedDate = submittedDate ?? DateTimeHelper.minDateTime, goodsReceiptLines = goodsReceiptLines ?? <GoodsReceiptLineDto>[], super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
 
   factory GoodsReceiptHeaderDto.fromJson(Map<String, dynamic> json) => GoodsReceiptHeaderDto(
     goodsReceiptHeaderId: json['goodsReceiptHeaderId'] as int? ?? 0,
@@ -38,8 +43,10 @@ class GoodsReceiptHeaderDto extends BaseModelDto
     orderAccount: json['orderAccount'] as String? ?? '',
     invoiceAccount: json['invoiceAccount'] as String? ?? '',
     purchStatus: json['purchStatus'] as String? ?? '',
+    isSubmitted: json['isSubmitted'] as bool? ?? false,
     submittedDate: DateTime.tryParse(json['submittedDate'] as String? ?? '') ?? DateTimeHelper.minDateTime,
     submittedBy: json['submittedBy'] as String? ?? '',
+    goodsReceiptLines: List<GoodsReceiptLineDto>.from(json['goodsReceiptLines'].map((e) => GoodsReceiptLineDto.fromJson(e as Map<String, dynamic>)).toList()),
     createdBy: json['createdBy'] as String? ?? '',
     createdDateTime: DateTime.tryParse(json['createdDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
     modifiedBy: json['modifiedBy'] as String? ?? '',
@@ -55,11 +62,28 @@ class GoodsReceiptHeaderDto extends BaseModelDto
     if (orderAccount.isNotEmpty) 'orderAccount': orderAccount,
     if (invoiceAccount.isNotEmpty) 'invoiceAccount': invoiceAccount,
     if (purchStatus.isNotEmpty) 'purchStatus': purchStatus,
+    if (isSubmitted != null) 'isSubmitted': isSubmitted,
     if (submittedDate.isAfter(DateTimeHelper.minDateTime)) 'submittedDate': submittedDate.toIso8601String(),
     if (submittedBy.isNotEmpty) 'submittedBy': submittedBy,
+    if (goodsReceiptLines!.isNotEmpty) 'goodsReceiptLines': goodsReceiptLines?.map((e) => e.toJson()).toList(),
     if (createdBy.isNotEmpty) 'createdBy': createdBy,
     if (createdDateTime.isAfter(DateTimeHelper.minDateTime)) 'createdDateTime': createdDateTime.toIso8601String(),
     if (modifiedBy.isNotEmpty) 'modifiedBy': modifiedBy,
     if (modifiedDateTime.isAfter(DateTimeHelper.minDateTime)) 'modifiedDateTime': modifiedDateTime.toIso8601String(),
   };
+
+  bool isDefault() => goodsReceiptHeaderId == 0 &&
+      packingSlipId.isEmpty &&
+      purchId.isEmpty &&
+      purchName.isEmpty &&
+      orderAccount.isEmpty &&
+      invoiceAccount.isEmpty &&
+      purchStatus.isEmpty &&
+      isSubmitted == null &&
+      submittedDate.isAtSameMomentAs(DateTimeHelper.minDateTime) &&
+      submittedBy.isEmpty &&
+      createdBy.isEmpty &&
+      createdDateTime.isAtSameMomentAs(DateTimeHelper.minDateTime) &&
+      modifiedBy.isEmpty &&
+      modifiedDateTime.isAtSameMomentAs(DateTimeHelper.minDateTime);
 }

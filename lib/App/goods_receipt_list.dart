@@ -5,14 +5,14 @@ import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/goods
 import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
-class GoodsReceiptHeaderList extends StatefulWidget {
-  const GoodsReceiptHeaderList({super.key});
+class GoodsReceiptList extends StatefulWidget {
+  const GoodsReceiptList({super.key});
 
   @override
-  State<GoodsReceiptHeaderList> createState() => _GoodsReceiptHeaderListState();
+  State<GoodsReceiptList> createState() => _GoodsReceiptListState();
 }
 
-class _GoodsReceiptHeaderListState extends State<GoodsReceiptHeaderList> {
+class _GoodsReceiptListState extends State<GoodsReceiptList> {
   static const int _pageSize = 20;
   final GoodsReceiptHeaderDAL _goodsReceiptHeaderDAL = locator<GoodsReceiptHeaderDAL>();
   final Logger _logger = locator<Logger>();
@@ -68,8 +68,11 @@ class _GoodsReceiptHeaderListState extends State<GoodsReceiptHeaderList> {
           itemBuilder: (context, item, index) => ListTile(
             title: Text('${item.purchId}${item.packingSlipId.isNotEmpty ? ' - ${item.packingSlipId}' : ''}'),
             subtitle: Text(item.orderAccount),
-            trailing: item.submittedBy.isNotEmpty ? const Text('Submitted') : const Text('Not Submitted'),
+            trailing: item.isSubmitted != null && item.isSubmitted == true ? const Icon(Icons.check, color: Colors.green) : const Icon(Icons.close, color: Colors.red),
             leadingAndTrailingTextStyle: TextStyle(fontSize: 13, color: item.submittedBy.isNotEmpty ? Colors.green : Colors.red),
+            onTap: () {
+              Navigator.pushNamed(context, '/goodsReceiptHeaderDetails', arguments: item.goodsReceiptHeaderId);
+            },
           ),
         ),
       ),

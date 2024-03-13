@@ -7,5 +7,5 @@ abstract class GoodsReceiptLineDAL {
   Future<ApiResponseDto<GoodsReceiptLineDto>> addGoodsReceiptLine(GoodsReceiptLineDto goodsReceiptLine);
   Future<ApiResponseDto<GoodsReceiptLineDto>> updateGoodsReceiptLine(GoodsReceiptLineDto goodsReceiptLine);
   Future<ApiResponseDto<GoodsReceiptLineDto>> deleteGoodsReceiptLine(int goodsReceiptLineId);
-  Future<ApiResponseDto<List<GoodsReceiptLineDto>>> getGoodsReceiptLineByParams();
+  Future<ApiResponseDto<List<GoodsReceiptLineDto>>> getGoodsReceiptLineByParams(GoodsReceiptLineDto goodsReceiptLineDto);
 }
