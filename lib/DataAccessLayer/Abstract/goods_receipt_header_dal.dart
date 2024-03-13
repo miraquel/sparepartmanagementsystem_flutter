@@ -11,4 +11,7 @@ abstract class GoodsReceiptHeaderDAL {
   Future<ApiResponseDto<GoodsReceiptHeaderDto>> deleteGoodsReceiptHeader(int goodsReceiptHeaderId);
   Future<ApiResponseDto<PagedListDto<GoodsReceiptHeaderDto>>> getGoodsReceiptHeaderPagedList(int pageNumber, int pageSize);
   Future<ApiResponseDto<PagedListDto<GoodsReceiptHeaderDto>>> getGoodsReceiptHeaderByParamsPagedList(int pageNumber, int pageSize, GoodsReceiptHeaderDto dto);
+  Future<ApiResponseDto<GoodsReceiptHeaderDto>> addGoodsReceiptHeaderWithLines(GoodsReceiptHeaderDto goodsReceiptHeader);
+  Future<ApiResponseDto<GoodsReceiptHeaderDto>> getGoodsReceiptHeaderByIdWithLines(int goodsReceiptHeaderId);
+  Future<ApiResponseDto<GoodsReceiptHeaderDto>> postToAX(GoodsReceiptHeaderDto goodsReceiptHeader);
 }

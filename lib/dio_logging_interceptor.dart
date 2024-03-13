@@ -83,7 +83,7 @@ class DioLoggingInterceptors extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    //logger.i(response.data);
+    logger.i(response.data);
     return handler.next(response);
   }
 

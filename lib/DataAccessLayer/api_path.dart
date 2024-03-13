@@ -2,6 +2,8 @@ class ApiPath {
   // GMKSMSServiceGroup
   static const String getInventTablePagedList = '/api/GMKSMSServiceGroup/GetInventTablePagedList';
   static const String getPurchTablePagedList = '/api/GMKSMSServiceGroup/GetPurchTablePagedList';
+  static const String getPurchLineList = '/api/GMKSMSServiceGroup/GetPurchLineList';
+  static const String getWMSLocationPagedList = '/api/GMKSMSServiceGroup/GetWMSLocationPagedList';
   static const String getImageFromNetworkUri = '/api/GMKSMSServiceGroup/GetImageFromNetworkUri';
   static const String getImageWithResolutionFromNetworkUri = '/api/GMKSMSServiceGroup/GetImageWithResolutionFromNetworkUri';
 
@@ -14,6 +16,9 @@ class ApiPath {
   static const String getGoodsReceiptHeaderPagedList = '/api/GoodsReceiptHeaderService/GetAllPagedList';
   static const String getGoodsReceiptHeaderByParams = '/api/GoodsReceiptHeaderService/GetByParams';
   static const String getGoodsReceiptHeaderByParamsPagedList = '/api/GoodsReceiptHeaderService/GetByParamsPagedList';
+  static const String addGoodsReceiptHeaderWithLines = '/api/GoodsReceiptHeaderService/AddWithLines';
+  static const String getGoodsReceiptHeaderByIdWithLines = '/api/GoodsReceiptHeaderService/GetByIdWithLines';
+  static const String postToAX = '/api/GoodsReceiptHeaderService/PostToAX';
 
   // GoodsReceiptLine
   static const String addGoodsReceiptLine = '/api/GoodsReceiptLineService';

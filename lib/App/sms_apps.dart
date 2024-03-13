@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sparepartmanagementsystem_flutter/App/goods_receipt_line_add.dart';
 import 'package:sparepartmanagementsystem_flutter/App/home.dart';
 import 'package:sparepartmanagementsystem_flutter/App/login.dart';
 import 'package:sparepartmanagementsystem_flutter/App/purch_table_lookup.dart';
@@ -9,11 +10,14 @@ import 'package:sparepartmanagementsystem_flutter/App/admin_center.dart';
 import 'package:sparepartmanagementsystem_flutter/App/user_create_edit.dart';
 import 'package:sparepartmanagementsystem_flutter/App/user_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/user_role.dart';
+import 'package:sparepartmanagementsystem_flutter/App/wms_location_lookup.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 import '../Model/user_dto.dart';
-import 'goods_receipt_header_add.dart';
-import 'goods_receipt_header_list.dart';
+import 'goods_receipt_add.dart';
+import 'goods_receipt_details.dart';
+import 'goods_receipt_list.dart';
 import 'inventory_master.dart';
 
 class SMSApps extends StatelessWidget {
@@ -40,8 +44,9 @@ class SMSApps extends StatelessWidget {
         '/role': (context) => const RoleList(),
         '/roleCreate': (context) => const RoleCreate(),
         '/purchTableLookup': (context) => const PurchTableLookup(),
-        '/goodsReceiptHeaderList': (context) => const GoodsReceiptHeaderList(),
-        '/goodsReceiptHeaderAdd': (context) => const GoodsReceiptHeaderAdd(),
+        '/goodsReceiptHeaderList': (context) => const GoodsReceiptList(),
+        '/goodsReceiptHeaderAdd': (context) => const GoodsReceiptAdd(),
+        '/wMSLocationLookup': (context) => const WMSLocationLookup(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/userEdit') {
@@ -60,6 +65,26 @@ class SMSApps extends StatelessWidget {
             builder: (context) {
               return UserRole(
                 user: args,
+              );
+            },
+          );
+        }
+        if (settings.name == '/goodsReceiptHeaderDetails') {
+          final args = settings.arguments as int;
+          return MaterialPageRoute(
+            builder: (context) {
+              return GoodsReceiptDetails(
+                goodsReceiptHeaderId: args,
+              );
+            },
+          );
+        }
+        if (settings.name == '/goodsReceiptLineAdd') {
+          final args = settings.arguments as GoodsReceiptHeaderDto;
+          return MaterialPageRoute(
+            builder: (context) {
+              return GoodsReceiptLineAdd(
+                goodsReceiptHeader: args,
               );
             },
           );

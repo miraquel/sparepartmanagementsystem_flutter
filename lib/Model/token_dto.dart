@@ -8,8 +8,8 @@ class TokenDto {
   });
 
   factory TokenDto.fromJson(Map<String, dynamic> json) => TokenDto(
-    accessToken: json['accessToken'] as String,
-    refreshToken: json['refreshToken'] as String,
+    accessToken: json['accessToken'] as String? ?? '',
+    refreshToken: json['refreshToken'] as String? ?? '',
   );
 
   Map<String, dynamic> toJson() => {

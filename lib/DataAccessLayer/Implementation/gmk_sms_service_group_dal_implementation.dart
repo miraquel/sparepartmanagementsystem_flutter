@@ -3,8 +3,11 @@ import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
 import 'package:dio/dio.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_search_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/purch_line_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/purch_table_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/purch_table_search_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/wms_location_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/wms_location_search_dto.dart';
 
 import '../../Model/paged_list_dto.dart';
 import '../../service_locator_setup.dart';
@@ -74,5 +77,38 @@ class GMKSMSServiceGroupDALImplementation implements GMKSMSServiceGroupDAL {
             json as Map<String, dynamic>,
             (json) => List<PurchTableDto>.from(
                 json.map((e) => PurchTableDto.fromJson(e as Map<String, dynamic>)).toList())));
+  }
+
+  @override
+  Future<ApiResponseDto<List<PurchLineDto>>> getPurchLineList(String purchId) {
+    final dio = loadDio();
+    return dio.then((dio) async {
+      final response = await dio.get(ApiPath.getPurchLineList, queryParameters: {'purchId': purchId});
+      return ApiResponseDto<List<PurchLineDto>>.fromJson(
+          response.data as Map<String, dynamic>,
+          (json) => List<PurchLineDto>.from(
+              json.map((e) => PurchLineDto.fromJson(e as Map<String, dynamic>)).toList()));
+    });
+  }
+
+  @override
+  Future<ApiResponseDto<PagedListDto<WMSLocationDto>>> getWMSLocationPagedList(int pageNumber, int pageSize, WMSLocationSearchDto dto) async {
+    final dio = await loadDio();
+    var parameters = <String, dynamic>{};
+    for (var entry in dto.toJson().entries) {
+      if (entry.value != null && entry.value.toString().isNotEmpty) {
+        parameters[entry.key] = entry.value;
+      }
+    }
+    final response = await dio.get(
+        ApiPath.getWMSLocationPagedList,
+        queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize, ...parameters}
+    );
+    return ApiResponseDto<PagedListDto<WMSLocationDto>>.fromJson(
+        response.data as Map<String, dynamic>,
+            (json) => PagedListDto<WMSLocationDto>.fromJson(
+            json as Map<String, dynamic>,
+                (json) => List<WMSLocationDto>.from(
+                json.map((e) => WMSLocationDto.fromJson(e as Map<String, dynamic>)).toList())));
   }
 }
