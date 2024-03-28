@@ -1,15 +1,14 @@
-import 'dart:convert';
 
-import 'package:accordion/accordion.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/purch_line_dto.dart';
 
 import '../DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
 import '../DataAccessLayer/Abstract/goods_receipt_header_dal.dart';
-import '../DataAccessLayer/Abstract/goods_receipt_line_dal.dart';
 import '../Model/goods_receipt_header_dto.dart';
 import '../Model/goods_receipt_line_dto.dart';
 import '../Model/purch_table_dto.dart';
@@ -23,9 +22,11 @@ class GoodsReceiptAdd extends StatefulWidget {
 }
 
 class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
-  final gmkSmsServiceGroupDAL = locator<GMKSMSServiceGroupDAL>();
-  final goodsReceiptHeaderDAL = locator<GoodsReceiptHeaderDAL>();
-  final goodsReceiptLineDAL = locator<GoodsReceiptLineDAL>();
+  final _gmkSmsServiceGroupDAL = locator<GMKSMSServiceGroupDAL>();
+  final _goodsReceiptHeaderDAL = locator<GoodsReceiptHeaderDAL>();
+  final packingSlipIdController = TextEditingController();
+  final transDateController = TextEditingController();
+  final descriptionController = TextEditingController();
   late NavigatorState _navigator;
   late ScaffoldMessengerState _scaffoldMessenger;
   var _isLoading = false;
@@ -47,6 +48,8 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
     try {
       setState(() => _isLoading = true);
       if (_purchTableDto.isDefault()) throw ArgumentError('You have not selected any Purchase Order, please select one.');
+      if (packingSlipIdController.text.isEmpty) throw ArgumentError('Packing Slip Id is required.');
+      if (_purchLineDtoList.isEmpty) throw ArgumentError('No Purchase Line found.');
 
       final goodsReceiptHeaderDto = GoodsReceiptHeaderDto(
         purchId: _purchTableDto.purchId,
@@ -55,13 +58,19 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
         invoiceAccount: _purchTableDto.invoiceAccount,
         purchStatus: _purchTableDto.purchStatus,
         isSubmitted: false,
+        packingSlipId: packingSlipIdController.text,
+        transDate: DateTime.tryParse(transDateController.text) ?? DateTime.now(),
+        description: descriptionController.text,
       );
 
       final goodsReceiptLineDtoList = _purchLineDtoList.map((e) => GoodsReceiptLineDto(
         itemId: e.itemId,
         lineNumber: e.lineNumber,
         itemName: e.itemName,
+        productType: e.productType,
         purchUnit: e.purchUnit,
+        remainPurchPhysical: e.remainPurchPhysical,
+        receiveNow: e.remainPurchPhysical,
         purchQty: e.purchQty,
         lineAmount: e.lineAmount,
         purchPrice: e.purchPrice,
@@ -69,7 +78,7 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
 
       goodsReceiptHeaderDto.goodsReceiptLines.addAll(goodsReceiptLineDtoList);
 
-      final response = await goodsReceiptHeaderDAL.addGoodsReceiptHeaderWithLines(goodsReceiptHeaderDto);
+      final response = await _goodsReceiptHeaderDAL.addGoodsReceiptHeaderWithLines(goodsReceiptHeaderDto);
 
       if (response.success) {
         _navigator.pop();
@@ -100,9 +109,10 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
   Future<void> _fetchPurchLineList() async {
     try {
       setState(() => _isLoading = true);
-      final response = await gmkSmsServiceGroupDAL.getPurchLineList(_purchTableDto.purchId);
+      final response = await _gmkSmsServiceGroupDAL.getPurchLineList(_purchTableDto.purchId);
       if (response.success) {
         _purchLineDtoList = response.data!;
+        transDateController.text = DateFormat("dd/MM/yyyy").format(DateTime.now());
       }
     }
     on DioException catch (error) {
@@ -129,137 +139,322 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
   Widget build(BuildContext context) {
     return LoadingOverlay(
       isLoading: _isLoading,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Goods Receipt Header Add'),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Column(
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(50),
-                    ),
-                    onPressed: () {
-                      _navigator.pushNamed('/purchTableLookup').then((value) {
-                        var purchTableDto = value as PurchTableDto;
-                        setState(() {
-                          _purchTableDto = purchTableDto;
-                        });
-                        _fetchPurchLineList();
-                      });
+      child: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('New Goods Receipt'),
+            actions: [
+              IconButton(
+                onPressed: !_purchTableDto.isDefault() ? () {
+                  // confirmation dialog
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Confirmation'),
+                        content: const Text('Are you sure you want to save this record?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              _navigator.pop();
+                            },
+                            style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all(Colors.white),
+                              backgroundColor: MaterialStateProperty.all(Colors.red),
+                            ),
+                            child: const Text('No'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              _navigator.pop();
+                              await saveData();
+                            },
+                            style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all(Colors.white),
+                              backgroundColor: MaterialStateProperty.all(Colors.green),
+                            ),
+                            child: const Text('Yes'),
+                          ),
+                        ],
+                      );
                     },
-                    child: const Text('Purch Table Lookup'),
-                  ),
-                  Accordion(
-                    headerPadding: const EdgeInsets.all(20),
-                    headerBorderRadius: 0,
-                    contentBorderRadius: 0,
-                    scaleWhenAnimating: false,
-                    maxOpenSections: 1,
-                    disableScrolling: true,
-                    children: [
-                      AccordionSection(
-                        isOpen: !_purchTableDto.isDefault() ? true : false,
-                        header: const Text("Header", style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15
-                        )),
-                        content: ListView(
-                          shrinkWrap: true,
-                          children: <Widget>[
-                            ListTile(
-                              title: const Text('Purch Id'),
-                              subtitle: _purchTableDto.purchId.isEmpty ? const Text('<blank>') : Text(_purchTableDto.purchId),
-                              dense: true,
-                            ),
-                            ListTile(
-                              title: const Text('Purch Name'),
-                              subtitle: _purchTableDto.purchName.isEmpty ? const Text('<blank>') : Text(_purchTableDto.purchName),
-                              dense: true,
-                            ),
-                            ListTile(
-                              title: const Text('Order Account'),
-                              subtitle: _purchTableDto.orderAccount.isEmpty ? const Text('<blank>') : Text(_purchTableDto.orderAccount),
-                              dense: true,
-                            ),
-                            ListTile(
-                              title: const Text('Invoice Account'),
-                              subtitle: _purchTableDto.invoiceAccount.isEmpty ? const Text('<blank>') : Text(_purchTableDto.invoiceAccount),
-                              dense: true,
-                            ),
-                            ListTile(
-                              title: const Text('Purch Status'),
-                              subtitle: _purchTableDto.purchStatus.isEmpty ? const Text('<blank>') : Text(_purchTableDto.purchStatus),
-                              dense: true,
-                            ),
-                          ],
-                        ),
-                      ),
-                      AccordionSection(
-                          header: const Text("Lines", style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15
-                          )),
-                          content: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: DataTable(
-                                  border: TableBorder.all(),
-                                  columns: const <DataColumn>[
-                                    DataColumn(
-                                      label: Center(child: Text('Item Id', textAlign: TextAlign.center, style: TextStyle(fontSize: 16))),
-                                    ),
-                                    DataColumn(
-                                      label: Center(child: Text('Name', textAlign: TextAlign.center, style: TextStyle(fontSize: 16))),
-                                    ),
-                                    // Purch Unit
-                                    DataColumn(
-                                      label: Center(child: Text('Unit', textAlign: TextAlign.center, style: TextStyle(fontSize: 16))),
-                                    ),
-                                    DataColumn(
-                                      label: Center(child: Text('Qty', textAlign: TextAlign.center, style: TextStyle(fontSize: 16))),
-                                    ),
-                                  ],
-                                  rows: _purchLineDtoList.map((PurchLineDto purchLineDto) => DataRow(
-                                    cells: <DataCell>[
-                                      DataCell(Text(purchLineDto.itemId)),
-                                      DataCell(Text(purchLineDto.itemName)),
-                                      DataCell(Text(purchLineDto.purchUnit)),
-                                      DataCell(Text(purchLineDto.purchQty.toString())),
-                                    ],
-                                  )).toList(),
-                                ),
-                              ),
-                            ],
-                          )
-                      )
-                    ]
-                  ),
-                ]
-              ),
-              ElevatedButton(
-                // style from height
-                style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(50)
-                ),
-                onPressed: () {
-                  saveData();
-                },
-                child: const Text('Create Goods Receipt Header'),
+                  );
+                } : null,
+                icon: const Icon(Icons.save),
+                tooltip: 'Save',
               ),
             ],
+            bottom: const TabBar(
+              tabs: <Widget>[
+                Tab(
+                  text: 'Header',
+                ),
+                Tab(
+                  text: 'Lines',
+                ),
+              ],
+            ),
           ),
-        )
+          body: TabBarView(
+            children: <Widget>[
+              _buildHeaderTab(),
+              _buildLineTab(),
+            ]
+          )
+        ),
       ),
     );
   }
+
+  Widget _buildHeaderTab() {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(right: 16, top: 16),
+            child: Text(
+              'New Goods Receipt',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top:8, right: 16, bottom: 3),
+            child: Text(
+              'Please fill the form below to create new Goods Receipt Header.',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          TextField(
+            controller: TextEditingController(text: _purchTableDto.purchId),
+            onTap: _purchTableLookup,
+            decoration: InputDecoration(
+              labelText: 'Purch Id',
+              suffixIcon: IconButton(
+                onPressed: _purchTableLookup,
+                icon: const Icon(
+                  Icons.search,
+                  color: Colors.blue,
+                ),
+                tooltip: 'Purch Table Lookup',
+              ),
+            ),
+            readOnly: true,
+          ),
+          TextField(
+            controller: packingSlipIdController,
+            decoration: const InputDecoration(
+              labelText: 'Packing Slip Id',
+            ),
+          ),
+          TextFormField(
+            controller: transDateController,
+            onTap: _transDatePicker,
+            decoration: InputDecoration(
+              labelText: 'Receipt Date',
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.calendar_month),
+                onPressed: _transDatePicker,
+              )
+            ),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'^\d{4}-\d{2}-\d{2}')),
+            ],
+            readOnly: true,
+          ),
+          TextField(
+            controller: descriptionController,
+            decoration: const InputDecoration(
+              labelText: 'Description',
+            ),
+          ),
+          TextField(
+            controller: TextEditingController(text: _purchTableDto.purchName),
+            decoration: const InputDecoration(
+              labelText: 'Purch Name',
+            ),
+            readOnly: true,
+          ),
+          TextField(
+            controller: TextEditingController(text: _purchTableDto.orderAccount),
+            decoration: const InputDecoration(
+              labelText: 'Order Account',
+            ),
+            readOnly: true,
+          ),
+          TextField(
+            controller: TextEditingController(text: _purchTableDto.invoiceAccount),
+            decoration: const InputDecoration(
+              labelText: 'Invoice Account',
+            ),
+            readOnly: true,
+          ),
+          TextField(
+            controller: TextEditingController(text: _purchTableDto.purchStatus),
+            decoration: const InputDecoration(
+              labelText: 'Purch Status',
+            ),
+            readOnly: true,
+          ),
+        ].map((e) => Padding(padding: const EdgeInsets.only(left: 16, right: 16, bottom: 3), child: e)).toList(),
+      ),
+    );
+  }
+
+  void _transDatePicker() {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          transDateController.text = DateFormat("dd/MM/yyyy").format(value);
+        });
+      }
+    });
+  }
+
+  void _purchTableLookup() {
+    _navigator.pushNamed('/purchTableLookup').then((value) {
+      var purchTableDto = value as PurchTableDto;
+      setState(() {
+        _purchTableDto = purchTableDto;
+      });
+      _fetchPurchLineList();
+    });
+  }
+
+  Widget _buildLineTab() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: _purchLineDtoList.isNotEmpty ? ListView.builder(
+            itemCount: _purchLineDtoList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListTile(
+                    title: Padding(
+                      padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
+                      child: Text(
+                        'Item Id: ${_purchLineDtoList[index].itemId}, Line Number: ${_purchLineDtoList[index].lineNumber}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                    ),
+                    subtitle: Column(
+                      children: [
+                        const Divider(color: Colors.grey),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                'Item Name',
+                                style: _purchLineFieldNameStyle(),
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              _purchLineDtoList[index].itemName,
+                              style: _purchLineFieldValueStyle(),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                'Purch Qty',
+                                style: _purchLineFieldNameStyle(),
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              '${_purchLineDtoList[index].purchQty} ${_purchLineDtoList[index].purchUnit}',
+                              style: _purchLineFieldValueStyle(),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        // deliver remainder
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                'Deliver remainder',
+                                style: _purchLineFieldNameStyle(),
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              '${_purchLineDtoList[index].remainPurchPhysical} ${_purchLineDtoList[index].purchUnit}',
+                              style: _purchLineFieldValueStyle(),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        // product type
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                'Product Type',
+                                style: _purchLineFieldNameStyle(),
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              _purchLineDtoList[index].productType.toString().split('.').last,
+                              style: _purchLineFieldValueStyle(),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }
+          ) : const Center(
+            child: Text('No data found\nplease select a Purchase Order.', textAlign: TextAlign.center, style: TextStyle(fontSize: 18, height: 1.5)),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ElevatedButton(
+            onPressed: _purchLineDtoList.isNotEmpty ? _fetchPurchLineList : null,
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size.fromHeight(50),
+            ),
+            child: const Text('Refresh'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  TextStyle _purchLineFieldValueStyle() => const TextStyle(fontSize: 16, color: Colors.black);
+
+  TextStyle _purchLineFieldNameStyle() => const TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.black);
 }

@@ -7,64 +7,44 @@ import '../Abstract/permission_dal.dart';
 import '../api_path.dart';
 
 class PermissionDALImplementation implements PermissionDAL {
-  Future<Dio> loadDio() async => await locator.getAsync<Dio>();
+  final _dio = locator<Dio>();
 
   @override
-  Future<ApiResponseDto<PermissionDto>> addPermission(PermissionDto permission) async {
-    final dio = await loadDio();
-    final response = await dio.post(ApiPath.addPermission, data: permission);
-    return ApiResponseDto<PermissionDto>.fromJson(response.data as Map<String, dynamic>, (json) => PermissionDto.fromJson(json as Map<String, dynamic>));
+  Future<ApiResponseDto> addPermission(PermissionDto permission) async {
+    final response = await _dio.post(ApiPath.addPermission, data: permission);
+    var responseBody = response.data as Map<String, dynamic>;
+    return ApiResponseDto.fromJson(responseBody);
   }
 
   @override
-  Future<ApiResponseDto<PermissionDto>> deletePermission(int permissionId) async {
-    final dio = await loadDio();
-    const path = ApiPath.deletePermission;
-    final response = await dio.delete("$path/$permissionId");
-
-    return ApiResponseDto<PermissionDto>.fromJson(response.data as Map<String, dynamic>, (json) => PermissionDto.fromJson(json as Map<String, dynamic>));
+  Future<ApiResponseDto> deletePermission(int permissionId) async {
+    final response = await _dio.delete("${ApiPath.deletePermission}/$permissionId");
+    var responseBody = response.data as Map<String, dynamic>;
+    return ApiResponseDto.fromJson(responseBody);
   }
 
   @override
   Future<ApiResponseDto<List<PermissionDto>>> fetchAllModule() async {
-    final dio = await loadDio();
-    final response = await dio.get(
-      ApiPath.fetchAllModule,
-    );
-
+    final response = await _dio.get(ApiPath.fetchAllModule);
     return ApiResponseDto<List<PermissionDto>>.fromJson(
-        response.data as Map<String, dynamic>, (json) => List<PermissionDto>.from(json.map((e) => PermissionDto.fromJson(e as Map<String, dynamic>)).toList()));
+        response.data as Map<String, dynamic>, (json) => json.map<PermissionDto>((e) => PermissionDto.fromJson(e as Map<String, dynamic>)).toList());
   }
 
   @override
   Future<ApiResponseDto<List<PermissionDto>>> fetchAllPermissionType() async {
-    final dio = await loadDio();
-    final response = await dio.get(
-      ApiPath.fetchAllPermissionType,
-    );
-
-    return ApiResponseDto<List<PermissionDto>>.fromJson(
-        response.data as Map<String, dynamic>, (json) => List<PermissionDto>.from(json.map((e) => PermissionDto.fromJson(e as Map<String, dynamic>)).toList()));
+    final response = await _dio.get(ApiPath.fetchAllPermissionType);
+    return ApiResponseDto<List<PermissionDto>>.fromJson(response.data as Map<String, dynamic>, (json) => json.map<PermissionDto>((e) => PermissionDto.fromJson(e as Map<String, dynamic>)).toList());
   }
 
   @override
   Future<ApiResponseDto<List<PermissionDto>>> fetchPermission() async {
-    final dio = await loadDio();
-    final response = await dio.get(
-      ApiPath.fetchPermission,
-    );
-
-    return ApiResponseDto<List<PermissionDto>>.fromJson(
-        response.data as Map<String, dynamic>, (json) => List<PermissionDto>.from(json.map((e) => PermissionDto.fromJson(e as Map<String, dynamic>)).toList()));
+    final response = await _dio.get(ApiPath.fetchPermission);
+    return ApiResponseDto<List<PermissionDto>>.fromJson(response.data as Map<String, dynamic>, (json) => json.map<PermissionDto>((e) => PermissionDto.fromJson(e as Map<String, dynamic>)).toList());
   }
 
   @override
   Future<ApiResponseDto<List<PermissionDto>>> fetchPermissionByRoleId(int roleId) async {
-    final dio = await loadDio();
-    const path = ApiPath.fetchPermissionByRoleId;
-    final response = await dio.get('$path/$roleId');
-
-    return ApiResponseDto<List<PermissionDto>>.fromJson(
-        response.data as Map<String, dynamic>, (json) => List<PermissionDto>.from(json.map((e) => PermissionDto.fromJson(e as Map<String, dynamic>)).toList()));
+    final response = await _dio.get('${ApiPath.fetchPermissionByRoleId}/$roleId');
+    return ApiResponseDto<List<PermissionDto>>.fromJson(response.data as Map<String, dynamic>, (json) => json.map<PermissionDto>((e) => PermissionDto.fromJson(e as Map<String, dynamic>)).toList());
   }
 }

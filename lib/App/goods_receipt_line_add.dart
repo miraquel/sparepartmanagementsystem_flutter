@@ -1,10 +1,10 @@
-import 'package:dropdown_search/dropdown_search.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
-import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_line_dto.dart';
 
 import '../DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
-import '../DataAccessLayer/Abstract/goods_receipt_line_dal.dart';
+import '../Model/api_response_dto.dart';
 import '../Model/purch_line_dto.dart';
 import '../service_locator_setup.dart';
 
@@ -17,128 +17,199 @@ class GoodsReceiptLineAdd extends StatefulWidget {
 }
 
 class _GoodsReceiptLineAddState extends State<GoodsReceiptLineAdd> {
+  final _gmkSmsServiceGroupDAL = locator<GMKSMSServiceGroupDAL>();
+  final _selectedPurchLineDtoList = <int>[];
+  late ScaffoldMessengerState _scaffoldMessenger;
+  late NavigatorState _navigator;
+  var _purchLineDtoList = <PurchLineDto>[];
+  var _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scaffoldMessenger = ScaffoldMessenger.of(context);
+      _navigator = Navigator.of(context);
+    });
+    _fetchPurchLineList();
+  }
+
+  Future<void> _fetchPurchLineList() async {
+    try {
+      setState(() => _isLoading = true);
+      final response = await _gmkSmsServiceGroupDAL.getPurchLineList(widget.goodsReceiptHeader.purchId);
+      // filter the response based on the widget.goodsReceiptHeader.goodsReceiptLines
+      if (response.success) {
+        _purchLineDtoList = response.data!;
+        for (var goodsReceiptLine in widget.goodsReceiptHeader.goodsReceiptLines) {
+          _purchLineDtoList.removeWhere((purchLine) => purchLine.lineNumber == goodsReceiptLine.lineNumber);
+        }
+      }
+    }
+    on DioException catch (error) {
+      ApiResponseDto response = error.response?.data;
+      _scaffoldMessenger.showSnackBar(
+        SnackBar(
+            content: Text(response.message)
+        ),
+      );
+    }
+    catch (error) {
+      _scaffoldMessenger.showSnackBar(
+        SnackBar(
+            content: Text(error.toString())
+        ),
+      );
+    }
+    finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Goods Receipt Line Add'),
+      ),
+      body: LoadingOverlay(
+        isLoading: _isLoading,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildPurchLineList(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                  onPressed: _selectedPurchLineDtoList.isNotEmpty ? () {
+                    _navigator.pop(_selectedPurchLineDtoList.map((index) => _purchLineDtoList[index]).toList());
+                  } : null,
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(50),
+                  ),
+                  child: const Text('Add Selected Items')
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
-  // final _gmkSMSServiceGroupDAL = locator<GMKSMSServiceGroupDAL>();
-  // final _goodsReceiptLineDAL = locator<GoodsReceiptLineDAL>();
-  // late ScaffoldMessengerState _scaffoldMessengerState;
-  // var _purchLineDtoList = <PurchLineDto>[];
-  // var _goodsReceiptLineDto = GoodsReceiptLineDto();
-  //
-  // final _purchQtyTextController = TextEditingController();
-  // final _wMSLocationIdTextController = TextEditingController();
-  //
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     _scaffoldMessengerState = ScaffoldMessenger.of(context);
-  //     _fetchData();
-  //   });
-  // }
-  //
-  // Future<void> _fetchData() async {
-  //   try {
-  //     final purchLineResponse = await _gmkSMSServiceGroupDAL.getPurchLineList(widget.goodsReceiptHeader.purchId);
-  //     if (purchLineResponse.success) {
-  //       _purchLineDtoList = purchLineResponse.data!;
-  //     }
-  //     final goodsReceiptLineResponse = await _goodsReceiptLineDAL.getGoodsReceiptLineByParams(
-  //       GoodsReceiptLineDto(
-  //         goodsReceiptHeaderId: widget.goodsReceiptHeader.goodsReceiptHeaderId,
-  //
-  //       ),
-  //     );
-  //     if (goodsReceiptLineResponse.success) {
-  //       _goodsReceiptLineDto = goodsReceiptLineResponse.data!;
-  //     }
-  //   } catch (error) {
-  //     _scaffoldMessengerState.showSnackBar(SnackBar(
-  //       content: Text('Error fetching purchase lines: $error')
-  //     ));
-  //   }
-  // }
-  //
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: const Text('Add Goods Receipt Line'),
-  //     ),
-  //     body: Column(
-  //       children: [
-  //         DropdownSearch(
-  //           items: _purchLineDtoList,
-  //           itemAsString: (PurchLineDto item) => item.itemId,
-  //           selectedItem: _purchLineDtoList[0],
-  //         ),
-  //         SingleChildScrollView(
-  //           child: Form(
-  //             child: Column(
-  //               children: [
-  //                 TextFormField(
-  //                   decoration: const InputDecoration(labelText: 'Item Id'),
-  //                   initialValue: _purchLineDtoList[0].itemId,
-  //                   enabled: false,
-  //                 ),
-  //                 TextFormField(
-  //                   decoration: const InputDecoration(labelText: 'Item Name'),
-  //                   initialValue: _purchLineDtoList[0].itemName,
-  //                   enabled: false,
-  //                 ),
-  //                 TextFormField(
-  //                   decoration: const InputDecoration(labelText: 'Line Number'),
-  //                   initialValue: _purchLineDtoList[0].lineNumber.toString(),
-  //                   enabled: false,
-  //                 ),
-  //                 TextFormField(
-  //                   controller: _purchQtyTextController,
-  //                   decoration: const InputDecoration(labelText: 'Quantity'),
-  //                   keyboardType: TextInputType.number,
-  //                   initialValue: _purchLineDtoList[0].purchQty.toString(),
-  //                 ),
-  //                 TextFormField(
-  //                   decoration: const InputDecoration(labelText: 'Unit'),
-  //                   initialValue: _purchLineDtoList[0].purchUnit,
-  //                   enabled: false,
-  //                 ),
-  //                 TextFormField(
-  //                   decoration: const InputDecoration(labelText: 'Price'),
-  //                   keyboardType: TextInputType.number,
-  //                   initialValue: _purchLineDtoList[0].purchPrice.toString(),
-  //                   enabled: false,
-  //                 ),
-  //                 TextFormField(
-  //                   decoration: const InputDecoration(labelText: 'Warehouse'),
-  //                   initialValue: _goodsReceiptLineDto.inventLocationId,
-  //                   enabled: false,
-  //                 ),
-  //                 TextFormField(
-  //                   decoration: const InputDecoration(labelText: 'WMS Location Id'),
-  //                   initialValue: _goodsReceiptLineDto.wMSLocationId,
-  //                   enabled: false,
-  //                 ),
-  //                 TextFormField(
-  //                   decoration: const InputDecoration(labelText: 'Line Amount'),
-  //                   keyboardType: TextInputType.number,
-  //                   initialValue: _purchLineDtoList[0].lineAmount.toString(),
-  //                   enabled: false,
-  //                 ),
-  //                 ElevatedButton(
-  //                   onPressed: () async {
-  //                     // save data
-  //                   },
-  //                   child: const Text('Save'),
-  //                 )
-  //               ],
-  //             ),
-  //           )
-  //         )
-  //       ],
-  //     )
-  //   );
-  // }
+
+  Widget _buildPurchLineList() {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: _purchLineDtoList.length,
+        itemBuilder: (context, index) {
+          return _buildPurchLineListItem(_purchLineDtoList[index], index);
+        },
+      ),
+    );
+  }
+
+  Widget _buildPurchLineListItem(PurchLineDto purchLineDto, index) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        color: _selectedPurchLineDtoList.contains(index) ? Colors.blue[100] : Colors.white,
+        child: ListTile(
+          onTap: () {
+            setState(() {
+              if (_selectedPurchLineDtoList.contains(index)) {
+                _selectedPurchLineDtoList.remove(index);
+              } else {
+                _selectedPurchLineDtoList.add(index);
+              }
+            });
+          },
+          title: Padding(
+            padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
+            child: Text(
+              'Item Id: ${purchLineDto.itemId}, Line Number: ${purchLineDto.lineNumber}',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+          ),
+          subtitle: Column(
+            children: [
+              const Divider(color: Colors.grey),
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      'Item Name',
+                      style: _purchLineFieldNameStyle(),
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    purchLineDto.itemName,
+                    style: _purchLineFieldValueStyle(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 5),
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      'Purch Qty',
+                      style: _purchLineFieldNameStyle(),
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '${purchLineDto.purchQty} ${purchLineDto.purchUnit}',
+                    style: _purchLineFieldValueStyle(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 5),
+              // deliver remainder
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      'Deliver remainder',
+                      style: _purchLineFieldNameStyle(),
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '${purchLineDto.remainPurchPhysical} ${purchLineDto.purchUnit}',
+                    style: _purchLineFieldValueStyle(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 5),
+              // product type
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      'Product Type',
+                      style: _purchLineFieldNameStyle(),
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    purchLineDto.productType.toString().split('.').last,
+                    style: _purchLineFieldValueStyle(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 5),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  TextStyle _purchLineFieldValueStyle() => const TextStyle(fontSize: 16, color: Colors.black);
+
+  TextStyle _purchLineFieldNameStyle() => const TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.black);
 }

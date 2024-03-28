@@ -1,4 +1,3 @@
-//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -6,17 +5,30 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Environment {
-  static Map<String, dynamic> config = <String, dynamic>{};
+  final _storage = const FlutterSecureStorage();
+  static String _baseUrl = '';
 
-  Future<void> loadEnvironment() async {
+  static String get baseUrl => _baseUrl;
+
+  Future<void> initialize() async {
     WidgetsFlutterBinding.ensureInitialized();
-    final environment = await rootBundle.loadString('environment.json');
-    config = jsonDecode(environment) as Map<String, dynamic>;
+    _baseUrl = await _storage.read(key: 'baseUrl') ?? '';
+    if (_baseUrl.isEmpty) {
+      final environment = await rootBundle.loadString('environment.json');
+      final config = jsonDecode(environment) as Map<String, dynamic>;
+      _baseUrl = config['API_URL'] ?? '';
+    }
   }
 
-  Future<String> get apiUrl async {
-    const storage = FlutterSecureStorage();
-    var apiUrl = await storage.read(key: 'apiUrl');
-    return apiUrl ?? config['API_URL'];
+  Future<void> saveBaseUrl(String newBaseUrl) async {
+    await _storage.write(key: 'baseUrl', value: newBaseUrl);
+    _baseUrl = newBaseUrl;
+  }
+
+  Future<void> clearBaseUrl() async {
+    await _storage.delete(key: 'baseUrl');
+    final environment = await rootBundle.loadString('environment.json');
+    final config = jsonDecode(environment) as Map<String, dynamic>;
+    _baseUrl = config['API_URL'];
   }
 }

@@ -6,6 +6,6 @@ abstract class PermissionDAL {
   Future<ApiResponseDto<List<PermissionDto>>> fetchPermissionByRoleId(int roleId);
   Future<ApiResponseDto<List<PermissionDto>>> fetchAllPermissionType();
   Future<ApiResponseDto<List<PermissionDto>>> fetchAllModule();
-  Future<ApiResponseDto<PermissionDto>> addPermission(PermissionDto permission);
-  Future<ApiResponseDto<PermissionDto>> deletePermission(int permissionId);
+  Future<ApiResponseDto> addPermission(PermissionDto permission);
+  Future<ApiResponseDto> deletePermission(int permissionId);
 }

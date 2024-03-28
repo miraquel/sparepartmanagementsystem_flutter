@@ -1,15 +1,15 @@
-import 'dart:convert';
 
-import 'package:accordion/accordion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
-import 'package:sparepartmanagementsystem_flutter/Helper/currency_helper.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 import 'package:sparepartmanagementsystem_flutter/Helper/numerical_range_formatter.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/purch_line_dto.dart';
 
 import '../DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
 import '../DataAccessLayer/Abstract/goods_receipt_header_dal.dart';
+import '../Model/Enums/product_type.dart';
 import '../Model/goods_receipt_header_dto.dart';
 import '../Model/goods_receipt_header_dto_builder.dart';
 import '../Model/wms_location_dto.dart';
@@ -23,17 +23,19 @@ class GoodsReceiptDetails extends StatefulWidget {
   State<GoodsReceiptDetails> createState() => _GoodsReceiptDetailsState();
 }
 
-class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> {
+class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerProviderStateMixin {
   final _goodsReceiptHeaderDAL = locator<GoodsReceiptHeaderDAL>();
   final _gmkSMSServiceGroupDAL = locator<GMKSMSServiceGroupDAL>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late ScaffoldMessengerState _scaffoldMessengerState;
   late NavigatorState _navigator;
   var _isLoading = false;
+  var _isEditing = false;
+  late TabController _tabController;
+  int tabIndex = 0;
 
   var _goodsReceiptHeader = GoodsReceiptHeaderDto();
-  var _purchLineDtoList = <PurchLineDto>[];
   var _goodsReceiptHeaderDtoBuilder = GoodsReceiptHeaderDtoBuilder();
-  //var _goodsReceiptLineDtoBuilder = <GoodsReceiptLineDtoBuilder>[];
   final _controllers = <TextEditingController>[];
 
   @override
@@ -42,8 +44,20 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scaffoldMessengerState = ScaffoldMessenger.of(context);
       _navigator = Navigator.of(context);
+      _tabController = TabController(initialIndex: 0, length: 2, vsync: this);
+      _tabController.animation?.addListener(() {
+        setState(() {
+          tabIndex = _tabController.index;
+        });
+      });
       _fetchData();
     });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchData() async {
@@ -53,15 +67,40 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> {
       if (goodsReceiptHeaderResponse.success) {
         _goodsReceiptHeader = goodsReceiptHeaderResponse.data!;
         _goodsReceiptHeaderDtoBuilder = GoodsReceiptHeaderDtoBuilder.fromDto(goodsReceiptHeaderResponse.data!);
-        //_goodsReceiptLineDtoBuilder = _goodsReceiptHeader.goodsReceiptLines.map((goodsReceiptLine) => GoodsReceiptLineDtoBuilder.fromDto(goodsReceiptLine)).toList();
+        if (_goodsReceiptHeaderDtoBuilder.transDate.isAtSameMomentAs(DateTimeHelper.minDateTime)) {
+          _goodsReceiptHeaderDtoBuilder.setTransDate(DateTime.now());
+        }
       }
-      final purchLineResponse = await _gmkSMSServiceGroupDAL.getPurchLineList(_goodsReceiptHeader.purchId);
+      final purchTableResponse = await _gmkSMSServiceGroupDAL.getPurchTable(goodsReceiptHeaderResponse.data!.purchId);
+      if (purchTableResponse.success) {
+      }
+      final purchLineResponse = await _gmkSMSServiceGroupDAL.getPurchLineList(goodsReceiptHeaderResponse.data!.purchId);
       if (purchLineResponse.success) {
-        _purchLineDtoList = purchLineResponse.data!;
       }
     } catch (error) {
       _scaffoldMessengerState.showSnackBar(SnackBar(
         content: Text('Error fetching goods receipt header details: $error')
+      ));
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _saveData() async {
+    try {
+      setState(() => _isLoading = true);
+      final goodsReceiptHeaderResponse = await _goodsReceiptHeaderDAL.updateGoodsReceiptHeaderWithLines(_goodsReceiptHeaderDtoBuilder.build());
+      if (goodsReceiptHeaderResponse.success) {
+        _scaffoldMessengerState.showSnackBar(const SnackBar(
+          content: Text('Goods receipt header has been saved')
+        ));
+      }
+      else {
+        throw Exception('response is received but not successful');
+      }
+    } catch (error) {
+      _scaffoldMessengerState.showSnackBar(SnackBar(
+        content: Text('Error saving goods receipt header to AX: $error')
       ));
     } finally {
       setState(() => _isLoading = false);
@@ -89,278 +128,472 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> {
   @override
   Widget build(BuildContext context) {
     // create 2 tabs, one for the header and one for the lines
+    var transDateTextController = TextEditingController(text: DateFormat("dd/MM/yyyy").format(_goodsReceiptHeaderDtoBuilder.transDate));
     return LoadingOverlay(
       isLoading: _isLoading,
-      child: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Goods Receipt Details'),
-            bottom: const TabBar(
-              tabs: <Widget>[
-                Tab(
-                  text: 'Header',
-                ),
-                Tab(
-                  text: 'Lines',
-                ),
-              ],
-            ),
-
-          ),
-          body: TabBarView(
-            children: <Widget>[
-              // Header tab
-              SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-                        controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.packingSlipId),
-                        onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setPackingSlipId(value),
-                        decoration: const InputDecoration(
-                          labelText: 'Packing Slip Id',
-                        ),
-
-                      ),
-                    ),
-                    Accordion(
-                        headerPadding: const EdgeInsets.all(20),
-                        headerBorderRadius: 0,
-                        contentBorderRadius: 0,
-                        scaleWhenAnimating: false,
-                        maxOpenSections: 1,
-                        disableScrolling: true,
-                        children: [
-                          AccordionSection(
-                            isOpen: !_goodsReceiptHeader.isDefault() ? true : false,
-                            header: const Text("Header", style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 15
-                            )),
-                            content: ListView(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              children: <Widget>[
-                                ListTile(
-                                  title: const Text('Purch Id'),
-                                  subtitle: _goodsReceiptHeader.purchId.isEmpty ? const Text('<blank>') : Text(_goodsReceiptHeader.purchId),
-                                  dense: true,
-                                ),
-                                ListTile(
-                                  title: const Text('Purch Name'),
-                                  subtitle: _goodsReceiptHeader.purchName.isEmpty ? const Text('<blank>') : Text(_goodsReceiptHeader.purchName),
-                                  dense: true,
-                                ),
-                                ListTile(
-                                  title: const Text('Order Account'),
-                                  subtitle: _goodsReceiptHeader.orderAccount.isEmpty ? const Text('<blank>') : Text(_goodsReceiptHeader.orderAccount),
-                                  dense: true,
-                                ),
-                                ListTile(
-                                  title: const Text('Invoice Account'),
-                                  subtitle: _goodsReceiptHeader.invoiceAccount.isEmpty ? const Text('<blank>') : Text(_goodsReceiptHeader.invoiceAccount),
-                                  dense: true,
-                                ),
-                                ListTile(
-                                  title: const Text('Purch Status'),
-                                  subtitle: _goodsReceiptHeader.purchStatus.isEmpty ? const Text('<blank>') : Text(_goodsReceiptHeader.purchStatus),
-                                  dense: true,
-                                ),
-                              ],
-                            ),
-                          ),
-                          AccordionSection(
-                              header: const Text("Lines", style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 15
-                              )),
-                              content: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: DataTable(
-                                      border: TableBorder.all(),
-                                      columns: const <DataColumn>[
-                                        DataColumn(
-                                          label: Center(child: Text('Item Id', textAlign: TextAlign.center, style: TextStyle(fontSize: 16))),
-                                        ),
-                                        DataColumn(
-                                          label: Center(child: Text('Name', textAlign: TextAlign.center, style: TextStyle(fontSize: 16))),
-                                        ),
-                                        // Purch Unit
-                                        DataColumn(
-                                          label: Center(child: Text('Unit', textAlign: TextAlign.center, style: TextStyle(fontSize: 16))),
-                                        ),
-                                        DataColumn(
-                                          label: Center(child: Text('Qty', textAlign: TextAlign.center, style: TextStyle(fontSize: 16))),
-                                        ),
-                                      ],
-                                      rows: _purchLineDtoList.map((PurchLineDto purchLineDto) => DataRow(
-                                        cells: <DataCell>[
-                                          DataCell(Text(purchLineDto.itemId)),
-                                          DataCell(Text(purchLineDto.itemName)),
-                                          DataCell(Text(purchLineDto.purchUnit)),
-                                          DataCell(Text(purchLineDto.purchQty.toString())),
-                                        ],
-                                      )).toList(),
-                                    ),
-                                  ),
-                                ],
-                              )
-                          )
-                        ]
-                    ),
-                  ],
-                ),
+      child: Scaffold(
+        key: _scaffoldKey,
+        floatingActionButton: _goodsReceiptHeaderDtoBuilder.isSubmitted == false && tabIndex == 1 ? FloatingActionButton(
+          onPressed: () async {
+            var result = await _navigator.pushNamed('/goodsReceiptLineAdd', arguments: _goodsReceiptHeader);
+            if (result != null) {
+              var goodsReceiptLines = result as List<PurchLineDto>;
+              for (var purchLine in goodsReceiptLines) {
+                _goodsReceiptHeaderDtoBuilder.addGoodsReceiptLine(purchLine);
+              }
+              setState(() {});
+            }
+          },
+          child: const Icon(Icons.add),
+        ) : null,
+        appBar: AppBar(
+          title: const Text('Goods Receipt Details'),
+          bottom: TabBar(
+            controller: _tabController,
+            tabs: const <Widget>[
+              Tab(
+                text: 'Header',
               ),
-              // Lines tab
-              // create a table to display the lines with add, edit, and delete capability
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _navigator.pushNamed('/goodsReceiptLineAdd', arguments: _goodsReceiptHeader);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50)
-                      ),
-                      child: const Text('Add Line'),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.separated(
-                      separatorBuilder: (BuildContext context, int index) { return const Divider(
-                        thickness: 1,
-                        color: Colors.black,
-                      );},
-                      itemCount: _goodsReceiptHeaderDtoBuilder.goodsReceiptLines.length,
-                      itemBuilder: (context, index) {
-                        _controllers.add(TextEditingController(text: _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchQty.toInt().toString()));
-                        return ListTile(
-                          title: Text(_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].itemId),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Name: ${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].itemName}"),
-                              const SizedBox(height: 10),
-                              Text("Qty: ${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchQty} / ${_goodsReceiptHeader.goodsReceiptLines[index].purchQty}"),
-                              Text("Unit: ${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchUnit}"),
-                              Text("Price: ${numberToIdr(_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchPrice, 2)}"),
-                              Text("Amount: ${numberToIdr(_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchQty * _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchPrice, 2)}"),
-                              const SizedBox(height: 10),
-                              // create a button
-                              Text("Warehouse: ${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].inventLocationId}"),
-                              Text("Location: ${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].wMSLocationId}"),
-                              const SizedBox(height: 10),
-                              ElevatedButton(
-                                onPressed: () {
-                                  _navigator.pushNamed('/wMSLocationLookup').then((value) {
-                                    if (value != null) {
-                                      setState(() {
-                                        var wMSLocationDto = value as WMSLocationDto;
-                                        _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].setInventLocationId(wMSLocationDto.inventLocationId);
-                                        _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].setWMSLocationId(wMSLocationDto.wMSLocationId);
-                                      });
-                                    }
-                                  });
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: const Size.fromHeight(40)
-                                ),
-                                child: const Text('Edit Location'),
-                              ),
-                            ],
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // minus icon
-                              IconButton(
-                                icon: const Icon(Icons.remove),
-                                onPressed: () {
-                                  setState(() {
-                                    if (_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchQty > 1) {
-                                      _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].setPurchQty(_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchQty - 1);
-                                      _controllers[index].text = _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchQty.toInt().toString();
-                                    }
-                                  });
-                                },
-                              ),
-                              // quantity text field
-                              SizedBox(
-                                width: 60,
-                                child: TextFormField(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Qty',
-                                    floatingLabelAlignment: FloatingLabelAlignment.center,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  controller: _controllers[index],
-                                  onChanged: (value) {
-                                    setState(() {
-                                      var valueParsed = int.tryParse(value) ?? 1;
-                                      if (valueParsed <= _goodsReceiptHeader.goodsReceiptLines[index].purchQty && valueParsed >= 1) {
-                                        _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].setPurchQty(valueParsed.toDouble());
-                                      }
-                                      if (valueParsed == 1) {
-                                        _controllers[index].text = valueParsed.toString();
-                                      }
-                                    });
-                                  },
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    NumericalRangeFormatter(min: 1, max: _goodsReceiptHeader.goodsReceiptLines[index].purchQty)
-                                  ],
-                                  keyboardType: TextInputType.number,
-                                ),
-                              ),
-                              // plus icon
-                              IconButton(
-                                icon: const Icon(Icons.add),
-                                onPressed: () {
-                                  setState(() {
-                                    if (_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchQty < _goodsReceiptHeader.goodsReceiptLines[index].purchQty) {
-                                      _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].setPurchQty(_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchQty + 1);
-                                      _controllers[index].text = _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchQty.toInt().toString();
-                                    }
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_goodsReceiptHeaderDtoBuilder.isSubmitted == false) {
-                          _postData();
-                          _navigator.pop();
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50)
-                      ),
-                      child: const Text('Post to AX'),
-                    ),
-                  )
-                ],
+              Tab(
+                text: 'Lines',
               ),
             ],
           ),
+          actions: [
+            if (!_isEditing) ...[
+              IconButton(
+                icon: const Icon(Icons.send),
+                onPressed: _goodsReceiptHeader.isSubmitted == false && _goodsReceiptHeaderDtoBuilder.goodsReceiptLines.isNotEmpty ? () async {
+                  // confirmation dialog
+                  await showDialog<bool>(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Post to AX'),
+                        content: const Text('Are you sure you want to post this goods receipt to AX?'),
+                        actions: <Widget>[
+                          TextButton(
+                              onPressed: () => _navigator.pop(),
+                              style: ButtonStyle(
+                                foregroundColor: MaterialStateProperty.all(Colors.white),
+                                backgroundColor: MaterialStateProperty.all(Colors.red),
+                              ),
+                              child: const Text('No')
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              // close confirmation dialog
+                              _navigator.pop();
+
+                              await _postData();
+
+                              // close page details
+                              _navigator.pop();
+                            },
+                            style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all(Colors.white),
+                              backgroundColor: MaterialStateProperty.all(Colors.green),
+                            ),
+                            child: const Text('Yes'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                } : null,
+              ),
+              IconButton(
+                icon: const Icon(Icons.save),
+                onPressed: _goodsReceiptHeader.isSubmitted == false ? () async {
+                  // show confirmation dialog
+                  await showDialog<bool>(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Save to AX'),
+                        content: const Text('Are you sure you want to save this goods receipt as draft?'),
+                        actions: <Widget>[
+                          TextButton(
+                              onPressed: () => _navigator.pop(),
+                              style: ButtonStyle(
+                                foregroundColor: MaterialStateProperty.all(Colors.white),
+                                backgroundColor: MaterialStateProperty.all(Colors.red),
+                              ),
+                              child: const Text('No')
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              // close confirmation dialog
+                              _navigator.pop();
+
+                              await _saveData();
+                            },
+                            style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all(Colors.white),
+                              backgroundColor: MaterialStateProperty.all(Colors.green),
+                            ),
+                            child: const Text('Yes'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                } : null,
+              ),
+            ]
+            else ...[
+              if (!_goodsReceiptHeaderDtoBuilder.isAllGoodsReceiptLinesSelected())
+                IconButton(
+                  icon: const Icon(Icons.select_all),
+                  onPressed: () {
+                    setState(() {
+                      _goodsReceiptHeaderDtoBuilder.selectAllGoodsReceiptLines();
+                    });
+                  },
+                ),
+              if (_goodsReceiptHeaderDtoBuilder.isAtLeastOneGoodsReceiptLineSelected())
+              IconButton(
+                icon: const Icon(Icons.deselect),
+                onPressed: () {
+                  setState(() {
+                    _goodsReceiptHeaderDtoBuilder.deselectAllGoodsReceiptLines();
+                    _isEditing = false;
+                  });
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () {
+                  // create a confirmation dialog
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Delete selected lines'),
+                        content: const Text('Are you sure you want to delete the selected lines?'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () => _navigator.pop(),
+                            style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all(Colors.white),
+                              backgroundColor: MaterialStateProperty.all(Colors.red),
+                            ),
+                            child: const Text('No')
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              _navigator.pop();
+                              setState(() {
+                                _goodsReceiptHeaderDtoBuilder.deleteSelectedGoodsReceiptLines();
+                              });
+                            },
+                            style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all(Colors.white),
+                              backgroundColor: MaterialStateProperty.all(Colors.green),
+                            ),
+                            child: const Text('Yes'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+            ]
+          ],
+        ),
+        body: TabBarView(
+          controller: _tabController,
+          children: <Widget>[
+            _buildHeaderTab(transDateTextController, context),
+            _buildLineTab(),
+          ],
         ),
       ),
     );
+  }
+
+  SingleChildScrollView _buildHeaderTab(TextEditingController transDateTextController, BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 16, top: 16),
+            child: Text(
+              'Update Goods Receipt',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top:8, left: 16, bottom: 3),
+            child: Text(
+              'Please update the goods receipt details below',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+            child: TextFormField(
+              controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.packingSlipId),
+              onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setPackingSlipId(value),
+              decoration: const InputDecoration(
+                labelText: 'Packing Slip Id',
+              ),
+              readOnly: _goodsReceiptHeader.isSubmitted == false ? false : true
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+            child: TextFormField(
+              controller: transDateTextController,
+              decoration: InputDecoration(
+                labelText: 'Receipt Date',
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.calendar_month),
+                  onPressed: _goodsReceiptHeader.isSubmitted == false ? () {
+                    showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100),
+                    ).then((value) {
+                      if (value != null) {
+                        setState(() {
+                          _goodsReceiptHeaderDtoBuilder.setTransDate(value);
+                          transDateTextController.text = DateFormat("dd/MM/yyyy").format(value);
+                        });
+                      }
+                    });
+                  } : null,
+                )
+              ),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d{4}-\d{2}-\d{2}')),
+              ],
+              readOnly: true,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+            child: TextFormField(
+              controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.description),
+              onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setDescription(value),
+              decoration: const InputDecoration(
+                labelText: 'Description',
+              ),
+              readOnly: _goodsReceiptHeader.isSubmitted == false ? false : true,
+            ),
+          ),
+          Padding(padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+            child: TextFormField(
+              controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.purchId),
+              onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setPurchId(value),
+              decoration: const InputDecoration(
+                labelText: 'Purch Id',
+              ),
+              readOnly: true,
+            ),
+          ),
+          Padding(padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+            child: TextFormField(
+              controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.purchName),
+              onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setPurchName(value),
+              decoration: const InputDecoration(
+                labelText: 'Purch Name',
+              ),
+              readOnly: true,
+            ),
+          ),
+          Padding(padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+            child: TextFormField(
+              controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.orderAccount),
+              onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setOrderAccount(value),
+              decoration: const InputDecoration(
+                labelText: 'Order Account',
+              ),
+              readOnly: true,
+            ),
+          ),
+          Padding(padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+            child: TextFormField(
+              controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.invoiceAccount),
+              onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setInvoiceAccount(value),
+              decoration: const InputDecoration(
+                labelText: 'Invoice Account',
+              ),
+              readOnly: true,
+            ),
+          ),
+          Padding(padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+            child: TextFormField(
+              controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.purchStatus),
+              onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setPurchStatus(value),
+              decoration: const InputDecoration(
+                labelText: 'Purch Status',
+              ),
+              readOnly: true,
+            ),
+          ),
+          Padding(padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size.fromHeight(50)
+              ),
+              child: const Text('View Original Purchase Order'),
+            )
+          ),
+        ],
+      ),
+    );
+  }
+
+  ListView _buildLineTab() {
+    return ListView.separated(
+              separatorBuilder: (BuildContext context, int index) {
+                return const Divider(
+                  thickness: 1,
+                  color: Colors.black,
+                );
+              },
+              padding: const EdgeInsets.only(top: 10),
+              itemCount: _goodsReceiptHeaderDtoBuilder.goodsReceiptLines.length,
+              itemBuilder: (context, index) {
+                _controllers.add(TextEditingController(text: _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].receiveNow.toInt().toString()));
+                return Theme(
+                  data: ThemeData(
+                    splashFactory: NoSplash.splashFactory,
+                  ),
+                  child: ListTile(
+                    title: Text(_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].itemId),
+                    onLongPress: !_isEditing ? () {
+                      setState(() {
+                        _isEditing = true;
+                        _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].setIsSelected(true);
+                      });
+                    } : null,
+                    onTap: _isEditing ? () {
+                      setState(() {
+                        _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].setIsSelected(!_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].isSelected);
+                      });
+                      if (_goodsReceiptHeaderDtoBuilder.isNoGoodsReceiptLineSelected()) {
+                        setState(() => _isEditing = false);
+                      }
+                    } : null,
+                    leading: _isEditing ? Checkbox(
+                      value: _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].isSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].setIsSelected(value!);
+                        });
+                        if (_goodsReceiptHeaderDtoBuilder.isNoGoodsReceiptLineSelected()) {
+                          setState(() => _isEditing = false);
+                        }
+                      },
+                    ) : null,
+                    minLeadingWidth: 0,
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Name: ${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].itemName}"),
+                        const SizedBox(height: 10),
+                        Text("Receive Qty: ${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].receiveNow} / ${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].remainPurchPhysical}"),
+                        Text("Unit: ${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchUnit}"),
+                        // Text("Price: ${numberToIdr(_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchPrice, 2)}"),
+                        // Text("Amount: ${numberToIdr(_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchQty * _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchPrice, 2)}"),
+                        const SizedBox(height: 10),
+                        // create a button
+                        if (_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].productType == ProductType.item) ...[
+                          Text("Warehouse: ${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].inventLocationId}"),
+                          Text("Location: ${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].wMSLocationId}"),
+                          const SizedBox(height: 10),
+                          if (!_isEditing)
+                            ElevatedButton(
+                              onPressed: _goodsReceiptHeaderDtoBuilder.isSubmitted == false ? () {
+                                _navigator.pushNamed('/wMSLocationLookup').then((value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      var wMSLocationDto = value as WMSLocationDto;
+                                      _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].setInventLocationId(wMSLocationDto.inventLocationId);
+                                      _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].setWMSLocationId(wMSLocationDto.wMSLocationId);
+                                    });
+                                  }
+                                });
+                              } : null,
+                              style: ElevatedButton.styleFrom(
+                                  minimumSize: const Size.fromHeight(40)
+                              ),
+                              child: const Text('Edit Location'),
+                            ),
+                        ]
+                      ],
+                    ),
+                    trailing: !_isEditing ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // minus icon
+                        IconButton(
+                          icon: const Icon(Icons.remove),
+                          onPressed: _goodsReceiptHeaderDtoBuilder.isSubmitted == false && _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].receiveNow > 1 ? () {
+                            setState(() {
+                              _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].setReceiveNow(_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].receiveNow - 1);
+                              _controllers[index].text = _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].receiveNow.toInt().toString();
+                            });
+                          } : null,
+                        ),
+                        // quantity text field
+                        SizedBox(
+                          width: 60,
+                          child: TextFormField(
+                            enabled: _goodsReceiptHeaderDtoBuilder.isSubmitted == false,
+                            decoration: const InputDecoration(
+                              labelText: 'Qty',
+                              floatingLabelAlignment: FloatingLabelAlignment.center,
+                            ),
+                            textAlign: TextAlign.center,
+                            controller: _controllers[index],
+                            onChanged: (value) {
+                              setState(() {
+                                var valueParsed = int.tryParse(value) ?? 1;
+                                if (valueParsed <= _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].receiveNow && valueParsed >= 1) {
+                                  _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].setReceiveNow(valueParsed.toDouble());
+                                }
+                                if (valueParsed == 1) {
+                                  _controllers[index].text = valueParsed.toString();
+                                }
+                              });
+                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              NumericalRangeFormatter(min: 1, max: _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].remainPurchPhysical)
+                            ],
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                        // plus icon
+                        IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: _goodsReceiptHeaderDtoBuilder.isSubmitted == false && _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].receiveNow < _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].remainPurchPhysical ? () {
+                            setState(() {
+                              _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].setReceiveNow(_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].receiveNow + 1);
+                              _controllers[index].text = _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].receiveNow.toInt().toString();
+                            });
+                          } : null,
+                        ),
+                      ],
+                    ) : null,
+                  ),
+                );
+              },
+            );
   }
 }

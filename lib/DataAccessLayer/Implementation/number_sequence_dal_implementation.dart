@@ -10,50 +10,45 @@ import '../api_path.dart';
 const storage = FlutterSecureStorage();
 
 class NumberSequenceDALImplementation implements NumberSequenceDAL {
-  Future<Dio> loadDio() async => await locator.getAsync<Dio>();
+  final _dio = locator<Dio>();
 
   @override
-  Future<ApiResponseDto<NumberSequenceDto>> addNumberSequence(NumberSequenceDto numberSequence) async {
-    final dio = await loadDio();
-    final response = await dio.post(ApiPath.addNumberSequence, data: numberSequence);
+  Future<ApiResponseDto> addNumberSequence(NumberSequenceDto numberSequence) async {
+    final response = await _dio.post(ApiPath.addNumberSequence, data: numberSequence);
     var responseBody = response.data as Map<String, dynamic>;
-    return ApiResponseDto<NumberSequenceDto>.fromJson(responseBody, (json) => NumberSequenceDto.fromJson(json as Map<String, dynamic>));
+    return ApiResponseDto.fromJson(responseBody);
   }
 
   @override
-  Future<ApiResponseDto<NumberSequenceDto>> deleteNumberSequence(int numberSequenceId) async {
-    final dio = await loadDio();
-    const path = ApiPath.deleteNumberSequence;
-    final response = await dio.delete("$path/$numberSequenceId");
-    return ApiResponseDto<NumberSequenceDto>.fromJson(response.data as Map<String, dynamic>, (json) => NumberSequenceDto.fromJson(json as Map<String, dynamic>));
+  Future<ApiResponseDto> deleteNumberSequence(int numberSequenceId) async {    const path = ApiPath.deleteNumberSequence;
+    final response = await _dio.delete("$path/$numberSequenceId");
+    var responseBody = response.data as Map<String, dynamic>;
+    return ApiResponseDto.fromJson(responseBody);
   }
 
   @override
   Future<ApiResponseDto<List<NumberSequenceDto>>> fetchNumberSequence() async {
-    final dio = await loadDio();
-    final response = await dio.get(ApiPath.fetchNumberSequence);
+    final response = await _dio.get(ApiPath.fetchNumberSequence);
 
     return ApiResponseDto<List<NumberSequenceDto>>.fromJson(response.data as Map<String, dynamic>,
-        (json) => List<NumberSequenceDto>.from(json.map((e) => NumberSequenceDto.fromJson(e as Map<String, dynamic>)).toList()));
+        (json) => json.map<NumberSequenceDto>((e) => NumberSequenceDto.fromJson(e as Map<String, dynamic>)).toList());
   }
 
   @override
   Future<ApiResponseDto<NumberSequenceDto>> fetchNumberSequenceById(int numberSequenceId) async {
-    final dio = await loadDio();
     var path = ApiPath.fetchNumberSequenceById;
-    final response = await dio.get('$path/$numberSequenceId');
+    final response = await _dio.get('$path/$numberSequenceId');
 
     return ApiResponseDto<NumberSequenceDto>.fromJson(response.data as Map<String, dynamic>, (json) => NumberSequenceDto.fromJson(json as Map<String, dynamic>));
   }
 
   @override
-  Future<ApiResponseDto<NumberSequenceDto>> updateNumberSequence(NumberSequenceDto numberSequence) async {
-    final dio = await loadDio();
-    final response = await dio.put(
+  Future<ApiResponseDto> updateNumberSequence(NumberSequenceDto numberSequence) async {
+    final response = await _dio.put(
       ApiPath.updateNumberSequence,
       data: numberSequence,
     );
     var responseBody = response.data as Map<String, dynamic>;
-    return ApiResponseDto<NumberSequenceDto>.fromJson(responseBody, (json) => NumberSequenceDto.fromJson(json as Map<String, dynamic>));
+    return ApiResponseDto.fromJson(responseBody);
   }
 }

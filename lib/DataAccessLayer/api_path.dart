@@ -6,27 +6,22 @@ class ApiPath {
   static const String getWMSLocationPagedList = '/api/GMKSMSServiceGroup/GetWMSLocationPagedList';
   static const String getImageFromNetworkUri = '/api/GMKSMSServiceGroup/GetImageFromNetworkUri';
   static const String getImageWithResolutionFromNetworkUri = '/api/GMKSMSServiceGroup/GetImageWithResolutionFromNetworkUri';
+  static const String getPurchTable = '/api/GMKSMSServiceGroup/GetPurchTable';
+  static const String getInventSumList = '/api/GMKSMSServiceGroup/GetInventSumList';
 
-  // GoodsReceiptHeader
-  static const String addGoodsReceiptHeader = '/api/GoodsReceiptHeaderService';
-  static const String deleteGoodsReceiptHeader = '/api/GoodsReceiptHeaderService';
-  static const String getGoodsReceiptHeader = '/api/GoodsReceiptHeaderService';
-  static const String getGoodsReceiptHeaderById = '/api/GoodsReceiptHeaderService';
-  static const String updateGoodsReceiptHeader = '/api/GoodsReceiptHeaderService';
-  static const String getGoodsReceiptHeaderPagedList = '/api/GoodsReceiptHeaderService/GetAllPagedList';
-  static const String getGoodsReceiptHeaderByParams = '/api/GoodsReceiptHeaderService/GetByParams';
-  static const String getGoodsReceiptHeaderByParamsPagedList = '/api/GoodsReceiptHeaderService/GetByParamsPagedList';
-  static const String addGoodsReceiptHeaderWithLines = '/api/GoodsReceiptHeaderService/AddWithLines';
-  static const String getGoodsReceiptHeaderByIdWithLines = '/api/GoodsReceiptHeaderService/GetByIdWithLines';
-  static const String postToAX = '/api/GoodsReceiptHeaderService/PostToAX';
-
-  // GoodsReceiptLine
-  static const String addGoodsReceiptLine = '/api/GoodsReceiptLineService';
-  static const String deleteGoodsReceiptLine = '/api/GoodsReceiptLineService';
-  static const String getGoodsReceiptLine = '/api/GoodsReceiptLineService';
-  static const String getGoodsReceiptLineById = '/api/GoodsReceiptLineService';
-  static const String updateGoodsReceiptLine = '/api/GoodsReceiptLineService';
-  static const String getGoodsReceiptLineByParams = '/api/GoodsReceiptLineService/GetByParams';
+  // GoodsReceipt
+  static const String addGoodsReceipt = '/api/GoodsReceiptService';
+  static const String deleteGoodsReceipt = '/api/GoodsReceiptService';
+  static const String getGoodsReceipt = '/api/GoodsReceiptService';
+  static const String getGoodsReceiptById = '/api/GoodsReceiptService';
+  static const String updateGoodsReceipt = '/api/GoodsReceiptService';
+  static const String getGoodsReceiptPagedList = '/api/GoodsReceiptService/GetAllPagedList';
+  static const String getGoodsReceiptByParams = '/api/GoodsReceiptService/GetByParams';
+  static const String getGoodsReceiptByParamsPagedList = '/api/GoodsReceiptService/GetByParamsPagedList';
+  static const String addGoodsReceiptWithLines = '/api/GoodsReceiptService/AddWithLines';
+  static const String updateGoodsReceiptWithLines = '/api/GoodsReceiptService/UpdateWithLines';
+  static const String getGoodsReceiptByIdWithLines = '/api/GoodsReceiptService/GetByIdWithLines';
+  static const String postToAX = '/api/GoodsReceiptService/PostToAX';
 
   // NumberSequence
   static const String addNumberSequence = '/api/NumberSequenceService';
@@ -66,4 +61,14 @@ class ApiPath {
   static const String refreshToken = '/api/UserService/RefreshToken';
   static const String revokeToken = '/api/UserService/RevokeToken';
   static const String revokeAllTokens = '/api/UserService/RevokeAllTokens';
+
+  // Row Level Access
+  static const String addRowLevelAccess = '/api/RowLevelAccessService';
+  static const String deleteRowLevelAccess = '/api/RowLevelAccessService';
+  static const String getRowLevelAccess = '/api/RowLevelAccessService';
+  static const String getRowLevelAccessByParams = '/api/RowLevelAccessService/GetByParams';
+  static const String getRowLevelAccessById = '/api/RowLevelAccessService';
+  static const String updateRowLevelAccess = '/api/RowLevelAccessService';
+  static const String getRowLevelAccessByUserId = '/api/RowLevelAccessService/GetByUserId';
+  static const String bulkDeleteRowLevelAccess = '/api/RowLevelAccessService/BulkDelete';
 }

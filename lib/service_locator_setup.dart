@@ -6,15 +6,15 @@ import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/gmk_s
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/number_sequence_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/permission_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/role_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/row_level_access_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/number_sequence_dal_implementation.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/row_level_access_dal_implementation.dart';
 import 'package:sparepartmanagementsystem_flutter/route_observer_extension.dart';
 
 import 'DataAccessLayer/Abstract/goods_receipt_header_dal.dart';
-import 'DataAccessLayer/Abstract/goods_receipt_line_dal.dart';
 import 'DataAccessLayer/Implementation/gmk_sms_service_group_dal_implementation.dart';
 import 'DataAccessLayer/Implementation/goods_receipt_header_dal_implementation.dart';
-import 'DataAccessLayer/Implementation/goods_receipt_line_dal_implementation.dart';
 import 'DataAccessLayer/Implementation/permission_dal_implementation.dart';
 import 'DataAccessLayer/Implementation/role_dal_implementation.dart';
 import 'DataAccessLayer/Implementation/user_dal_implementation.dart';
@@ -37,9 +37,9 @@ void serviceLocatorSetup() {
           stackTraceBeginIndex: 0
       ));
   locator.registerSingleton<Logger>(logger);
-  locator.registerFactoryAsync<Dio>(() async {
+  locator.registerFactory<Dio>(() {
     var dio = Dio();
-    dio.options.baseUrl = await Environment().apiUrl;
+    dio.options.baseUrl = Environment.baseUrl;
     dio.options.connectTimeout = const Duration(seconds: 120);
     dio.options.receiveTimeout = const Duration(seconds: 120);
     dio.options.contentType = 'application/json';
@@ -53,5 +53,5 @@ void serviceLocatorSetup() {
   locator.registerFactory<PermissionDAL>(() => PermissionDALImplementation());
   locator.registerFactory<NumberSequenceDAL>(() => NumberSequenceDALImplementation());
   locator.registerFactory<GoodsReceiptHeaderDAL>(() => GoodsReceiptHeaderDALImplementation());
-  locator.registerFactory<GoodsReceiptLineDAL>(() => GoodsReceiptLineDALImplementation());
+  locator.registerFactory<RowLevelAccessDAL>(() => RowLevelAccessDALImplementation());
 }

@@ -56,6 +56,7 @@ class _PurchTableLookupState extends State<PurchTableLookup> {
       }
     } catch (error) {
       _pagingController.error = error;
+      _logger.e('Error fetching data', error: error);
     }
   }
 

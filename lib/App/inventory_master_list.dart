@@ -13,31 +13,34 @@ import '../Model/invent_table_search_dto.dart';
 import '../Model/paged_list_dto.dart';
 import '../service_locator_setup.dart';
 
-class InventoryMaster extends StatefulWidget {
-  const InventoryMaster({super.key});
+class InventoryMasterList extends StatefulWidget {
+  const InventoryMasterList({super.key});
 
   @override
-  State<InventoryMaster> createState() => _InventoryMasterState();
+  State<InventoryMasterList> createState() => _InventoryMasterListState();
 }
 
-class _InventoryMasterState extends State<InventoryMaster> {
+class _InventoryMasterListState extends State<InventoryMasterList> {
   static const _pageSize = 20;
   final _inventTableDAL = locator<GMKSMSServiceGroupDAL>();
   final _logger = locator<Logger>();
   final _itemIdSearchTextController = TextEditingController();
   final _productNameSearchTextController = TextEditingController();
   final _searchNameSearchTextController = TextEditingController();
-  var _baseUrl = '';
+  late NavigatorState _navigator;
 
   final PagingController<int, InventTableDto> _pagingController =
       PagingController(firstPageKey: 1);
 
   @override
   void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigator = Navigator.of(context);
+    });
     _pagingController.addPageRequestListener((pageKey) {
       _fetchPage(pageKey);
     });
-    super.initState();
   }
 
   @override
@@ -47,9 +50,6 @@ class _InventoryMasterState extends State<InventoryMaster> {
   }
 
   Future<void> _fetchPage(int pageNumber) async {
-    if (_baseUrl.isEmpty) {
-      _baseUrl = await Environment().apiUrl;
-    }
     ApiResponseDto<PagedListDto<InventTableDto>> newItems;
     try {
       newItems = await _inventTableDAL.getInventTablePagedList(
@@ -87,14 +87,21 @@ class _InventoryMasterState extends State<InventoryMaster> {
           ),
         ],
       ),
-      body: Center(
-        child: PagedListView(
-          pagingController: _pagingController,
-          builderDelegate: PagedChildBuilderDelegate<InventTableDto>(
-            itemBuilder: (context, item, index) => ListTile(
-              leading: item.image.isNotEmpty ?
-                CachedNetworkImage(
-                  imageUrl: "$_baseUrl${ApiPath.getImageWithResolutionFromNetworkUri}?networkUri=${item.image}&maxLength=50",
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // test
+        },
+        child: const Icon(Icons.qr_code_scanner),
+      ),
+      body: PagedListView(
+        pagingController: _pagingController,
+        builderDelegate: PagedChildBuilderDelegate<InventTableDto>(
+          itemBuilder: (context, item, index) => ListTile(
+            leading: item.image.isNotEmpty ?
+              Hero(
+                tag: item.image,
+                child: CachedNetworkImage(
+                  imageUrl: "${Environment.baseUrl}${ApiPath.getImageWithResolutionFromNetworkUri}?networkUri=${item.image}&maxLength=50",
                   width: 50,
                   height: 50,
                   fadeInDuration: const Duration(seconds: 0),
@@ -105,10 +112,13 @@ class _InventoryMasterState extends State<InventoryMaster> {
                     _logger.e('Error loading image', error: error);
                     return SizedBox.fromSize(size: const Size.square(50), child: const Icon(Icons.error));
                   },
-                ) : const Image(image: AssetImage('assets/images/no_image.png'), width: 50, height: 50),
-              title: Text(item.itemId),
-              subtitle: Text(item.productName),
-            ),
+                ),
+              ) : const Image(image: AssetImage('assets/images/no_image.png'), width: 50, height: 50),
+            title: Text(item.itemId),
+            subtitle: Text(item.productName),
+            onTap: () {
+              Navigator.pushNamed(context, '/inventoryMasterDetails', arguments: item);
+            },
           ),
         ),
       ),
