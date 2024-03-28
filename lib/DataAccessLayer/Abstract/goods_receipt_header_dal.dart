@@ -6,12 +6,13 @@ import '../../Model/goods_receipt_header_dto.dart';
 abstract class GoodsReceiptHeaderDAL {
   Future<ApiResponseDto<List<GoodsReceiptHeaderDto>>> getGoodsReceiptHeader();
   Future<ApiResponseDto<GoodsReceiptHeaderDto>> getGoodsReceiptHeaderById(int goodsReceiptHeaderId);
-  Future<ApiResponseDto<GoodsReceiptHeaderDto>> addGoodsReceiptHeader(GoodsReceiptHeaderDto goodsReceiptHeader);
-  Future<ApiResponseDto<GoodsReceiptHeaderDto>> updateGoodsReceiptHeader(GoodsReceiptHeaderDto goodsReceiptHeader);
-  Future<ApiResponseDto<GoodsReceiptHeaderDto>> deleteGoodsReceiptHeader(int goodsReceiptHeaderId);
+  Future<ApiResponseDto> addGoodsReceiptHeader(GoodsReceiptHeaderDto goodsReceiptHeader);
+  Future<ApiResponseDto> updateGoodsReceiptHeader(GoodsReceiptHeaderDto goodsReceiptHeader);
+  Future<ApiResponseDto> deleteGoodsReceiptHeader(int goodsReceiptHeaderId);
   Future<ApiResponseDto<PagedListDto<GoodsReceiptHeaderDto>>> getGoodsReceiptHeaderPagedList(int pageNumber, int pageSize);
   Future<ApiResponseDto<PagedListDto<GoodsReceiptHeaderDto>>> getGoodsReceiptHeaderByParamsPagedList(int pageNumber, int pageSize, GoodsReceiptHeaderDto dto);
-  Future<ApiResponseDto<GoodsReceiptHeaderDto>> addGoodsReceiptHeaderWithLines(GoodsReceiptHeaderDto goodsReceiptHeader);
+  Future<ApiResponseDto> addGoodsReceiptHeaderWithLines(GoodsReceiptHeaderDto goodsReceiptHeader);
+  Future<ApiResponseDto> updateGoodsReceiptHeaderWithLines(GoodsReceiptHeaderDto goodsReceiptHeader);
   Future<ApiResponseDto<GoodsReceiptHeaderDto>> getGoodsReceiptHeaderByIdWithLines(int goodsReceiptHeaderId);
-  Future<ApiResponseDto<GoodsReceiptHeaderDto>> postToAX(GoodsReceiptHeaderDto goodsReceiptHeader);
+  Future<ApiResponseDto> postToAX(GoodsReceiptHeaderDto goodsReceiptHeader);
 }

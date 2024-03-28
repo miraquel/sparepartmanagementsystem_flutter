@@ -7,6 +7,8 @@ class GoodsReceiptHeaderDto extends BaseModelDto
 {
   final int goodsReceiptHeaderId;
   final String packingSlipId;
+  final DateTime transDate;
+  final String description;
   final String purchId;
   final String purchName;
   final String orderAccount;
@@ -20,6 +22,8 @@ class GoodsReceiptHeaderDto extends BaseModelDto
   GoodsReceiptHeaderDto({
     this.goodsReceiptHeaderId = 0,
     this.packingSlipId = '',
+    DateTime? transDate,
+    this.description = '',
     this.purchId = '',
     this.purchName = '',
     this.orderAccount = '',
@@ -33,11 +37,13 @@ class GoodsReceiptHeaderDto extends BaseModelDto
     super.modifiedBy = '',
     DateTime? modifiedDateTime,
     List<GoodsReceiptLineDto>? goodsReceiptLines,
-  }) : submittedDate = submittedDate ?? DateTimeHelper.minDateTime, goodsReceiptLines = goodsReceiptLines ?? <GoodsReceiptLineDto>[], super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
+  }) : transDate = transDate ?? DateTimeHelper.minDateTime, submittedDate = submittedDate ?? DateTimeHelper.minDateTime, goodsReceiptLines = goodsReceiptLines ?? <GoodsReceiptLineDto>[], super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
 
   factory GoodsReceiptHeaderDto.fromJson(Map<String, dynamic> json) => GoodsReceiptHeaderDto(
     goodsReceiptHeaderId: json['goodsReceiptHeaderId'] as int? ?? 0,
     packingSlipId: json['packingSlipId'] as String? ?? '',
+    transDate: DateTime.tryParse(json['transDate'] as String? ?? '') ?? DateTimeHelper.minDateTime,
+    description: json['description'] as String? ?? '',
     purchId: json['purchId'] as String? ?? '',
     purchName: json['purchName'] as String? ?? '',
     orderAccount: json['orderAccount'] as String? ?? '',
@@ -46,7 +52,7 @@ class GoodsReceiptHeaderDto extends BaseModelDto
     isSubmitted: json['isSubmitted'] as bool? ?? false,
     submittedDate: DateTime.tryParse(json['submittedDate'] as String? ?? '') ?? DateTimeHelper.minDateTime,
     submittedBy: json['submittedBy'] as String? ?? '',
-    goodsReceiptLines: List<GoodsReceiptLineDto>.from(json['goodsReceiptLines'].map((e) => GoodsReceiptLineDto.fromJson(e as Map<String, dynamic>)).toList()),
+    goodsReceiptLines: json['goodsReceiptLines']?.map<GoodsReceiptLineDto>((e) => GoodsReceiptLineDto.fromJson(e as Map<String, dynamic>)).toList(),
     createdBy: json['createdBy'] as String? ?? '',
     createdDateTime: DateTime.tryParse(json['createdDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
     modifiedBy: json['modifiedBy'] as String? ?? '',
@@ -57,6 +63,8 @@ class GoodsReceiptHeaderDto extends BaseModelDto
   Map<String, dynamic> toJson() => {
     if (goodsReceiptHeaderId > 0) 'goodsReceiptHeaderId': goodsReceiptHeaderId,
     if (packingSlipId.isNotEmpty) 'packingSlipId': packingSlipId,
+    if (transDate.isAfter(DateTimeHelper.minDateTime)) 'transDate': transDate.toIso8601String(),
+    if (description.isNotEmpty) 'description': description,
     if (purchId.isNotEmpty) 'purchId': purchId,
     if (purchName.isNotEmpty) 'purchName': purchName,
     if (orderAccount.isNotEmpty) 'orderAccount': orderAccount,
@@ -65,7 +73,7 @@ class GoodsReceiptHeaderDto extends BaseModelDto
     if (isSubmitted != null) 'isSubmitted': isSubmitted,
     if (submittedDate.isAfter(DateTimeHelper.minDateTime)) 'submittedDate': submittedDate.toIso8601String(),
     if (submittedBy.isNotEmpty) 'submittedBy': submittedBy,
-    if (goodsReceiptLines!.isNotEmpty) 'goodsReceiptLines': goodsReceiptLines?.map((e) => e.toJson()).toList(),
+    if (goodsReceiptLines.isNotEmpty) 'goodsReceiptLines': goodsReceiptLines.map((e) => e.toJson()).toList(),
     if (createdBy.isNotEmpty) 'createdBy': createdBy,
     if (createdDateTime.isAfter(DateTimeHelper.minDateTime)) 'createdDateTime': createdDateTime.toIso8601String(),
     if (modifiedBy.isNotEmpty) 'modifiedBy': modifiedBy,
@@ -74,6 +82,8 @@ class GoodsReceiptHeaderDto extends BaseModelDto
 
   bool isDefault() => goodsReceiptHeaderId == 0 &&
       packingSlipId.isEmpty &&
+      transDate.isAtSameMomentAs(DateTimeHelper.minDateTime) &&
+      description.isEmpty &&
       purchId.isEmpty &&
       purchName.isEmpty &&
       orderAccount.isEmpty &&

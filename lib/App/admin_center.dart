@@ -57,6 +57,18 @@ class _AdminCenterState extends State<AdminCenter> {
             ),
             minLeadingWidth: 0,
           ),
+          ListTile(
+            onTap: () {
+              Navigator.pushNamed(context, '/rowLevelAccessList');
+            },
+            title: const Text('Row Level Access'),
+            subtitle: const Text('Row Level Access management'),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.table_rows, size: 30)
+            ),
+            minLeadingWidth: 0,
+          ),
         ],
       ),
     );

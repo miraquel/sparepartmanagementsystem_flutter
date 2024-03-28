@@ -29,18 +29,18 @@ class UserDto extends BaseModelDto {
   }) : super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
 
   factory UserDto.fromJson(Map<String, dynamic> json) => UserDto(
-    userId: json['userId'] as int,
-    username: json['username'] as String,
-    firstName: json['firstName'] as String,
-    lastName: json['lastName'] as String,
-    email: json['email'] as String,
+    userId: json['userId'] as int? ?? 0,
+    username: json['username'] as String? ?? '',
+    firstName: json['firstName'] as String? ?? '',
+    lastName: json['lastName'] as String? ?? '',
+    email: json['email'] as String? ?? '',
     isAdministrator: json['isAdministrator'] as bool?,
     isEnabled: json['isEnabled'] as bool?,
-    createdBy: json['createdBy'] as String,
-    createdDateTime: DateTime.parse(json['createdDateTime'] as String),
-    modifiedBy: json['modifiedBy'] as String,
-    modifiedDateTime: DateTime.parse(json['modifiedDateTime'] as String),
-    roles: List<RoleDto>.from(json['roles'].map((e) => RoleDto.fromJson(e as Map<String, dynamic>)).toList())
+    createdBy: json['createdBy'] as String? ?? '',
+    createdDateTime: DateTime.tryParse(json['createdDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
+    modifiedBy: json['modifiedBy'] as String? ?? '',
+    modifiedDateTime: DateTime.tryParse(json['modifiedDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
+    roles: json['roles'] != null ? json['roles'].map<RoleDto>((e) => RoleDto.fromJson(e as Map<String, dynamic>)).toList() : <RoleDto>[]
   );
 
   @override

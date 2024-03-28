@@ -52,6 +52,7 @@ class _GoodsReceiptListState extends State<GoodsReceiptList> {
         _pagingController.appendPage(newItems.data!.items!, nextPageKey);
       }
     } catch (error) {
+      _logger.e(error);
       _pagingController.error = error;
     }
   }
@@ -62,23 +63,28 @@ class _GoodsReceiptListState extends State<GoodsReceiptList> {
       appBar: AppBar(
         title: const Text('Goods Receipt Header List'),
       ),
-      body: PagedListView<int, GoodsReceiptHeaderDto>(
-        pagingController: _pagingController,
-        builderDelegate: PagedChildBuilderDelegate<GoodsReceiptHeaderDto>(
-          itemBuilder: (context, item, index) => ListTile(
-            title: Text('${item.purchId}${item.packingSlipId.isNotEmpty ? ' - ${item.packingSlipId}' : ''}'),
-            subtitle: Text(item.orderAccount),
-            trailing: item.isSubmitted != null && item.isSubmitted == true ? const Icon(Icons.check, color: Colors.green) : const Icon(Icons.close, color: Colors.red),
-            leadingAndTrailingTextStyle: TextStyle(fontSize: 13, color: item.submittedBy.isNotEmpty ? Colors.green : Colors.red),
-            onTap: () {
-              Navigator.pushNamed(context, '/goodsReceiptHeaderDetails', arguments: item.goodsReceiptHeaderId);
-            },
+      body: RefreshIndicator(
+        onRefresh: () {
+          return Future.sync(() => _pagingController.refresh());
+        },
+        child: PagedListView<int, GoodsReceiptHeaderDto>(
+          pagingController: _pagingController,
+          builderDelegate: PagedChildBuilderDelegate<GoodsReceiptHeaderDto>(
+            itemBuilder: (context, item, index) => ListTile(
+              title: Text('${item.purchId}${item.packingSlipId.isNotEmpty ? ' - ${item.packingSlipId}' : ''}'),
+              subtitle: Text(item.orderAccount),
+              trailing: item.isSubmitted != null && item.isSubmitted == true ? const Text('Submitted', style: TextStyle(fontSize: 13, color: Colors.green)) : const Text('Not Submitted', style: TextStyle(fontSize: 13, color: Colors.red)),
+              onTap: () {
+                Navigator.pushNamed(context, '/goodsReceiptHeaderDetails', arguments: item.goodsReceiptHeaderId)
+                  .then((value) => _pagingController.refresh());
+              },
+            ),
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/goodsReceiptHeaderAdd');
+          Navigator.pushNamed(context, '/goodsReceiptHeaderAdd').then((value) => _pagingController.refresh());
         },
         child: const Icon(Icons.add),
       )

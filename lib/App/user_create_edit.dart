@@ -2,6 +2,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/ActiveDirectoryDto.dart';
 
 import '../DataAccessLayer/Abstract/user_dal.dart';
 import '../Model/user_dto.dart';
@@ -23,7 +24,7 @@ class _UserCreateEditState extends State<UserCreateEdit> {
   late NavigatorState _navigator;
   late ScaffoldMessengerState _scaffoldMessenger;
   bool _isLoading = false;
-  List<UserDto> _activeDirectoryUsers = <UserDto>[];
+  List<ActiveDirectoryDto> _activeDirectoryUsers = <ActiveDirectoryDto>[];
   bool _isEdit = false;
 
   var selectedUsername = '';

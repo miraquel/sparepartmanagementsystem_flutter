@@ -13,8 +13,8 @@ class ApiResponseDto<T> {
     required this.success
   });
 
-  factory ApiResponseDto.fromJson(Map<String, dynamic> json, Function(dynamic) create) => ApiResponseDto<T>(
-    data: create(json['data']),
+  factory ApiResponseDto.fromJson(Map<String, dynamic> json, [Function(dynamic)? create]) => ApiResponseDto<T>(
+    data: create != null && json['data'] != null ? create(json['data']) : null,
     error: json['error'] ?? '',
     errorMessages: json['errorMessages'] ?? '',
     message: json['message'] ?? '',

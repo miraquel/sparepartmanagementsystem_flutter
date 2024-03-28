@@ -37,7 +37,9 @@ class _SettingsState extends State<Settings> {
       }
       var userId = int.parse(userIdString);
       var fetchUser = await _userDAL.getUserById(userId);
-      setState(() => _user = fetchUser.data!);
+      if (fetchUser.success && fetchUser.data != null) {
+        setState(() => _user = fetchUser.data!);
+      }
     } catch (e) {
       _logger.e('Error while fetching data', error: e);
     }

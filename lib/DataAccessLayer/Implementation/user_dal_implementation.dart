@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dio/dio.dart';
 
+import '../../Model/ActiveDirectoryDto.dart';
 import '../../Model/api_response_dto.dart';
 import '../../Model/refresh_token_dto.dart';
 import '../../Model/token_dto.dart';
@@ -13,30 +14,26 @@ import '../api_path.dart';
 const storage = FlutterSecureStorage();
 
 class UserDALImplementation implements UserDAL {
-  Future<Dio> loadDio() async => await locator.getAsync<Dio>();
+  final _dio = locator<Dio>();
 
   @override
   Future<ApiResponseDto<TokenDto>> loginWithActiveDirectory(String username, String password) async {
-    final dio = await loadDio();
-    final response = await dio.post(ApiPath.loginWithActiveDirectory, data: {'username': username, 'password': password});
+    final response = await _dio.post(ApiPath.loginWithActiveDirectory, data: {'username': username, 'password': password});
     Map<String, dynamic> body = response.data as Map<String, dynamic>;
     return ApiResponseDto<TokenDto>.fromJson(body, (json) => TokenDto.fromJson(json));
   }
 
   @override
   Future<ApiResponseDto<UserDto>> getUserByIdWithRoles(int userId) async {
-    final dio = await loadDio();
-    const path = ApiPath.getUserByIdWithRoles;
-    final response = await dio.get('$path/$userId');
+    final response = await _dio.get('${ApiPath.getUserByIdWithRoles}/$userId');
     Map<String, dynamic> body = response.data;
     return ApiResponseDto<UserDto>.fromJson(body, (json) => UserDto.fromJson(json));
   }
 
   @override
   Future<ApiResponseDto<UserDto>> getUserByUsernameWithRoles() async {
-    final dio = await loadDio();
     var username = await storage.read(key: 'username');
-    final response = await dio.get(
+    final response = await _dio.get(
       ApiPath.getUserByUsernameWithRoles,
       queryParameters: {'username': username},
     );
@@ -46,85 +43,82 @@ class UserDALImplementation implements UserDAL {
 
   @override
   Future<ApiResponseDto<List<UserDto>>> getUser() async {
-    final dio = await loadDio();
-    final response = await dio.get(
+    final response = await _dio.get(
       ApiPath.getUser,
     );
     return ApiResponseDto<List<UserDto>>.fromJson(
-        response.data as Map<String, dynamic>, (json) => List<UserDto>.from(json.map((e) => UserDto.fromJson(e as Map<String, dynamic>)).toList()));
+        response.data as Map<String, dynamic>, (json) => json.map<UserDto>((e) => UserDto.fromJson(e as Map<String, dynamic>)).toList());
   }
 
   @override
   Future<ApiResponseDto<UserDto>> getUserById(int id) async {
-    final dio = await loadDio();
-    const path = ApiPath.getUserById;
-    final response = await dio.get('$path/$id');
-    return ApiResponseDto<UserDto>.fromJson(response.data as Map<String, dynamic>, (json) => UserDto.fromJson(json));
+    final response = await _dio.get('${ApiPath.getUserById}/$id');
+    var responseBody = response.data as Map<String, dynamic>;
+    return ApiResponseDto<UserDto>.fromJson(responseBody, (json) => UserDto.fromJson(json));
   }
 
   @override
-  Future<ApiResponseDto<UserDto>> deleteUser(int userId) async {
-    final dio = await loadDio();
-    const path = ApiPath.deleteUser;
-    final response = await dio.delete("$path/$userId");
-    return ApiResponseDto<UserDto>.fromJson(jsonDecode(response.toString()) as Map<String, dynamic>, (json) => UserDto.fromJson(json));
+  Future<ApiResponseDto> deleteUser(int userId) async {
+    final response = await _dio.delete("${ApiPath.deleteUser}/$userId");
+    var responseBody = response.data as Map<String, dynamic>;
+    return ApiResponseDto.fromJson(responseBody);
   }
 
   @override
-  Future<ApiResponseDto<UserDto>> addUser(UserDto user) async {
-    final dio = await loadDio();
-    final response = await dio.post(
+  Future<ApiResponseDto> addUser(UserDto user) async {
+    final response = await _dio.post(
       ApiPath.addUser,
       data: user,
     );
-    return ApiResponseDto<UserDto>.fromJson(response.data as Map<String, dynamic>, (json) => UserDto.fromJson(json));
+    var responseBody = response.data as Map<String, dynamic>;
+    return ApiResponseDto.fromJson(responseBody);
   }
 
   @override
-  Future<ApiResponseDto<UserDto>> addRoleToUser(int userId, int roleId) async {
-    final dio = await loadDio();
-    var response = await dio.post(
+  Future<ApiResponseDto> addRoleToUser(int userId, int roleId) async {
+    var response = await _dio.post(
       ApiPath.addRoleToUser,
       data: {'userId': userId, 'roleId': roleId},
     );
-    return ApiResponseDto<UserDto>.fromJson(response.data as Map<String, dynamic>, (json) => UserDto.fromJson(json));
+    var responseBody = response.data as Map<String, dynamic>;
+    return ApiResponseDto.fromJson(responseBody);
   }
 
   @override
-  Future<ApiResponseDto<UserDto>> deleteRoleFromUser(int userId, int roleId) async {
-    final dio = await loadDio();
-    final response = await dio.delete(
+  Future<ApiResponseDto> deleteRoleFromUser(int userId, int roleId) async {
+    final response = await _dio.delete(
       ApiPath.deleteRoleFromUser,
       queryParameters: {'userId': userId, 'roleId': roleId},
     );
-    return ApiResponseDto<UserDto>.fromJson(response.data as Map<String, dynamic>, (json) => UserDto.fromJson(json));
+    var responseBody = response.data as Map<String, dynamic>;
+    return ApiResponseDto.fromJson(responseBody);
   }
 
   @override
-  Future<ApiResponseDto<List<UserDto>>> getUsersFromActiveDirectory() async {
-    final dio = await loadDio();
-    final response = await dio.get(
+  Future<ApiResponseDto<List<ActiveDirectoryDto>>> getUsersFromActiveDirectory([String searchText = ""]) async {
+    var queryParameters = {'searchText': searchText};
+    final response = await _dio.get(
       ApiPath.getUsersFromActiveDirectory,
+      queryParameters: queryParameters,
     );
 
-    return ApiResponseDto<List<UserDto>>.fromJson(
-        response.data as Map<String, dynamic>, (json) => List<UserDto>.from(json.map((e) => UserDto.fromJson(e as Map<String, dynamic>)).toList()));
+    return ApiResponseDto<List<ActiveDirectoryDto>>.fromJson(
+        response.data as Map<String, dynamic>, (json) => json.map<ActiveDirectoryDto>((e) => ActiveDirectoryDto.fromJson(e as Map<String, dynamic>)).toList());
   }
 
   @override
-  Future<ApiResponseDto<UserDto>> updateUser(UserDto user) async {
-    final dio = await loadDio();
-    final response = await dio.put(
+  Future<ApiResponseDto> updateUser(UserDto user) async {
+    final response = await _dio.put(
       ApiPath.updateUser,
       data: user,
     );
-    return ApiResponseDto<UserDto>.fromJson(response.data as Map<String, dynamic>, (json) => UserDto.fromJson(json));
+    var responseBody = response.data as Map<String, dynamic>;
+    return ApiResponseDto.fromJson(responseBody);
   }
 
   @override
   Future<ApiResponseDto<TokenDto>> refreshToken(String refreshToken) async {
-    final dio = await loadDio();
-    final response = await dio.post(
+    final response = await _dio.post(
       ApiPath.refreshToken,
       data: {'refreshToken': refreshToken},
     );
@@ -134,8 +128,7 @@ class UserDALImplementation implements UserDAL {
 
   @override
   Future<ApiResponseDto<RefreshTokenDto>> revokeToken(RefreshTokenDto refreshToken) async {
-    final dio = await loadDio();
-    final response = await dio.post(
+    final response = await _dio.post(
       ApiPath.revokeToken,
       data: refreshToken,
     );
@@ -145,13 +138,12 @@ class UserDALImplementation implements UserDAL {
 
   @override
   Future<ApiResponseDto<List<RefreshTokenDto>>> revokeAllTokens(RefreshTokenDto refreshToken) async {
-    final dio = await loadDio();
-    final response = await dio.post(
+    final response = await _dio.post(
       ApiPath.revokeAllTokens,
       data: refreshToken,
     );
     Map<String, dynamic> body = response.data as Map<String, dynamic>;
     return ApiResponseDto<List<RefreshTokenDto>>.fromJson(
-        body, (json) => List<RefreshTokenDto>.from(json.map((e) => RefreshTokenDto.fromJson(e as Map<String, dynamic>)).toList()));
+        body, (json) => json.map<UserDto>((e) => RefreshTokenDto.fromJson(e as Map<String, dynamic>)).toList());
   }
 }
