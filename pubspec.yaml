@@ -45,8 +45,10 @@ dependencies:
   flutter_spinkit: ^5.2.0
   dropdown_search: ^5.0.6
   accordion: ^2.6.0
-  intl: ^0.18.1
+  intl: ^0.19.0
   photo_view: ^0.14.0
+  flutter_barcode_scanner: ^2.0.0
+  decimal: ^2.3.3
 
 dev_dependencies:
   flutter_test:

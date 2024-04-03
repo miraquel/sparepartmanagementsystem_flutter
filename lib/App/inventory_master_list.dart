@@ -3,12 +3,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:logger/logger.dart';
+import 'package:sparepartmanagementsystem_flutter/App/scanner.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/environment.dart';
 
 import '../DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
+import '../Helper/scanner_helper.dart';
 import '../Model/invent_table_search_dto.dart';
 import '../Model/paged_list_dto.dart';
 import '../service_locator_setup.dart';
@@ -29,8 +31,7 @@ class _InventoryMasterListState extends State<InventoryMasterList> {
   final _searchNameSearchTextController = TextEditingController();
   late NavigatorState _navigator;
 
-  final PagingController<int, InventTableDto> _pagingController =
-      PagingController(firstPageKey: 1);
+  final PagingController<int, InventTableDto> _pagingController = PagingController(firstPageKey: 1);
 
   @override
   void initState() {
@@ -88,8 +89,8 @@ class _InventoryMasterListState extends State<InventoryMasterList> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // test
+        onPressed: () async {
+          var asd = await scanQR();
         },
         child: const Icon(Icons.qr_code_scanner),
       ),
