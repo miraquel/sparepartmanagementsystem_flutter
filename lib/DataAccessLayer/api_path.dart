@@ -23,6 +23,19 @@ class ApiPath {
   static const String getGoodsReceiptByIdWithLines = '/api/GoodsReceiptService/GetByIdWithLines';
   static const String postToAX = '/api/GoodsReceiptService/PostToAX';
 
+  // WorkOrder
+  static const String addWorkOrderHeader = '/api/WorkOrderService/AddWorkOrderHeader';
+  static const String updateWorkOrderHeader = '/api/WorkOrderService/UpdateWorkOrderHeader';
+  static const String deleteWorkOrderHeader = '/api/WorkOrderService/DeleteWorkOrderHeader';
+  static const String getWorkOrderHeaderById = '/api/WorkOrderService/GetWorkOrderHeaderById';
+  static const String getAllWorkOrderHeaderPagedList = '/api/WorkOrderService/GetAllWorkOrderHeaderPagedList';
+  static const String getWorkOrderHeaderByParamsPagedList = '/api/WorkOrderService/GetWorkOrderHeaderByParamsPagedList';
+  static const String addWorkOrderLine = '/api/WorkOrderService/AddWorkOrderLine';
+  static const String updateWorkOrderLine = '/api/WorkOrderService/UpdateWorkOrderLine';
+  static const String deleteWorkOrderLine = '/api/WorkOrderService/DeleteWorkOrderLine';
+  static const String getWorkOrderLineById = '/api/WorkOrderService/GetWorkOrderLineById';
+  static const String getWorkOrderLineByWorkOrderHeaderId = '/api/WorkOrderService/GetWorkOrderLineByWorkOrderHeaderId';
+
   // NumberSequence
   static const String addNumberSequence = '/api/NumberSequenceService';
   static const String deleteNumberSequence = '/api/NumberSequenceService';

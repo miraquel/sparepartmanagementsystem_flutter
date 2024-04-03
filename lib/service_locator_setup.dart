@@ -8,6 +8,7 @@ import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/permi
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/role_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/row_level_access_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/work_order_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/number_sequence_dal_implementation.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/row_level_access_dal_implementation.dart';
 import 'package:sparepartmanagementsystem_flutter/route_observer_extension.dart';
@@ -18,6 +19,7 @@ import 'DataAccessLayer/Implementation/goods_receipt_header_dal_implementation.d
 import 'DataAccessLayer/Implementation/permission_dal_implementation.dart';
 import 'DataAccessLayer/Implementation/role_dal_implementation.dart';
 import 'DataAccessLayer/Implementation/user_dal_implementation.dart';
+import 'DataAccessLayer/Implementation/work_order_dal_implementation.dart';
 import 'dio_logging_interceptor.dart';
 import 'environment.dart';
 
@@ -54,4 +56,5 @@ void serviceLocatorSetup() {
   locator.registerFactory<NumberSequenceDAL>(() => NumberSequenceDALImplementation());
   locator.registerFactory<GoodsReceiptHeaderDAL>(() => GoodsReceiptHeaderDALImplementation());
   locator.registerFactory<RowLevelAccessDAL>(() => RowLevelAccessDALImplementation());
+  locator.registerFactory<WorkOrderDAL>(() => WorkOrderDALImplementation());
 }
