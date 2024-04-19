@@ -50,14 +50,8 @@ class WorkOrderDALImplementation implements WorkOrderDAL {
 
   @override
   Future<ApiResponseDto<PagedListDto<WorkOrderHeaderDto>>> getWorkOrderHeaderByParamsPagedList(int pageNumber, int pageSize, WorkOrderHeaderDto entity) async {
-    var queryParameters = {'pageNumber': pageNumber, 'pageSize': pageSize};
-    for (var key in entity.toJson().keys) {
-      if (entity.toJson()[key] != null) {
-        queryParameters[key] = entity.toJson()[key];
-      }
-    }
-    final response = await _dio.post(ApiPath.getWorkOrderHeaderByParamsPagedList, queryParameters: queryParameters);
-    return ApiResponseDto<PagedListDto<WorkOrderHeaderDto>>.fromJson(response.data, (json) => PagedListDto<WorkOrderHeaderDto>.fromJson(json, (json) => WorkOrderHeaderDto.fromJson(json)));
+    final response = await _dio.get(ApiPath.getWorkOrderHeaderByParamsPagedList, queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize, ...entity.toJson()});
+    return ApiResponseDto<PagedListDto<WorkOrderHeaderDto>>.fromJson(response.data, (json) => PagedListDto<WorkOrderHeaderDto>.fromJson(json as Map<String, dynamic>, (json) => json.map<WorkOrderHeaderDto>((e) => WorkOrderHeaderDto.fromJson(e)).toList()));
   }
 
   @override

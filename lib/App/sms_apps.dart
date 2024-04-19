@@ -15,8 +15,13 @@ import 'package:sparepartmanagementsystem_flutter/App/user_create_edit.dart';
 import 'package:sparepartmanagementsystem_flutter/App/user_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/user_role.dart';
 import 'package:sparepartmanagementsystem_flutter/App/wms_location_lookup.dart';
+import 'package:sparepartmanagementsystem_flutter/App/work_order_add.dart';
+import 'package:sparepartmanagementsystem_flutter/App/work_order_details.dart';
+import 'package:sparepartmanagementsystem_flutter/App/work_order_list.dart';
+import 'package:sparepartmanagementsystem_flutter/App/work_order_lookup.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 import '../Model/user_dto.dart';
@@ -55,6 +60,9 @@ class SMSApps extends StatelessWidget {
         '/wMSLocationLookup': (context) => const WMSLocationLookup(),
         '/rowLevelAccessList': (context) => const RowLeveAccessList(),
         '/rowLevelAccessAdd': (context) => const RowLevelAccessAdd(),
+        '/workOrderList': (context) => const WorkOrderList(),
+        '/workOrderAdd': (context) => const WorkOrderAdd(),
+        '/workOrderLookup': (context) => const WorkOrderLookup(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/userEdit') {
@@ -125,6 +133,17 @@ class SMSApps extends StatelessWidget {
             builder: (context) {
               return InventoryMasterStockList(
                 inventTableDto: args,
+              );
+            },
+          );
+        }
+        if (settings.name == '/workOrderDetails')
+        {
+          final args = settings.arguments as WorkOrderHeaderDto;
+          return MaterialPageRoute(
+            builder: (context) {
+              return WorkOrderDetails(
+                workOrderHeaderDto: args,
               );
             },
           );

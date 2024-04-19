@@ -1,4 +1,5 @@
 import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto_builder.dart';
 
@@ -66,6 +67,24 @@ class WorkOrderHeaderDtoBuilder {
       notes: _notes,
       workOrderLines: _workOrderLines.map((e) => e.build()).toList(),
     );
+  }
+
+  factory WorkOrderHeaderDtoBuilder.fromWorkOrderDto(WorkOrderDto workOrderDto) {
+    return WorkOrderHeaderDtoBuilder()
+      .setAgseamwoid(workOrderDto.agseamwoid)
+      .setAgseamwrid(workOrderDto.agseamwrid)
+      .setAgseamEntityID(workOrderDto.agseamEntityID)
+      .setName(workOrderDto.name)
+      .setHeaderTitle(workOrderDto.headerTitle)
+      .setAgseamPriorityID(workOrderDto.agseamPriorityID)
+      .setAgseamwotype(workOrderDto.agseamwotype)
+      .setAgseamwoStatusID(workOrderDto.agseamwoStatusID)
+      .setAgseamPlanningStartDate(workOrderDto.agseamPlanningStartDate)
+      .setAgseamPlanningEndDate(workOrderDto.agseamPlanningEndDate)
+      .setEntityShutDown(workOrderDto.entityShutDown)
+      .setWoCloseDate(workOrderDto.woCloseDate)
+      .setAgseamSuspend(workOrderDto.agseamSuspend)
+      .setNotes(workOrderDto.notes);
   }
 
   factory WorkOrderHeaderDtoBuilder.fromDto(WorkOrderHeaderDto workOrderHeaderDto) {

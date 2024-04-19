@@ -8,6 +8,7 @@ class ApiPath {
   static const String getImageWithResolutionFromNetworkUri = '/api/GMKSMSServiceGroup/GetImageWithResolutionFromNetworkUri';
   static const String getPurchTable = '/api/GMKSMSServiceGroup/GetPurchTable';
   static const String getInventSumList = '/api/GMKSMSServiceGroup/GetInventSumList';
+  static const String getWorkOrderPagedList = '/api/GMKSMSServiceGroup/GetWorkOrderPagedList';
 
   // GoodsReceipt
   static const String addGoodsReceipt = '/api/GoodsReceiptService';

@@ -10,6 +10,8 @@ import '../../Model/paged_list_dto.dart';
 import '../../Model/purch_line_dto.dart';
 import '../../Model/purch_table_dto.dart';
 import '../../Model/purch_table_search_dto.dart';
+import '../../Model/work_order_dto.dart';
+import '../../Model/work_order_search_dto.dart';
 
 abstract class GMKSMSServiceGroupDAL {
   Future<ApiResponseDto<PagedListDto<InventTableDto>>> getInventTablePagedList(int pageNumber, int pageSize, InventTableSearchDto dto);
@@ -21,4 +23,5 @@ abstract class GMKSMSServiceGroupDAL {
   Future<ApiResponseDto<PagedListDto<WMSLocationDto>>> getWMSLocationPagedList(int pageNumber, int pageSize, WMSLocationSearchDto dto);
   Future<ApiResponseDto<PurchTableDto>> getPurchTable(String purchId);
   Future<ApiResponseDto<List<InventSumDto>>> getInventSumList(InventSumSearchDto dto);
+  Future<ApiResponseDto<PagedListDto<WorkOrderDto>>> getWorkOrderPagedList(int pageNumber, int pageSize, WorkOrderSearchDto dto);
 }
