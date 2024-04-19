@@ -71,16 +71,22 @@ class _WorkOrderListState extends State<WorkOrderList> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _navigator.pushNamed('/workOrderAdd');
+          _navigator.pushNamed('/workOrderAdd').then((value) => _pagingController.refresh());
         },
         child: const Icon(Icons.add),
       ),
-      body: PagedListView<int, WorkOrderHeaderDto>(
-        pagingController: _pagingController,
-        builderDelegate: PagedChildBuilderDelegate<WorkOrderHeaderDto>(
-          itemBuilder: (context, item, index) => ListTile(
-            title: Text(item.agseamwoid),
-            subtitle: Text(item.name),
+      body: RefreshIndicator(
+        onRefresh: () { return Future.sync(() => _pagingController.refresh()); },
+        child: PagedListView<int, WorkOrderHeaderDto>(
+          pagingController: _pagingController,
+          builderDelegate: PagedChildBuilderDelegate<WorkOrderHeaderDto>(
+            itemBuilder: (context, item, index) => ListTile(
+              title: Text(item.agseamwoid),
+              subtitle: Text(item.name),
+              onTap: () {
+                _navigator.pushNamed('/workOrderDetails', arguments: item).then((value) => _pagingController.refresh());
+              },
+            ),
           ),
         ),
       ),

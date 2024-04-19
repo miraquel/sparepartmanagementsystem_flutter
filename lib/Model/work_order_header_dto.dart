@@ -78,7 +78,7 @@ class WorkOrderHeaderDto extends BaseModelDto {
   Map<String, dynamic> toJson() {
     return {
       if (workOrderHeaderId != 0) 'workOrderHeaderId': workOrderHeaderId,
-      if (isSubmitted != false) 'isSubmitted': isSubmitted,
+      if (isSubmitted != null) 'isSubmitted': isSubmitted,
       if (submittedDate != DateTimeHelper.minDateTime) 'submittedDate': submittedDate.toIso8601String(),
       if (agseamwoid.isNotEmpty) 'agseamwoid': agseamwoid,
       if (agseamwrid.isNotEmpty) 'agseamwrid': agseamwrid,

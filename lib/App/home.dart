@@ -59,6 +59,12 @@ class _HomeState extends State<Home> {
                   },
                   child: const Text('Goods Receipt Header List'),
                 ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/workOrderList');
+                  },
+                  child: const Text('Work Order List'),
+                ),
               ],
             ),
           ),

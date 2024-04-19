@@ -10,6 +10,8 @@ import 'package:sparepartmanagementsystem_flutter/Model/purch_table_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/purch_table_search_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/wms_location_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/wms_location_search_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_search_dto.dart';
 
 import '../../Model/paged_list_dto.dart';
 import '../../service_locator_setup.dart';
@@ -116,5 +118,18 @@ class GMKSMSServiceGroupDALImplementation implements GMKSMSServiceGroupDAL {
     return ApiResponseDto<List<InventSumDto>>.fromJson(
         response.data as Map<String, dynamic>,
         (json) => json.map<InventSumDto>((e) => InventSumDto.fromJson(e as Map<String, dynamic>)).toList());
+  }
+
+  @override
+  Future<ApiResponseDto<PagedListDto<WorkOrderDto>>> getWorkOrderPagedList(int pageNumber, int pageSize, WorkOrderSearchDto dto) async {
+    final response = await _dio.get(
+        ApiPath.getWorkOrderPagedList,
+        queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize, ...dto.toJson()}
+    );
+    return ApiResponseDto<PagedListDto<WorkOrderDto>>.fromJson(
+        response.data as Map<String, dynamic>,
+        (json) => PagedListDto<WorkOrderDto>.fromJson(
+            json as Map<String, dynamic>,
+            (json) => json.map<WorkOrderDto>((e) => WorkOrderDto.fromJson(e as Map<String, dynamic>)).toList()));
   }
 }
