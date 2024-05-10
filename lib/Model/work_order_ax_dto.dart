@@ -1,7 +1,7 @@
 import '../Helper/date_time_helper.dart';
 import 'Constants/no_yes.dart';
 
-class WorkOrderDto {
+class WorkOrderAxDto {
   final String agseamwoid;
   final String agseamwrid;
   final String agseamEntityID;
@@ -17,7 +17,7 @@ class WorkOrderDto {
   final NoYes agseamSuspend;
   final String notes;
 
-  WorkOrderDto({
+  WorkOrderAxDto({
     this.agseamwoid = '',
     this.agseamwrid = '',
     this.agseamEntityID = '',
@@ -34,8 +34,8 @@ class WorkOrderDto {
     this.notes = '',
   }) : agseamPlanningStartDate = agseamPlanningStartDate ?? DateTimeHelper.minDateTime, agseamPlanningEndDate = agseamPlanningEndDate ?? DateTimeHelper.minDateTime, woCloseDate = woCloseDate ?? DateTimeHelper.minDateTime;
 
-  factory WorkOrderDto.fromJson(Map<String, dynamic> json) {
-    return WorkOrderDto(
+  factory WorkOrderAxDto.fromJson(Map<String, dynamic> json) {
+    return WorkOrderAxDto(
       agseamwoid: json['agseamwoid'] as String? ?? '',
       agseamwrid: json['agseamwrid'] as String? ?? '',
       agseamEntityID: json['agseamEntityID'] as String? ?? '',

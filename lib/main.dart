@@ -6,7 +6,7 @@ import 'App/sms_apps.dart';
 import 'environment.dart';
 
 void main() async {
-  await Environment().initialize();
+  await Environment.initialize();
   serviceLocatorSetup();
   await GetIt.I.allReady();
   runApp(const SMSApps());

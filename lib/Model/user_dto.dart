@@ -1,4 +1,5 @@
 import 'package:sparepartmanagementsystem_flutter/Model/role_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/user_warehouse_dto.dart';
 
 import '../Helper/date_time_helper.dart';
 import 'base_model_dto.dart';
@@ -12,6 +13,7 @@ class UserDto extends BaseModelDto {
   final bool? isAdministrator;
   final bool? isEnabled;
   final List<RoleDto> roles;
+  final List<UserWarehouseDto> userWarehouses;
 
   UserDto({
     this.userId = 0,
@@ -25,7 +27,8 @@ class UserDto extends BaseModelDto {
     DateTime? createdDateTime,
     super.modifiedBy = '',
     DateTime? modifiedDateTime,
-    this.roles = const <RoleDto>[]
+    this.roles = const <RoleDto>[],
+    this.userWarehouses = const <UserWarehouseDto>[]
   }) : super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
 
   factory UserDto.fromJson(Map<String, dynamic> json) => UserDto(
@@ -40,7 +43,8 @@ class UserDto extends BaseModelDto {
     createdDateTime: DateTime.tryParse(json['createdDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
     modifiedBy: json['modifiedBy'] as String? ?? '',
     modifiedDateTime: DateTime.tryParse(json['modifiedDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
-    roles: json['roles'] != null ? json['roles'].map<RoleDto>((e) => RoleDto.fromJson(e as Map<String, dynamic>)).toList() : <RoleDto>[]
+    roles: json['roles'] != null ? json['roles'].map<RoleDto>((e) => RoleDto.fromJson(e)).toList() : <RoleDto>[],
+    userWarehouses: json['userWarehouses'] != null ? json['userWarehouses'].map<UserWarehouseDto>((e) => UserWarehouseDto.fromJson(e)).toList() : <UserWarehouseDto>[]
   );
 
   @override
@@ -57,7 +61,8 @@ class UserDto extends BaseModelDto {
       if (createdDateTime != DateTimeHelper.minDateTime) 'createdDateTime': createdDateTime.toIso8601String(),
       if (modifiedBy.isNotEmpty) 'modifiedBy': modifiedBy,
       if (modifiedDateTime != DateTimeHelper.minDateTime) 'modifiedDateTime': modifiedDateTime.toIso8601String(),
-      if (roles.isNotEmpty) 'roles': roles.map((e) => e.toJson()).toList()
+      if (roles.isNotEmpty) 'roles': roles.map((e) => e.toJson()).toList(),
+      if (userWarehouses.isNotEmpty) 'userWarehouses': userWarehouses.map((e) => e.toJson()).toList()
     };
   }
 }

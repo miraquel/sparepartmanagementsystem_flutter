@@ -1,6 +1,7 @@
 import 'package:sparepartmanagementsystem_flutter/Model/Enums/product_type.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/purch_line_dto.dart';
 
+import '../Helper/date_time_helper.dart';
 import 'goods_receipt_line_dto.dart';
 
 class GoodsReceiptLineDtoBuilder {
@@ -18,6 +19,10 @@ class GoodsReceiptLineDtoBuilder {
   double _lineAmount = 0;
   String _inventLocationId = '';
   String _wMSLocationId = '';
+  String _createdBy = '';
+  DateTime _createdDateTime = DateTimeHelper.minDateTime;
+  String _modifiedBy = '';
+  DateTime _modifiedDateTime = DateTimeHelper.minDateTime;
   bool _isSelected = false;
 
   GoodsReceiptLineDtoBuilder();
@@ -36,6 +41,10 @@ class GoodsReceiptLineDtoBuilder {
   double      get lineAmount => _lineAmount;
   String      get inventLocationId => _inventLocationId;
   String      get wMSLocationId => _wMSLocationId;
+  String      get createdBy => _createdBy;
+  DateTime    get createdDateTime => _createdDateTime;
+  String      get modifiedBy => _modifiedBy;
+  DateTime    get modifiedDateTime => _modifiedDateTime;
   bool        get isSelected => _isSelected;
 
   factory GoodsReceiptLineDtoBuilder.fromDto(GoodsReceiptLineDto goodsReceiptLineDto) {
@@ -53,7 +62,11 @@ class GoodsReceiptLineDtoBuilder {
       .setPurchPrice(goodsReceiptLineDto.purchPrice)
       .setLineAmount(goodsReceiptLineDto.lineAmount)
       .setInventLocationId(goodsReceiptLineDto.inventLocationId)
-      .setWMSLocationId(goodsReceiptLineDto.wMSLocationId);
+      .setWMSLocationId(goodsReceiptLineDto.wMSLocationId)
+      .setCreatedBy(goodsReceiptLineDto.createdBy)
+      .setCreatedDateTime(goodsReceiptLineDto.createdDateTime)
+      .setModifiedBy(goodsReceiptLineDto.modifiedBy)
+      .setModifiedDateTime(goodsReceiptLineDto.modifiedDateTime);
   }
 
   factory GoodsReceiptLineDtoBuilder.fromPurchLineDto(PurchLineDto purchLineDto) {
@@ -68,6 +81,20 @@ class GoodsReceiptLineDtoBuilder {
       .setPurchPrice(purchLineDto.purchPrice)
       .setLineAmount(purchLineDto.lineAmount)
       .setReceiveNow(purchLineDto.remainPurchPhysical);
+  }
+
+  GoodsReceiptLineDtoBuilder setFromPurchLineDto(PurchLineDto purchLineDto) {
+    _itemId = purchLineDto.itemId;
+    _lineNumber = purchLineDto.lineNumber;
+    _itemName = purchLineDto.itemName;
+    _productType = purchLineDto.productType;
+    _remainPurchPhysical = purchLineDto.remainPurchPhysical;
+    _purchQty = purchLineDto.purchQty;
+    _purchUnit = purchLineDto.purchUnit;
+    _purchPrice = purchLineDto.purchPrice;
+    _lineAmount = purchLineDto.lineAmount;
+    _receiveNow = purchLineDto.remainPurchPhysical;
+    return this;
   }
 
   GoodsReceiptLineDtoBuilder setGoodsReceiptLineId(int goodsReceiptLineId) {
@@ -140,6 +167,26 @@ class GoodsReceiptLineDtoBuilder {
     return this;
   }
 
+  GoodsReceiptLineDtoBuilder setCreatedBy(String createdBy) {
+    _createdBy = createdBy;
+    return this;
+  }
+
+  GoodsReceiptLineDtoBuilder setCreatedDateTime(DateTime createdDateTime) {
+    _createdDateTime = createdDateTime;
+    return this;
+  }
+
+  GoodsReceiptLineDtoBuilder setModifiedBy(String modifiedBy) {
+    _modifiedBy = modifiedBy;
+    return this;
+  }
+
+  GoodsReceiptLineDtoBuilder setModifiedDateTime(DateTime modifiedDateTime) {
+    _modifiedDateTime = modifiedDateTime;
+    return this;
+  }
+
   GoodsReceiptLineDtoBuilder setIsSelected(bool isSelected) {
     _isSelected = isSelected;
     return this;
@@ -189,6 +236,10 @@ class GoodsReceiptLineDtoBuilder {
       lineAmount: _lineAmount,
       inventLocationId: _inventLocationId,
       wMSLocationId: _wMSLocationId,
+      createdBy: _createdBy,
+      createdDateTime: _createdDateTime,
+      modifiedBy: _modifiedBy,
+      modifiedDateTime: _modifiedDateTime,
     );
   }
 }

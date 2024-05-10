@@ -24,27 +24,27 @@ class PermissionDALImplementation implements PermissionDAL {
   }
 
   @override
-  Future<ApiResponseDto<List<PermissionDto>>> fetchAllModule() async {
-    final response = await _dio.get(ApiPath.fetchAllModule);
+  Future<ApiResponseDto<List<PermissionDto>>> getAllModules() async {
+    final response = await _dio.get(ApiPath.getAllModules);
     return ApiResponseDto<List<PermissionDto>>.fromJson(
         response.data as Map<String, dynamic>, (json) => json.map<PermissionDto>((e) => PermissionDto.fromJson(e as Map<String, dynamic>)).toList());
   }
 
   @override
-  Future<ApiResponseDto<List<PermissionDto>>> fetchAllPermissionType() async {
-    final response = await _dio.get(ApiPath.fetchAllPermissionType);
+  Future<ApiResponseDto<List<PermissionDto>>> getAllPermissionType() async {
+    final response = await _dio.get(ApiPath.getAllPermissionType);
     return ApiResponseDto<List<PermissionDto>>.fromJson(response.data as Map<String, dynamic>, (json) => json.map<PermissionDto>((e) => PermissionDto.fromJson(e as Map<String, dynamic>)).toList());
   }
 
   @override
-  Future<ApiResponseDto<List<PermissionDto>>> fetchPermission() async {
-    final response = await _dio.get(ApiPath.fetchPermission);
+  Future<ApiResponseDto<List<PermissionDto>>> getAllPermission() async {
+    final response = await _dio.get(ApiPath.getAllPermission);
     return ApiResponseDto<List<PermissionDto>>.fromJson(response.data as Map<String, dynamic>, (json) => json.map<PermissionDto>((e) => PermissionDto.fromJson(e as Map<String, dynamic>)).toList());
   }
 
   @override
-  Future<ApiResponseDto<List<PermissionDto>>> fetchPermissionByRoleId(int roleId) async {
-    final response = await _dio.get('${ApiPath.fetchPermissionByRoleId}/$roleId');
+  Future<ApiResponseDto<List<PermissionDto>>> getPermissionByRoleId(int roleId) async {
+    final response = await _dio.get('${ApiPath.getPermissionByRoleId}/$roleId');
     return ApiResponseDto<List<PermissionDto>>.fromJson(response.data as Map<String, dynamic>, (json) => json.map<PermissionDto>((e) => PermissionDto.fromJson(e as Map<String, dynamic>)).toList());
   }
 }

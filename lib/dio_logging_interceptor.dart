@@ -5,8 +5,10 @@ import 'package:logger/logger.dart';
 import 'package:sparepartmanagementsystem_flutter/App/reconnect.dart';
 import 'package:sparepartmanagementsystem_flutter/Helper/token_helper.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/environment.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
+import 'DataAccessLayer/api_path.dart';
 import 'Model/token_dto.dart';
 
 class DioLoggingInterceptors extends Interceptor {
@@ -27,7 +29,8 @@ class DioLoggingInterceptors extends Interceptor {
 
         var dio = Dio();
         dio.options = _dio.options;
-        var refreshTokenResponse = await dio.post('/api/UserService/RefreshToken', data: { 'refreshToken': refreshTokenLocal });
+        dio.options.baseUrl = Environment.baseUrl;
+        var refreshTokenResponse = await dio.post(ApiPath.refreshToken, data: { 'refreshToken': refreshTokenLocal });
 
         ApiResponseDto<TokenDto> refreshToken = ApiResponseDto.fromJson(refreshTokenResponse.data, (json) => TokenDto.fromJson(json));
         // Save the new tokens for next time
@@ -56,14 +59,18 @@ class DioLoggingInterceptors extends Interceptor {
     }
 
     if (err.response?.statusCode == 400 || err.response?.statusCode == 500) {
-      var response = err.response?.data as Map<String, dynamic>;
-      var errorMessage = response['errorMessages'].cast<String>().first;
-      var snackBar = SnackBar(
-        content: Text(errorMessage),
-      );
-      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(snackBar);
-
-      logger.e(errorMessage, error: err);
+      // create a safe conversion of error response data to ApiResponseDto
+      try {
+        var errorResponse = ApiResponseDto.fromJson(err.response?.data, (json) => json);
+        var snackBar = SnackBar(
+          content: Text(errorResponse.errorMessages.first),
+          duration: const Duration(seconds: 5),
+        );
+        ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(snackBar);
+        logger.e(errorResponse.errorMessages.join());
+      } catch (e) {
+        logger.e(err.response?.data);
+      }
 
       return handler.reject(err);
     }
@@ -93,6 +100,7 @@ class DioLoggingInterceptors extends Interceptor {
     if (accessToken != null) {
       options.headers['Authorization'] = 'Bearer $accessToken';
     }
+    options.baseUrl = Environment.baseUrl;
     handler.next(options);
   }
 

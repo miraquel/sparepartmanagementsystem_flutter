@@ -31,8 +31,7 @@ class RoleDALImplementation implements RoleDAL {
 
   @override
   Future<ApiResponseDto> deleteRole(int roleId) async {
-    const path = ApiPath.deleteRole;
-    final response = await _dio.delete("$path/$roleId");
+    final response = await _dio.delete("${ApiPath.deleteRole}/$roleId");
     var responseBody = response.data as Map<String, dynamic>;
     return ApiResponseDto.fromJson(responseBody);
   }
@@ -48,14 +47,14 @@ class RoleDALImplementation implements RoleDAL {
   }
 
   @override
-  Future<ApiResponseDto<RoleDto>> fetchByIdWithUsers(int roleId) async {
-    final response = await _dio.get('${ApiPath.fetchByIdWithUsers}/$roleId');
+  Future<ApiResponseDto<RoleDto>> getRoleByIdWithUsers(int roleId) async {
+    final response = await _dio.get('${ApiPath.getRoleByIdWithUsers}/$roleId');
     return ApiResponseDto<RoleDto>.fromJson(response.data as Map<String, dynamic>, (json) => RoleDto.fromJson(json));
   }
 
   @override
-  Future<ApiResponseDto<List<RoleDto>>> fetchRole() async {
-    final response = await _dio.get(ApiPath.fetchRole);
+  Future<ApiResponseDto<List<RoleDto>>> getAllRole() async {
+    final response = await _dio.get(ApiPath.getAllRole);
     var responseBody = response.data as Map<String, dynamic>;
     return ApiResponseDto<List<RoleDto>>.fromJson(responseBody, (json) => json.map<RoleDto>((e) => RoleDto.fromJson(e as Map<String, dynamic>)).toList());
   }

@@ -27,18 +27,16 @@ class NumberSequenceDALImplementation implements NumberSequenceDAL {
   }
 
   @override
-  Future<ApiResponseDto<List<NumberSequenceDto>>> fetchNumberSequence() async {
-    final response = await _dio.get(ApiPath.fetchNumberSequence);
+  Future<ApiResponseDto<List<NumberSequenceDto>>> getAllNumberSequence() async {
+    final response = await _dio.get(ApiPath.getAllNumberSequence);
 
     return ApiResponseDto<List<NumberSequenceDto>>.fromJson(response.data as Map<String, dynamic>,
         (json) => json.map<NumberSequenceDto>((e) => NumberSequenceDto.fromJson(e as Map<String, dynamic>)).toList());
   }
 
   @override
-  Future<ApiResponseDto<NumberSequenceDto>> fetchNumberSequenceById(int numberSequenceId) async {
-    var path = ApiPath.fetchNumberSequenceById;
-    final response = await _dio.get('$path/$numberSequenceId');
-
+  Future<ApiResponseDto<NumberSequenceDto>> getNumberSequenceById(int numberSequenceId) async {
+    final response = await _dio.get('${ApiPath.getNumberSequenceById}/$numberSequenceId');
     return ApiResponseDto<NumberSequenceDto>.fromJson(response.data as Map<String, dynamic>, (json) => NumberSequenceDto.fromJson(json as Map<String, dynamic>));
   }
 

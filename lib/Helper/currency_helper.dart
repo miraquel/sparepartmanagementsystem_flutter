@@ -1,4 +1,3 @@
-
 import 'package:intl/intl.dart';
 
 String numberToIdr(dynamic number, int decimalDigits) {

@@ -6,6 +6,7 @@ import 'package:sparepartmanagementsystem_flutter/Model/wms_location_dto.dart';
 
 import '../DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
 import '../Model/wms_location_search_dto.dart';
+import '../environment.dart';
 import '../service_locator_setup.dart';
 
 class WMSLocationLookup extends StatefulWidget {
@@ -17,7 +18,6 @@ class WMSLocationLookup extends StatefulWidget {
 
 class _WMSLocationLookupState extends State<WMSLocationLookup> {
   static const int _pageSize = 20;
-  final _inventLocationIdSearchTextController = TextEditingController();
   final _wMSLocationIdSearchTextController = TextEditingController();
   final _gmkSMSServiceGroupDAL = locator<GMKSMSServiceGroupDAL>();
   Timer? _debounce;
@@ -45,7 +45,7 @@ class _WMSLocationLookupState extends State<WMSLocationLookup> {
         pageNumber,
         _pageSize,
         WMSLocationSearchDto(
-          inventLocationId: _inventLocationIdSearchTextController.text,
+          inventLocationId: Environment.userWarehouseDto.inventLocationId,
           wMSLocationId: _wMSLocationIdSearchTextController.text,
         ),
       );
@@ -65,35 +65,11 @@ class _WMSLocationLookupState extends State<WMSLocationLookup> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('WMS Location Lookup'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              buildSearchModal(context);
-            },
-            icon: const Icon(Icons.search),
-          ),
-        ],
+        title: const Text('Warehouse Location Lookup'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
-            child: TextField(
-              controller: _inventLocationIdSearchTextController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Warehouse',
-              ),
-              onChanged: (value) {
-                if (_debounce?.isActive ?? false) _debounce?.cancel();
-                _debounce = Timer(const Duration(milliseconds: 500), () {
-                  _pagingController.refresh();
-                });
-              }
-            ),
-          ),
           Padding(
             padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
             child: TextField(
@@ -125,44 +101,6 @@ class _WMSLocationLookupState extends State<WMSLocationLookup> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Future<dynamic> buildSearchModal(BuildContext context) {
-    return showModalBottomSheet<void>(
-      context: context,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _inventLocationIdSearchTextController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Warehouse',
-              ),
-            ),
-            TextField(
-              controller: _wMSLocationIdSearchTextController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Location',
-              ),
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  _pagingController.refresh();
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                ),
-                child: const Text('Search')
-            ),
-          ].map((e) => Padding(padding: const EdgeInsets.fromLTRB(0, 0, 0, 10), child: e)).toList(),
-        ),
       ),
     );
   }

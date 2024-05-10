@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sparepartmanagementsystem_flutter/App/goods_receipt_line_add.dart';
 import 'package:sparepartmanagementsystem_flutter/App/home.dart';
+import 'package:sparepartmanagementsystem_flutter/App/invent_table_lookup.dart';
 import 'package:sparepartmanagementsystem_flutter/App/inventory_master_details.dart';
 import 'package:sparepartmanagementsystem_flutter/App/inventory_master_stock_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/login.dart';
@@ -11,14 +12,17 @@ import 'package:sparepartmanagementsystem_flutter/App/row_level_access_add.dart'
 import 'package:sparepartmanagementsystem_flutter/App/row_level_access_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/settings.dart';
 import 'package:sparepartmanagementsystem_flutter/App/admin_center.dart';
-import 'package:sparepartmanagementsystem_flutter/App/user_create_edit.dart';
+import 'package:sparepartmanagementsystem_flutter/App/user_add.dart';
+import 'package:sparepartmanagementsystem_flutter/App/user_edit.dart';
 import 'package:sparepartmanagementsystem_flutter/App/user_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/user_role.dart';
+import 'package:sparepartmanagementsystem_flutter/App/user_warehouse_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/wms_location_lookup.dart';
 import 'package:sparepartmanagementsystem_flutter/App/work_order_add.dart';
 import 'package:sparepartmanagementsystem_flutter/App/work_order_details.dart';
+import 'package:sparepartmanagementsystem_flutter/App/work_order_line_add.dart';
 import 'package:sparepartmanagementsystem_flutter/App/work_order_list.dart';
-import 'package:sparepartmanagementsystem_flutter/App/work_order_lookup.dart';
+import 'package:sparepartmanagementsystem_flutter/App/work_order_ax_lookup.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto.dart';
@@ -30,6 +34,8 @@ import 'goods_receipt_add.dart';
 import 'goods_receipt_details.dart';
 import 'goods_receipt_list.dart';
 import 'inventory_master_list.dart';
+import 'item_requisition_add.dart';
+import 'item_requisition_list.dart';
 
 class SMSApps extends StatelessWidget {
   const SMSApps({super.key});
@@ -51,7 +57,8 @@ class SMSApps extends StatelessWidget {
         '/settings': (context) => const Settings(),
         '/adminCenter': (context) => const AdminCenter(),
         '/user': (context) => const UserList(),
-        '/userCreate': (context) => const UserCreateEdit(),
+        //'/userCreate': (context) => const UserCreateEdit(),
+        '/userAdd': (context) => const UserAdd(),
         '/role': (context) => const RoleList(),
         '/roleCreate': (context) => const RoleCreate(),
         '/purchTableLookup': (context) => const PurchTableLookup(),
@@ -62,15 +69,18 @@ class SMSApps extends StatelessWidget {
         '/rowLevelAccessAdd': (context) => const RowLevelAccessAdd(),
         '/workOrderList': (context) => const WorkOrderList(),
         '/workOrderAdd': (context) => const WorkOrderAdd(),
-        '/workOrderLookup': (context) => const WorkOrderLookup(),
+        '/workOrderLookup': (context) => const WorkOrderAxLookup(),
+        '/workOrderLineAdd': (context) => const WorkOrderLineAdd(),
+        '/itemRequisitionAdd': (context) => const ItemRequisitionAdd(),
+        '/inventTableLookup': (context) => const InventTableLookup(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/userEdit') {
-          final args = settings.arguments as UserDto;
+          final args = settings.arguments as int;
           return MaterialPageRoute(
             builder: (context) {
-              return UserCreateEdit(
-                user: args,
+              return UserEdit(
+                userId: args,
               );
             },
           );
@@ -148,6 +158,39 @@ class SMSApps extends StatelessWidget {
             },
           );
         }
+        if (settings.name == '/itemRequisitionList')
+        {
+          final args = settings.arguments as int;
+          return MaterialPageRoute(
+            builder: (context) {
+              return ItemRequisitionList(
+                workOrderLineId: args,
+              );
+            },
+          );
+        }
+        if (settings.name == '/userWarehouseList')
+        {
+          final args = settings.arguments as int;
+          return MaterialPageRoute(
+            builder: (context) {
+              return UserWarehouseList(
+                userId: args,
+              );
+            },
+          );
+        }
+        // if (settings.name == '/userWarehouseAdd')
+        // {
+        //   final args = settings.arguments as int;
+        //   return MaterialPageRoute(
+        //     builder: (context) {
+        //       return UserWarehouseAdd(
+        //         userId: args,
+        //       );
+        //     },
+        //   );
+        // }
         return null;
       }
     );

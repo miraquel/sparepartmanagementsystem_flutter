@@ -1,5 +1,6 @@
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/invent_location_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_sum_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_sum_search_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
@@ -10,10 +11,11 @@ import 'package:sparepartmanagementsystem_flutter/Model/purch_table_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/purch_table_search_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/wms_location_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/wms_location_search_dto.dart';
-import 'package:sparepartmanagementsystem_flutter/Model/work_order_dto.dart';
-import 'package:sparepartmanagementsystem_flutter/Model/work_order_search_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_ax_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_ax_search_dto.dart';
 
 import '../../Model/paged_list_dto.dart';
+import '../../Model/work_order_line_ax_dto.dart';
 import '../../service_locator_setup.dart';
 import '../Abstract/gmk_sms_service_group_dal.dart';
 
@@ -22,15 +24,24 @@ class GMKSMSServiceGroupDALImplementation implements GMKSMSServiceGroupDAL {
 
   @override
   Future<ApiResponseDto<PagedListDto<InventTableDto>>> getInventTablePagedList(int pageNumber, int pageSize, InventTableSearchDto dto) async {
-    var parameters = <String, dynamic>{};
-    for (var entry in dto.toJson().entries) {
-      if (entry.value != null && entry.value.toString().isNotEmpty) {
-        parameters[entry.key] = entry.value;
-      }
-    }
+    var queryParameters = {'pageNumber': pageNumber, 'pageSize': pageSize, ...dto.toJson()};
     final response = await _dio.get(
         ApiPath.getInventTablePagedList,
-        queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize, ...parameters}
+        queryParameters: queryParameters
+    );
+    return ApiResponseDto<PagedListDto<InventTableDto>>.fromJson(
+        response.data as Map<String, dynamic>,
+        (json) => PagedListDto<InventTableDto>.fromJson(
+            json as Map<String, dynamic>,
+            (json) => json.map<InventTableDto>((e) => InventTableDto.fromJson(e as Map<String, dynamic>)).toList()));
+  }
+
+  @override
+  Future<ApiResponseDto<PagedListDto<InventTableDto>>> getRawInventTablePagedList(int pageNumber, int pageSize, InventTableSearchDto dto) async {
+    var queryParameters = {'pageNumber': pageNumber, 'pageSize': pageSize, ...dto.toJson()};
+    final response = await _dio.get(
+        ApiPath.getRawInventTablePagedList,
+        queryParameters: queryParameters
     );
     return ApiResponseDto<PagedListDto<InventTableDto>>.fromJson(
         response.data as Map<String, dynamic>,
@@ -59,15 +70,9 @@ class GMKSMSServiceGroupDALImplementation implements GMKSMSServiceGroupDAL {
 
   @override
   Future<ApiResponseDto<PagedListDto<PurchTableDto>>> getPurchTablePagedList(int pageNumber, int pageSize, PurchTableSearchDto dto) async {
-    var parameters = <String, dynamic>{};
-    for (var entry in dto.toJson().entries) {
-      if (entry.value != null && entry.value.toString().isNotEmpty) {
-        parameters[entry.key] = entry.value;
-      }
-    }
     final response = await _dio.get(
         ApiPath.getPurchTablePagedList,
-        queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize, ...parameters}
+        queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize, ...dto.toJson()}
     );
 
     return ApiResponseDto<PagedListDto<PurchTableDto>>.fromJson(
@@ -87,15 +92,9 @@ class GMKSMSServiceGroupDALImplementation implements GMKSMSServiceGroupDAL {
 
   @override
   Future<ApiResponseDto<PagedListDto<WMSLocationDto>>> getWMSLocationPagedList(int pageNumber, int pageSize, WMSLocationSearchDto dto) async {
-    var parameters = <String, dynamic>{};
-    for (var entry in dto.toJson().entries) {
-      if (entry.value != null && entry.value.toString().isNotEmpty) {
-        parameters[entry.key] = entry.value;
-      }
-    }
     final response = await _dio.get(
         ApiPath.getWMSLocationPagedList,
-        queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize, ...parameters}
+        queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize, ...dto.toJson()}
     );
     return ApiResponseDto<PagedListDto<WMSLocationDto>>.fromJson(
         response.data as Map<String, dynamic>,
@@ -108,8 +107,8 @@ class GMKSMSServiceGroupDALImplementation implements GMKSMSServiceGroupDAL {
   Future<ApiResponseDto<PurchTableDto>> getPurchTable(String purchId) async {
     final response = await _dio.get("${ApiPath.getPurchTable}/$purchId");
     return ApiResponseDto<PurchTableDto>.fromJson(
-        response.data as Map<String, dynamic>,
-        (json) => PurchTableDto.fromJson(json as Map<String, dynamic>));
+        response.data,
+        (json) => PurchTableDto.fromJson(json));
   }
 
   @override
@@ -117,19 +116,41 @@ class GMKSMSServiceGroupDALImplementation implements GMKSMSServiceGroupDAL {
     final response = await _dio.get(ApiPath.getInventSumList, queryParameters: dto.toJson());
     return ApiResponseDto<List<InventSumDto>>.fromJson(
         response.data as Map<String, dynamic>,
-        (json) => json.map<InventSumDto>((e) => InventSumDto.fromJson(e as Map<String, dynamic>)).toList());
+        (json) => json.map<InventSumDto>((e) => InventSumDto.fromJson(e)).toList());
   }
 
   @override
-  Future<ApiResponseDto<PagedListDto<WorkOrderDto>>> getWorkOrderPagedList(int pageNumber, int pageSize, WorkOrderSearchDto dto) async {
+  Future<ApiResponseDto<PagedListDto<WorkOrderAxDto>>> getWorkOrderPagedList(int pageNumber, int pageSize, WorkOrderSearchDto dto) async {
     final response = await _dio.get(
         ApiPath.getWorkOrderPagedList,
         queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize, ...dto.toJson()}
     );
-    return ApiResponseDto<PagedListDto<WorkOrderDto>>.fromJson(
+    return ApiResponseDto<PagedListDto<WorkOrderAxDto>>.fromJson(
         response.data as Map<String, dynamic>,
-        (json) => PagedListDto<WorkOrderDto>.fromJson(
+        (json) => PagedListDto<WorkOrderAxDto>.fromJson(
             json as Map<String, dynamic>,
-            (json) => json.map<WorkOrderDto>((e) => WorkOrderDto.fromJson(e as Map<String, dynamic>)).toList()));
+            (json) => json.map<WorkOrderAxDto>((e) => WorkOrderAxDto.fromJson(e)).toList()));
+  }
+
+  @override
+  Future<ApiResponseDto<List<WorkOrderLineAxDto>>> getWorkOrderLineList(String workOrderHeaderId) async {
+    final response = await _dio.get(ApiPath.getWorkOrderLineList, queryParameters: {'workOrderHeaderId': workOrderHeaderId});
+    return ApiResponseDto<List<WorkOrderLineAxDto>>.fromJson(
+        response.data as Map<String, dynamic>,
+        (json) => json.map<WorkOrderLineAxDto>((e) => WorkOrderLineAxDto.fromJson(e)).toList());
+  }
+
+  @override
+  Future<ApiResponseDto<List<InventLocationDto>>> getInventLocationList(InventLocationDto dto) async {
+    final response = await _dio.get(ApiPath.getInventLocationList);
+    return ApiResponseDto<List<InventLocationDto>>.fromJson(
+        response.data,
+        (json) => json.map<InventLocationDto>((e) => InventLocationDto.fromJson(e)).toList());
+  }
+
+  @override
+  Future<ApiResponseDto<WMSLocationDto>> getWMSLocation(WMSLocationDto dto) async {
+    final response = await _dio.get(ApiPath.getWMSLocation, queryParameters: dto.toJson());
+    return ApiResponseDto<WMSLocationDto>.fromJson(response.data, (json) => WMSLocationDto.fromJson(json));
   }
 }

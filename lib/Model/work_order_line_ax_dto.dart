@@ -1,11 +1,7 @@
-import 'package:sparepartmanagementsystem_flutter/Model/base_model_dto.dart';
-
 import '../Helper/date_time_helper.dart';
 import 'Constants/no_yes.dart';
 
-class WorkOrderLineDto extends BaseModelDto {
-  final int workOrderLineId;
-  final int workOrderHeaderId;
+class WorkOrderLineAxDto {
   final int line;
   final String lineTitle;
   final String entityId;
@@ -20,9 +16,7 @@ class WorkOrderLineDto extends BaseModelDto {
   final String workOrderStatus;
   final NoYes suspend;
 
-  WorkOrderLineDto({
-    this.workOrderLineId = 0,
-    this.workOrderHeaderId = 0,
+  WorkOrderLineAxDto({
     this.line = 0,
     this.lineTitle = '',
     this.entityId = '',
@@ -36,16 +30,10 @@ class WorkOrderLineDto extends BaseModelDto {
     this.calendarId = '',
     this.workOrderStatus = '',
     this.suspend = NoYes.none,
-    super.createdBy = '',
-    DateTime? createdDateTime,
-    super.modifiedBy = '',
-    DateTime? modifiedDateTime,
-  }) : planningStartDate = planningStartDate ?? DateTimeHelper.minDateTime, planningEndDate = planningEndDate ?? DateTimeHelper.minDateTime, super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
+  }) : planningStartDate = planningStartDate ?? DateTimeHelper.minDateTime, planningEndDate = planningEndDate ?? DateTimeHelper.minDateTime;
 
-  factory WorkOrderLineDto.fromJson(Map<String, dynamic> json) {
-    return WorkOrderLineDto(
-      workOrderLineId: json['workOrderLineId'] as int? ?? 0,
-      workOrderHeaderId: json['workOrderHeaderId'] as int? ?? 0,
+  factory WorkOrderLineAxDto.fromJson(Map<String, dynamic> json) {
+    return WorkOrderLineAxDto(
       line: json['line'] as int? ?? 0,
       lineTitle: json['lineTitle'] as String? ?? '',
       entityId: json['entityId'] as String? ?? '',
@@ -62,11 +50,8 @@ class WorkOrderLineDto extends BaseModelDto {
     );
   }
 
-  @override
   Map<String, dynamic> toJson() {
     return {
-      if (workOrderLineId != 0) 'workOrderLineId': workOrderLineId,
-      if (workOrderHeaderId != 0) 'workOrderHeaderId': workOrderHeaderId,
       if (line != 0) 'line': line,
       if (lineTitle.isNotEmpty) 'lineTitle': lineTitle,
       if (entityId.isNotEmpty) 'entityId': entityId,
@@ -82,5 +67,4 @@ class WorkOrderLineDto extends BaseModelDto {
       if (suspend != NoYes.none) 'suspend': suspend.index,
     };
   }
-
 }

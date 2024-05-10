@@ -3,8 +3,9 @@ import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/work_
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/paged_list_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto.dart';
-import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/item_requisition_dto.dart';
 
+import '../../Model/work_order_line_dto.dart';
 import '../../service_locator_setup.dart';
 import '../api_path.dart';
 
@@ -75,6 +76,48 @@ class WorkOrderDALImplementation implements WorkOrderDAL {
   @override
   Future<ApiResponseDto> updateWorkOrderLine(WorkOrderLineDto dto) async {
     final response = await _dio.put(ApiPath.updateWorkOrderLine, data: dto);
+    return ApiResponseDto.fromJson(response.data);
+  }
+
+  @override
+  Future<ApiResponseDto> addItemRequisition(ItemRequisitionDto dto) async {
+    final response = await _dio.post(ApiPath.addItemRequisition, data: dto);
+    return ApiResponseDto.fromJson(response.data);
+  }
+
+  @override
+  Future<ApiResponseDto> deleteItemRequisition(int id) async {
+    final response = await _dio.delete('${ApiPath.deleteItemRequisition}/$id');
+    return ApiResponseDto.fromJson(response.data);
+  }
+
+  @override
+  Future<ApiResponseDto<ItemRequisitionDto>> getItemRequisitionById(int id) async {
+    final response = await _dio.get('${ApiPath.getItemRequisitionById}/$id');
+    return ApiResponseDto<ItemRequisitionDto>.fromJson(response.data, (json) => ItemRequisitionDto.fromJson(json));
+  }
+
+  @override
+  Future<ApiResponseDto<List<ItemRequisitionDto>>> getItemRequisitionByParams(ItemRequisitionDto entity) async {
+    final response = await _dio.get(ApiPath.getItemRequisitionByParams, queryParameters: entity.toJson());
+    return ApiResponseDto<List<ItemRequisitionDto>>.fromJson(response.data, (json) => json.map<ItemRequisitionDto>((e) => ItemRequisitionDto.fromJson(e)).toList());
+  }
+
+  @override
+  Future<ApiResponseDto> updateItemRequisition(ItemRequisitionDto dto) async {
+    final response = await _dio.put(ApiPath.updateItemRequisition, data: dto);
+    return ApiResponseDto.fromJson(response.data);
+  }
+
+  @override
+  Future<ApiResponseDto<List<ItemRequisitionDto>>> getItemRequisitionByWorkOrderLineId(int id) async {
+    final response = await _dio.get('${ApiPath.getItemRequisitionByWorkOrderLineId}/$id');
+    return ApiResponseDto<List<ItemRequisitionDto>>.fromJson(response.data, (json) => json.map<ItemRequisitionDto>((e) => ItemRequisitionDto.fromJson(e)).toList());
+  }
+
+  @override
+  Future<ApiResponseDto> addWorkOrderHeaderWithLines(WorkOrderHeaderDto dto) async {
+    final response = await _dio.post(ApiPath.addWorkOrderHeaderWithLines, data: dto);
     return ApiResponseDto.fromJson(response.data);
   }
 }

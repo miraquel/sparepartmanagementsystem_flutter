@@ -82,4 +82,19 @@ class GoodsReceiptLineDto extends BaseModelDto
     if (modifiedBy.isNotEmpty) 'modifiedBy': modifiedBy,
     if (modifiedDateTime.isAfter(DateTimeHelper.minDateTime)) 'modifiedDateTime': modifiedDateTime.toIso8601String(),
   };
+
+  bool compare(GoodsReceiptLineDto other) => goodsReceiptLineId == other.goodsReceiptLineId &&
+    goodsReceiptHeaderId == other.goodsReceiptHeaderId &&
+    itemId == other.itemId &&
+    lineNumber == other.lineNumber &&
+    itemName == other.itemName &&
+    productType == other.productType &&
+    remainPurchPhysical == other.remainPurchPhysical &&
+    receiveNow == other.receiveNow &&
+    purchQty == other.purchQty &&
+    purchUnit == other.purchUnit &&
+    purchPrice == other.purchPrice &&
+    lineAmount == other.lineAmount &&
+    inventLocationId == other.inventLocationId &&
+    wMSLocationId == other.wMSLocationId;
 }

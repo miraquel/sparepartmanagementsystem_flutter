@@ -1,5 +1,5 @@
 import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
-import 'package:sparepartmanagementsystem_flutter/Model/work_order_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_ax_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto_builder.dart';
 
@@ -26,6 +26,12 @@ class WorkOrderHeaderDtoBuilder {
   List<WorkOrderLineDtoBuilder> _workOrderLines = <WorkOrderLineDtoBuilder>[];
 
   WorkOrderHeaderDtoBuilder();
+
+  WorkOrderHeaderDtoBuilder.forInput() {
+    _isSubmitted = false;
+    _entityShutDown = NoYes.no;
+    _agseamSuspend = NoYes.no;
+  }
 
   int get workOrderHeaderId => _workOrderHeaderId;
   bool? get isSubmitted => _isSubmitted;
@@ -69,7 +75,7 @@ class WorkOrderHeaderDtoBuilder {
     );
   }
 
-  factory WorkOrderHeaderDtoBuilder.fromWorkOrderDto(WorkOrderDto workOrderDto) {
+  factory WorkOrderHeaderDtoBuilder.fromWorkOrderDto(WorkOrderAxDto workOrderDto) {
     return WorkOrderHeaderDtoBuilder()
       .setAgseamwoid(workOrderDto.agseamwoid)
       .setAgseamwrid(workOrderDto.agseamwrid)
@@ -107,6 +113,46 @@ class WorkOrderHeaderDtoBuilder {
       .setAgseamSuspend(workOrderHeaderDto.agseamSuspend)
       .setNotes(workOrderHeaderDto.notes)
       .setWorkOrderLines(workOrderHeaderDto.workOrderLines.map((e) => WorkOrderLineDtoBuilder.fromDto(e)).toList());
+  }
+
+  WorkOrderHeaderDtoBuilder setFromDto(WorkOrderHeaderDto workOrderHeaderDto) {
+    _workOrderHeaderId = workOrderHeaderDto.workOrderHeaderId;
+    _isSubmitted = workOrderHeaderDto.isSubmitted;
+    _submittedDate = workOrderHeaderDto.submittedDate;
+    _agseamwoid = workOrderHeaderDto.agseamwoid;
+    _agseamwrid = workOrderHeaderDto.agseamwrid;
+    _agseamEntityID = workOrderHeaderDto.agseamEntityID;
+    _name = workOrderHeaderDto.name;
+    _headerTitle = workOrderHeaderDto.headerTitle;
+    _agseamPriorityID = workOrderHeaderDto.agseamPriorityID;
+    _agseamwotype = workOrderHeaderDto.agseamwotype;
+    _agseamwoStatusID = workOrderHeaderDto.agseamwoStatusID;
+    _agseamPlanningStartDate = workOrderHeaderDto.agseamPlanningStartDate;
+    _agseamPlanningEndDate = workOrderHeaderDto.agseamPlanningEndDate;
+    _entityShutDown = workOrderHeaderDto.entityShutDown;
+    _woCloseDate = workOrderHeaderDto.woCloseDate;
+    _agseamSuspend = workOrderHeaderDto.agseamSuspend;
+    _notes = workOrderHeaderDto.notes;
+    _workOrderLines = workOrderHeaderDto.workOrderLines.map((e) => WorkOrderLineDtoBuilder.fromDto(e)).toList();
+    return this;
+  }
+
+  WorkOrderHeaderDtoBuilder setFromWorkOrderDto(WorkOrderAxDto workOrderDto) {
+    _agseamwoid = workOrderDto.agseamwoid;
+    _agseamwrid = workOrderDto.agseamwrid;
+    _agseamEntityID = workOrderDto.agseamEntityID;
+    _name = workOrderDto.name;
+    _headerTitle = workOrderDto.headerTitle;
+    _agseamPriorityID = workOrderDto.agseamPriorityID;
+    _agseamwotype = workOrderDto.agseamwotype;
+    _agseamwoStatusID = workOrderDto.agseamwoStatusID;
+    _agseamPlanningStartDate = workOrderDto.agseamPlanningStartDate;
+    _agseamPlanningEndDate = workOrderDto.agseamPlanningEndDate;
+    _entityShutDown = workOrderDto.entityShutDown;
+    _woCloseDate = workOrderDto.woCloseDate;
+    _agseamSuspend = workOrderDto.agseamSuspend;
+    _notes = workOrderDto.notes;
+    return this;
   }
 
   WorkOrderHeaderDtoBuilder setWorkOrderHeaderId(int workOrderHeaderId) {

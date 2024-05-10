@@ -1,32 +1,101 @@
-import 'package:decimal/decimal.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_ax_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto.dart';
 
-import '../Helper/date_time_helper.dart';
+import 'Constants/no_yes.dart';
 
 class WorkOrderLineDtoBuilder {
   int _workOrderLineId = 0;
   int _workOrderHeaderId = 0;
-  String _itemId = '';
-  String _itemName = '';
-  DateTime _requiredDate = DateTimeHelper.minDateTime;
-  Decimal _quantity = Decimal.zero;
-  Decimal _requestQuantity = Decimal.zero;
-  String _inventLocationId = '';
-  String _wMSLocationId = '';
+  int _line = 0;
+  String _lineTitle = '';
+  String _entityId = '';
+  NoYes _entityShutdown = NoYes.none;
+  String _workOrderType = '';
+  String _taskId = '';
+  String _condition = '';
+  DateTime _planningStartDate = DateTimeHelper.minDateTime;
+  DateTime _planningEndDate = DateTimeHelper.minDateTime;
+  String _supervisor = '';
+  String _calendarId = '';
+  String _workOrderStatus = '';
+  NoYes _suspend = NoYes.none;
   bool _isSelected = false;
 
   WorkOrderLineDtoBuilder();
 
   int get workOrderLineId => _workOrderLineId;
   int get workOrderHeaderId => _workOrderHeaderId;
-  String get itemId => _itemId;
-  String get itemName => _itemName;
-  DateTime get requiredDate => _requiredDate;
-  Decimal get quantity => _quantity;
-  Decimal get requestQuantity => _requestQuantity;
-  String get inventLocationId => _inventLocationId;
-  String get wMSLocationId => _wMSLocationId;
+  int get line => _line;
+  String get lineTitle => _lineTitle;
+  String get entityId => _entityId;
+  NoYes get entityShutdown => _entityShutdown;
+  String get workOrderType => _workOrderType;
+  String get taskId => _taskId;
+  String get condition => _condition;
+  DateTime get planningStartDate => _planningStartDate;
+  DateTime get planningEndDate => _planningEndDate;
+  String get supervisor => _supervisor;
+  String get calendarId => _calendarId;
+  String get workOrderStatus => _workOrderStatus;
+  NoYes get suspend => _suspend;
   bool get isSelected => _isSelected;
+
+  factory WorkOrderLineDtoBuilder.fromDto(WorkOrderLineDto model) {
+    return WorkOrderLineDtoBuilder()
+      .._workOrderLineId = model.workOrderLineId
+      .._workOrderHeaderId = model.workOrderHeaderId
+      .._line = model.line
+      .._lineTitle = model.lineTitle
+      .._entityId = model.entityId
+      .._entityShutdown = model.entityShutdown
+      .._workOrderType = model.workOrderType
+      .._taskId = model.taskId
+      .._condition = model.condition
+      .._planningStartDate = model.planningStartDate
+      .._planningEndDate = model.planningEndDate
+      .._supervisor = model.supervisor
+      .._calendarId = model.calendarId
+      .._workOrderStatus = model.workOrderStatus
+      .._suspend = model.suspend;
+  }
+
+  factory WorkOrderLineDtoBuilder.fromWorkOrderLineAxDto(WorkOrderLineAxDto model) {
+    return WorkOrderLineDtoBuilder()
+      .._line = model.line
+      .._lineTitle = model.lineTitle
+      .._entityId = model.entityId
+      .._entityShutdown = model.entityShutdown
+      .._workOrderType = model.workOrderType
+      .._taskId = model.taskId
+      .._condition = model.condition
+      .._planningStartDate = model.planningStartDate
+      .._planningEndDate = model.planningEndDate
+      .._supervisor = model.supervisor
+      .._calendarId = model.calendarId
+      .._workOrderStatus = model.workOrderStatus
+      .._suspend = model.suspend;
+  }
+
+  WorkOrderLineDto build() {
+    return WorkOrderLineDto(
+      workOrderLineId: _workOrderLineId,
+      workOrderHeaderId: _workOrderHeaderId,
+      line: _line,
+      lineTitle: _lineTitle,
+      entityId: _entityId,
+      entityShutdown: _entityShutdown,
+      workOrderType: _workOrderType,
+      taskId: _taskId,
+      condition: _condition,
+      planningStartDate: _planningStartDate,
+      planningEndDate: _planningEndDate,
+      supervisor: _supervisor,
+      calendarId: _calendarId,
+      workOrderStatus: _workOrderStatus,
+      suspend: _suspend,
+    );
+  }
 
   WorkOrderLineDtoBuilder setWorkOrderLineId(int workOrderLineId) {
     _workOrderLineId = workOrderLineId;
@@ -38,66 +107,69 @@ class WorkOrderLineDtoBuilder {
     return this;
   }
 
-  WorkOrderLineDtoBuilder setItemId(String itemId) {
-    _itemId = itemId;
+  WorkOrderLineDtoBuilder setLine(int line) {
+    _line = line;
     return this;
   }
 
-  WorkOrderLineDtoBuilder setItemName(String itemName) {
-    _itemName = itemName;
+  WorkOrderLineDtoBuilder setLineTitle(String lineTitle) {
+    _lineTitle = lineTitle;
     return this;
   }
 
-  WorkOrderLineDtoBuilder setRequiredDate(DateTime requiredDate) {
-    _requiredDate = requiredDate;
+  WorkOrderLineDtoBuilder setEntityId(String entityId) {
+    _entityId = entityId;
     return this;
   }
 
-  WorkOrderLineDtoBuilder setQuantity(Decimal quantity) {
-    _quantity = quantity;
+  WorkOrderLineDtoBuilder setEntityShutdown(NoYes entityShutdown) {
+    _entityShutdown = entityShutdown;
     return this;
   }
 
-  WorkOrderLineDtoBuilder setRequestQuantity(Decimal requestQuantity) {
-    _requestQuantity = requestQuantity;
+  WorkOrderLineDtoBuilder setWorkOrderType(String workOrderType) {
+    _workOrderType = workOrderType;
     return this;
   }
 
-  WorkOrderLineDtoBuilder setInventLocationId(String inventLocationId) {
-    _inventLocationId = inventLocationId;
+  WorkOrderLineDtoBuilder setTaskId(String taskId) {
+    _taskId = taskId;
     return this;
   }
 
-  WorkOrderLineDtoBuilder setWMSLocationId(String wMSLocationId) {
-    _wMSLocationId = wMSLocationId;
+  WorkOrderLineDtoBuilder setCondition(String condition) {
+    _condition = condition;
     return this;
   }
 
-  WorkOrderLineDto build() {
-    return WorkOrderLineDto(
-      workOrderLineId: _workOrderLineId,
-      workOrderHeaderId: _workOrderHeaderId,
-      itemId: _itemId,
-      itemName: _itemName,
-      requiredDate: _requiredDate,
-      quantity: _quantity,
-      requestQuantity: _requestQuantity,
-      inventLocationId: _inventLocationId,
-      wMSLocationId: _wMSLocationId,
-    );
+  WorkOrderLineDtoBuilder setPlanningStartDate(DateTime planningStartDate) {
+    _planningStartDate = planningStartDate;
+    return this;
   }
 
-  factory WorkOrderLineDtoBuilder.fromDto(WorkOrderLineDto workOrderLineDto) {
-    return WorkOrderLineDtoBuilder()
-      .setWorkOrderLineId(workOrderLineDto.workOrderLineId)
-      .setWorkOrderHeaderId(workOrderLineDto.workOrderHeaderId)
-      .setItemId(workOrderLineDto.itemId)
-      .setItemName(workOrderLineDto.itemName)
-      .setRequiredDate(workOrderLineDto.requiredDate)
-      .setQuantity(workOrderLineDto.quantity)
-      .setRequestQuantity(workOrderLineDto.requestQuantity)
-      .setInventLocationId(workOrderLineDto.inventLocationId)
-      .setWMSLocationId(workOrderLineDto.wMSLocationId);
+  WorkOrderLineDtoBuilder setPlanningEndDate(DateTime planningEndDate) {
+    _planningEndDate = planningEndDate;
+    return this;
+  }
+
+  WorkOrderLineDtoBuilder setSupervisor(String supervisor) {
+    _supervisor = supervisor;
+    return this;
+  }
+
+  WorkOrderLineDtoBuilder setCalendarId(String calendarId) {
+    _calendarId = calendarId;
+    return this;
+  }
+
+  WorkOrderLineDtoBuilder setWorkOrderStatus(String workOrderStatus) {
+    _workOrderStatus = workOrderStatus;
+    return this;
+  }
+
+  WorkOrderLineDtoBuilder setSuspend(NoYes suspend) {
+    _suspend = suspend;
+    return this;
   }
 
   WorkOrderLineDtoBuilder setIsSelected(bool isSelected) {

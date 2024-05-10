@@ -96,4 +96,19 @@ class GoodsReceiptHeaderDto extends BaseModelDto
       createdDateTime.isAtSameMomentAs(DateTimeHelper.minDateTime) &&
       modifiedBy.isEmpty &&
       modifiedDateTime.isAtSameMomentAs(DateTimeHelper.minDateTime);
+
+  bool compare(GoodsReceiptHeaderDto other) => goodsReceiptHeaderId == other.goodsReceiptHeaderId &&
+      packingSlipId == other.packingSlipId &&
+      transDate.isAtSameMomentAs(other.transDate) &&
+      description == other.description &&
+      purchId == other.purchId &&
+      purchName == other.purchName &&
+      orderAccount == other.orderAccount &&
+      invoiceAccount == other.invoiceAccount &&
+      purchStatus == other.purchStatus &&
+      isSubmitted == other.isSubmitted &&
+      submittedDate.isAtSameMomentAs(other.submittedDate) &&
+      submittedBy == other.submittedBy &&
+      goodsReceiptLines.length == other.goodsReceiptLines.length &&
+      goodsReceiptLines.every((e) => other.goodsReceiptLines.any((x) => e.compare(x)));
 }
