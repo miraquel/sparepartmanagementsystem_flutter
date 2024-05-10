@@ -4,24 +4,24 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import '../DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
-import '../Model/work_order_dto.dart';
-import '../Model/work_order_search_dto.dart';
+import '../Model/work_order_ax_dto.dart';
+import '../Model/work_order_ax_search_dto.dart';
 import '../service_locator_setup.dart';
 
-class WorkOrderLookup extends StatefulWidget {
-  const WorkOrderLookup({super.key});
+class WorkOrderAxLookup extends StatefulWidget {
+  const WorkOrderAxLookup({super.key});
 
   @override
-  State<WorkOrderLookup> createState() => _WorkOrderLookupState();
+  State<WorkOrderAxLookup> createState() => _WorkOrderAxLookupState();
 }
 
-class _WorkOrderLookupState extends State<WorkOrderLookup> {
+class _WorkOrderAxLookupState extends State<WorkOrderAxLookup> {
   static const int _pageSize = 20;
   final _gmkSMSServiceGroupDAL = locator<GMKSMSServiceGroupDAL>();
   final _agseamwoidController = TextEditingController();
   Timer? _debounce;
 
-  final PagingController<int, WorkOrderDto> _pagingController = PagingController(firstPageKey: 1);
+  final PagingController<int, WorkOrderAxDto> _pagingController = PagingController(firstPageKey: 1);
 
   @override
   void initState() {
@@ -85,9 +85,9 @@ class _WorkOrderLookupState extends State<WorkOrderLookup> {
             ),
           ),
           Expanded(
-            child: PagedListView<int, WorkOrderDto>(
+            child: PagedListView<int, WorkOrderAxDto>(
               pagingController: _pagingController,
-              builderDelegate: PagedChildBuilderDelegate<WorkOrderDto>(
+              builderDelegate: PagedChildBuilderDelegate<WorkOrderAxDto>(
                 itemBuilder: (context, item, index) => ListTile(
                   title: Text(item.agseamwoid),
                   subtitle: Text(item.name),

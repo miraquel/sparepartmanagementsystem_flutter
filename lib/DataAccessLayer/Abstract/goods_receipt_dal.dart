@@ -3,7 +3,7 @@ import 'package:sparepartmanagementsystem_flutter/Model/paged_list_dto.dart';
 import '../../Model/api_response_dto.dart';
 import '../../Model/goods_receipt_header_dto.dart';
 
-abstract class GoodsReceiptHeaderDAL {
+abstract class GoodsReceiptDAL {
   Future<ApiResponseDto<List<GoodsReceiptHeaderDto>>> getGoodsReceiptHeader();
   Future<ApiResponseDto<GoodsReceiptHeaderDto>> getGoodsReceiptHeaderById(int goodsReceiptHeaderId);
   Future<ApiResponseDto> addGoodsReceiptHeader(GoodsReceiptHeaderDto goodsReceiptHeader);

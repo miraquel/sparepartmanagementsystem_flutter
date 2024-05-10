@@ -35,7 +35,7 @@ class RowLevelAccessDALImplementation implements RowLevelAccessDAL {
 
   @override
   Future<ApiResponseDto<List<RowLevelAccessDto>>> getRowLevelAccess() async {
-    final response = await _dio.get(ApiPath.getRowLevelAccess);
+    final response = await _dio.get(ApiPath.getAllRowLevelAccess);
     var responseBody = response.data as Map<String, dynamic>;
     return ApiResponseDto<List<RowLevelAccessDto>>.fromJson(responseBody, (json) => json.map<RowLevelAccessDto>((e) => RowLevelAccessDto.fromJson(e as Map<String, dynamic>)).toList());
   }

@@ -35,27 +35,8 @@ class _WorkOrderDetailsState extends State<WorkOrderDetails> with SingleTickerPr
       _navigator = Navigator.of(context);
       _scaffoldMessenger = ScaffoldMessenger.of(context);
       _tabController = TabController(initialIndex: 0, length: 2, vsync: this);
-      _tabController.animation?.addListener(() {
-        setState(() => _tabIndex = _tabController.index);
-      });
-      _workOrderHeaderDtoBuilder
-        .setIsSubmitted(widget.workOrderHeaderDto.isSubmitted)
-        .setSubmittedDate(widget.workOrderHeaderDto.submittedDate)
-        .setAgseamwoid(widget.workOrderHeaderDto.agseamwoid)
-        .setAgseamwrid(widget.workOrderHeaderDto.agseamwrid)
-        .setAgseamEntityID(widget.workOrderHeaderDto.agseamEntityID)
-        .setName(widget.workOrderHeaderDto.name)
-        .setHeaderTitle(widget.workOrderHeaderDto.headerTitle)
-        .setAgseamPriorityID(widget.workOrderHeaderDto.agseamPriorityID)
-        .setAgseamwotype(widget.workOrderHeaderDto.agseamwotype)
-        .setAgseamwoStatusID(widget.workOrderHeaderDto.agseamwoStatusID)
-        .setAgseamPlanningStartDate(widget.workOrderHeaderDto.agseamPlanningStartDate)
-        .setAgseamPlanningEndDate(widget.workOrderHeaderDto.agseamPlanningEndDate)
-        .setEntityShutDown(widget.workOrderHeaderDto.entityShutDown)
-        .setWoCloseDate(widget.workOrderHeaderDto.woCloseDate)
-        .setAgseamSuspend(widget.workOrderHeaderDto.agseamSuspend)
-        .setNotes(widget.workOrderHeaderDto.notes);
-
+      _tabController.animation?.addListener(() => setState(() => _tabIndex = _tabController.index));
+      _workOrderHeaderDtoBuilder.setFromDto(widget.workOrderHeaderDto);
       _fetchWorkOrderLine();
     });
   }
@@ -91,7 +72,7 @@ class _WorkOrderDetailsState extends State<WorkOrderDetails> with SingleTickerPr
       child: Scaffold(
         floatingActionButton: _tabIndex == 1 ? FloatingActionButton(
           onPressed: () {
-            _navigator.pushNamed('/workOrderLineAdd', arguments: widget.workOrderHeaderDto.workOrderHeaderId).then((value) => _fetchWorkOrderLine());
+            _navigator.pushNamed('/workOrderLineAdd').then((value) => _fetchWorkOrderLine());
           },
           child: const Icon(Icons.add),
         ) : null,
@@ -279,8 +260,14 @@ class _WorkOrderDetailsState extends State<WorkOrderDetails> with SingleTickerPr
       itemBuilder: (context, index) {
         final workOrderLine = _workOrderHeaderDtoBuilder.workOrderLines[index];
         return ListTile(
-          title: Text(workOrderLine.itemId),
-          subtitle: Text(workOrderLine.itemName),
+          title: Text("Line number: ${workOrderLine.line}"),
+          subtitle: Text("Task ID: ${workOrderLine.taskId}"),
+          trailing: IconButton(
+            icon: const Icon(Icons.chevron_right),
+            onPressed: () {
+              _navigator.pushNamed('/itemRequisitionList', arguments: workOrderLine.workOrderLineId).then((value) => _fetchWorkOrderLine());
+            },
+          )
         );
       },
     ) : const Column(

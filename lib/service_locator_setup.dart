@@ -8,20 +8,21 @@ import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/permi
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/role_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/row_level_access_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_warehouse_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/work_order_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/number_sequence_dal_implementation.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/row_level_access_dal_implementation.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/user_warehouse_dal_implementation.dart';
 import 'package:sparepartmanagementsystem_flutter/route_observer_extension.dart';
 
-import 'DataAccessLayer/Abstract/goods_receipt_header_dal.dart';
+import 'DataAccessLayer/Abstract/goods_receipt_dal.dart';
 import 'DataAccessLayer/Implementation/gmk_sms_service_group_dal_implementation.dart';
-import 'DataAccessLayer/Implementation/goods_receipt_header_dal_implementation.dart';
+import 'DataAccessLayer/Implementation/goods_receipt_dal_implementation.dart';
 import 'DataAccessLayer/Implementation/permission_dal_implementation.dart';
 import 'DataAccessLayer/Implementation/role_dal_implementation.dart';
 import 'DataAccessLayer/Implementation/user_dal_implementation.dart';
 import 'DataAccessLayer/Implementation/work_order_dal_implementation.dart';
 import 'dio_logging_interceptor.dart';
-import 'environment.dart';
 
 GetIt locator = GetIt.instance;
 final routeObserver = RouteObserverExtension();
@@ -41,7 +42,6 @@ void serviceLocatorSetup() {
   locator.registerSingleton<Logger>(logger);
   locator.registerFactory<Dio>(() {
     var dio = Dio();
-    dio.options.baseUrl = Environment.baseUrl;
     dio.options.connectTimeout = const Duration(seconds: 120);
     dio.options.receiveTimeout = const Duration(seconds: 120);
     dio.options.contentType = 'application/json';
@@ -54,7 +54,8 @@ void serviceLocatorSetup() {
   locator.registerFactory<RoleDAL>(() => RoleDALImplementation());
   locator.registerFactory<PermissionDAL>(() => PermissionDALImplementation());
   locator.registerFactory<NumberSequenceDAL>(() => NumberSequenceDALImplementation());
-  locator.registerFactory<GoodsReceiptHeaderDAL>(() => GoodsReceiptHeaderDALImplementation());
+  locator.registerFactory<GoodsReceiptDAL>(() => GoodsReceiptDALImplementation());
   locator.registerFactory<RowLevelAccessDAL>(() => RowLevelAccessDALImplementation());
   locator.registerFactory<WorkOrderDAL>(() => WorkOrderDALImplementation());
+  locator.registerFactory<UserWarehouseDAL>(() => UserWarehouseDALImplementation());
 }

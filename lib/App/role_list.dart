@@ -27,7 +27,7 @@ class _RoleListState extends State<RoleList> {
   Future<void> fetchData() async {
     setState(() => _isLoading = true);
     try {
-      var result = await _roleDAL.fetchRole();
+      var result = await _roleDAL.getAllRole();
       setState(() => _roles = result.data!);
     } catch (e) {
       logger.e('Error while fetching data', error: e);

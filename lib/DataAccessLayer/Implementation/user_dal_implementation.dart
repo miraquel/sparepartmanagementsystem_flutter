@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dio/dio.dart';
 
-import '../../Model/ActiveDirectoryDto.dart';
+import '../../Model/active_directory_dto.dart';
 import '../../Model/api_response_dto.dart';
 import '../../Model/refresh_token_dto.dart';
 import '../../Model/token_dto.dart';
@@ -31,8 +31,7 @@ class UserDALImplementation implements UserDAL {
   }
 
   @override
-  Future<ApiResponseDto<UserDto>> getUserByUsernameWithRoles() async {
-    var username = await storage.read(key: 'username');
+  Future<ApiResponseDto<UserDto>> getUserByUsernameWithRoles(String username) async {
     final response = await _dio.get(
       ApiPath.getUserByUsernameWithRoles,
       queryParameters: {'username': username},
@@ -44,7 +43,7 @@ class UserDALImplementation implements UserDAL {
   @override
   Future<ApiResponseDto<List<UserDto>>> getUser() async {
     final response = await _dio.get(
-      ApiPath.getUser,
+      ApiPath.getAllUser,
     );
     return ApiResponseDto<List<UserDto>>.fromJson(
         response.data as Map<String, dynamic>, (json) => json.map<UserDto>((e) => UserDto.fromJson(e as Map<String, dynamic>)).toList());
@@ -96,10 +95,9 @@ class UserDALImplementation implements UserDAL {
 
   @override
   Future<ApiResponseDto<List<ActiveDirectoryDto>>> getUsersFromActiveDirectory([String searchText = ""]) async {
-    var queryParameters = {'searchText': searchText};
     final response = await _dio.get(
       ApiPath.getUsersFromActiveDirectory,
-      queryParameters: queryParameters,
+      queryParameters: {'searchText': searchText},
     );
 
     return ApiResponseDto<List<ActiveDirectoryDto>>.fromJson(
@@ -127,23 +125,28 @@ class UserDALImplementation implements UserDAL {
   }
 
   @override
-  Future<ApiResponseDto<RefreshTokenDto>> revokeToken(RefreshTokenDto refreshToken) async {
+  Future<ApiResponseDto> revokeToken(RefreshTokenDto refreshToken) async {
     final response = await _dio.post(
       ApiPath.revokeToken,
       data: refreshToken,
     );
     Map<String, dynamic> body = response.data as Map<String, dynamic>;
-    return ApiResponseDto<RefreshTokenDto>.fromJson(body, (json) => RefreshTokenDto.fromJson(json));
+    return ApiResponseDto.fromJson(body);
   }
 
   @override
-  Future<ApiResponseDto<List<RefreshTokenDto>>> revokeAllTokens(RefreshTokenDto refreshToken) async {
+  Future<ApiResponseDto> revokeAllTokens(RefreshTokenDto refreshToken) async {
     final response = await _dio.post(
       ApiPath.revokeAllTokens,
       data: refreshToken,
     );
     Map<String, dynamic> body = response.data as Map<String, dynamic>;
-    return ApiResponseDto<List<RefreshTokenDto>>.fromJson(
-        body, (json) => json.map<UserDto>((e) => RefreshTokenDto.fromJson(e as Map<String, dynamic>)).toList());
+    return ApiResponseDto.fromJson(body);
+  }
+
+  @override
+  Future<ApiResponseDto<UserDto>> getUserByIdWithUserWarehouse(int userId) async {
+    final response = await _dio.get('${ApiPath.getUserByIdWithUserWarehouse}/$userId');
+    return ApiResponseDto<UserDto>.fromJson(response.data, (json) => UserDto.fromJson(json));
   }
 }

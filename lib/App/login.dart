@@ -94,7 +94,7 @@ class _LoginState extends State<Login> {
         _navigator.pushReplacementNamed('/home');
       }
     } catch (e) {
-      _logger.e('Error while logging in', error: e);
+        _logger.e('Error while logging in', error: e);
     } finally {
       if (_isLoading) {
         setState(() => _isLoading = false);

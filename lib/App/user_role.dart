@@ -87,7 +87,7 @@ class _UserRoleState extends State<UserRole> {
                     }
                     return null;
                   },
-                  asyncItems: (String searchTerm) => _roleDAL.fetchRole().then((value) {
+                  asyncItems: (String searchTerm) => _roleDAL.getAllRole().then((value) {
                     setState(() => _newRoles = value.data!);
                     return _newRoles.map((e) => e.roleName).toList();
                   }),

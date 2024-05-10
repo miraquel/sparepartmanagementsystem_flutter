@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:logger/logger.dart';
-import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/goods_receipt_header_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/goods_receipt_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
@@ -14,7 +14,7 @@ class GoodsReceiptList extends StatefulWidget {
 
 class _GoodsReceiptListState extends State<GoodsReceiptList> {
   static const int _pageSize = 20;
-  final GoodsReceiptHeaderDAL _goodsReceiptHeaderDAL = locator<GoodsReceiptHeaderDAL>();
+  final GoodsReceiptDAL _goodsReceiptHeaderDAL = locator<GoodsReceiptDAL>();
   final Logger _logger = locator<Logger>();
   final _purchIdSearchTextController = TextEditingController();
   final _purchNameSearchTextController = TextEditingController();

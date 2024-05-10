@@ -4,13 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'Model/user_warehouse_dto.dart';
+
 class Environment {
-  final _storage = const FlutterSecureStorage();
+  static const _storage = FlutterSecureStorage();
   static String _baseUrl = '';
+  static UserWarehouseDto _userWarehouseDto = UserWarehouseDto();
 
   static String get baseUrl => _baseUrl;
+  static UserWarehouseDto get userWarehouseDto => _userWarehouseDto;
 
-  Future<void> initialize() async {
+  static Future<void> initialize() async {
     WidgetsFlutterBinding.ensureInitialized();
     _baseUrl = await _storage.read(key: 'baseUrl') ?? '';
     if (_baseUrl.isEmpty) {
@@ -20,15 +24,23 @@ class Environment {
     }
   }
 
-  Future<void> saveBaseUrl(String newBaseUrl) async {
+  static Future<void> saveBaseUrl(String newBaseUrl) async {
     await _storage.write(key: 'baseUrl', value: newBaseUrl);
     _baseUrl = newBaseUrl;
   }
 
-  Future<void> clearBaseUrl() async {
+  static Future<void> clearBaseUrl() async {
     await _storage.delete(key: 'baseUrl');
     final environment = await rootBundle.loadString('environment.json');
     final config = jsonDecode(environment) as Map<String, dynamic>;
     _baseUrl = config['API_URL'];
+  }
+
+  static Future<void> saveUserWarehouseDto(UserWarehouseDto newUserWarehouseDto) async {
+    _userWarehouseDto = newUserWarehouseDto;
+  }
+
+  static Future<void> clearUserWarehouseDto() async {
+    _userWarehouseDto = UserWarehouseDto();
   }
 }

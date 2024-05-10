@@ -43,7 +43,7 @@ class _UserListState extends State<UserList> {
       appBar: AppBar(title: const Text('User')),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/userCreate').then((value) => fetchData());
+          Navigator.pushNamed(context, '/userAdd').then((value) => fetchData());
         },
         child: const Icon(Icons.add),
       ),
@@ -80,7 +80,7 @@ class _UserListState extends State<UserList> {
                     child: Card(
                       child: ListTile(
                         onTap: () {
-                          Navigator.pushNamed(context, '/userEdit', arguments: users[index]).then((value) => fetchData());
+                          Navigator.pushNamed(context, '/userEdit', arguments: users[index].userId).then((value) => fetchData());
                         },
                         title: Text(users[index].username),
                         subtitle: Text(users[index].email),

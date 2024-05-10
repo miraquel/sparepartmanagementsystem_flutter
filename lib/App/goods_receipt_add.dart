@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_line_dto_builder.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/purch_line_dto.dart';
 
 import '../DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
-import '../DataAccessLayer/Abstract/goods_receipt_header_dal.dart';
+import '../DataAccessLayer/Abstract/goods_receipt_dal.dart';
 import '../Model/goods_receipt_header_dto.dart';
+import '../Model/goods_receipt_header_dto_builder.dart';
 import '../Model/goods_receipt_line_dto.dart';
 import '../Model/purch_table_dto.dart';
 import '../service_locator_setup.dart';
@@ -23,17 +26,18 @@ class GoodsReceiptAdd extends StatefulWidget {
 
 class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
   final _gmkSmsServiceGroupDAL = locator<GMKSMSServiceGroupDAL>();
-  final _goodsReceiptHeaderDAL = locator<GoodsReceiptHeaderDAL>();
-  final packingSlipIdController = TextEditingController();
-  final transDateController = TextEditingController();
-  final descriptionController = TextEditingController();
+  final _goodsReceiptHeaderDAL = locator<GoodsReceiptDAL>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late NavigatorState _navigator;
   late ScaffoldMessengerState _scaffoldMessenger;
   var _isLoading = false;
 
   // form fields
-  var _purchTableDto = PurchTableDto();
-  var _purchLineDtoList = <PurchLineDto>[];
+  // var _purchTableDto = PurchTableDto();
+  // var _purchLineDtoList = <PurchLineDto>[];
+
+  // builder
+  final _goodsReceiptHeaderDtoBuilder = GoodsReceiptHeaderDtoBuilder();
 
   @override
   void initState() {
@@ -47,38 +51,13 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
   Future<void> saveData() async {
     try {
       setState(() => _isLoading = true);
-      if (_purchTableDto.isDefault()) throw ArgumentError('You have not selected any Purchase Order, please select one.');
-      if (packingSlipIdController.text.isEmpty) throw ArgumentError('Packing Slip Id is required.');
-      if (_purchLineDtoList.isEmpty) throw ArgumentError('No Purchase Line found.');
+      if (_goodsReceiptHeaderDtoBuilder.isDefault()) throw ArgumentError('You have not selected any Purchase Order, please select one.');
+      if (_goodsReceiptHeaderDtoBuilder.packingSlipId.isEmpty) throw ArgumentError('Packing Slip Id is required.');
+      if (_goodsReceiptHeaderDtoBuilder.goodsReceiptLines.isEmpty) throw ArgumentError('No Purchase Line found.');
 
-      final goodsReceiptHeaderDto = GoodsReceiptHeaderDto(
-        purchId: _purchTableDto.purchId,
-        purchName: _purchTableDto.purchName,
-        orderAccount: _purchTableDto.orderAccount,
-        invoiceAccount: _purchTableDto.invoiceAccount,
-        purchStatus: _purchTableDto.purchStatus,
-        isSubmitted: false,
-        packingSlipId: packingSlipIdController.text,
-        transDate: DateTime.tryParse(transDateController.text) ?? DateTime.now(),
-        description: descriptionController.text,
-      );
+      _goodsReceiptHeaderDtoBuilder.setIsSubmitted(false);
 
-      final goodsReceiptLineDtoList = _purchLineDtoList.map((e) => GoodsReceiptLineDto(
-        itemId: e.itemId,
-        lineNumber: e.lineNumber,
-        itemName: e.itemName,
-        productType: e.productType,
-        purchUnit: e.purchUnit,
-        remainPurchPhysical: e.remainPurchPhysical,
-        receiveNow: e.remainPurchPhysical,
-        purchQty: e.purchQty,
-        lineAmount: e.lineAmount,
-        purchPrice: e.purchPrice,
-      )).toList();
-
-      goodsReceiptHeaderDto.goodsReceiptLines.addAll(goodsReceiptLineDtoList);
-
-      final response = await _goodsReceiptHeaderDAL.addGoodsReceiptHeaderWithLines(goodsReceiptHeaderDto);
+      final response = await _goodsReceiptHeaderDAL.addGoodsReceiptHeaderWithLines(_goodsReceiptHeaderDtoBuilder.build());
 
       if (response.success) {
         _navigator.pop();
@@ -109,10 +88,10 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
   Future<void> _fetchPurchLineList() async {
     try {
       setState(() => _isLoading = true);
-      final response = await _gmkSmsServiceGroupDAL.getPurchLineList(_purchTableDto.purchId);
+      final response = await _gmkSmsServiceGroupDAL.getPurchLineList(_goodsReceiptHeaderDtoBuilder.purchId);
       if (response.success) {
-        _purchLineDtoList = response.data!;
-        transDateController.text = DateFormat("dd/MM/yyyy").format(DateTime.now());
+        var purchLineDtoList = response.data!;
+        setState(() => _goodsReceiptHeaderDtoBuilder.goodsReceiptLines.addAll(purchLineDtoList.map((e) => GoodsReceiptLineDtoBuilder.fromPurchLineDto(e)).toList()));
       }
     }
     on DioException catch (error) {
@@ -146,7 +125,7 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
             title: const Text('New Goods Receipt'),
             actions: [
               IconButton(
-                onPressed: !_purchTableDto.isDefault() ? () {
+                onPressed: !_goodsReceiptHeaderDtoBuilder.isDefault() ? () {
                   // confirmation dialog
                   showDialog(
                     context: context,
@@ -210,101 +189,106 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
 
   Widget _buildHeaderTab() {
     return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(right: 16, top: 16),
-            child: Text(
-              'New Goods Receipt',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top:8, right: 16, bottom: 3),
-            child: Text(
-              'Please fill the form below to create new Goods Receipt Header.',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          TextField(
-            controller: TextEditingController(text: _purchTableDto.purchId),
-            onTap: _purchTableLookup,
-            decoration: InputDecoration(
-              labelText: 'Purch Id',
-              suffixIcon: IconButton(
-                onPressed: _purchTableLookup,
-                icon: const Icon(
-                  Icons.search,
-                  color: Colors.blue,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(right: 16, top: 16),
+              child: Text(
+                'New Goods Receipt',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
-                tooltip: 'Purch Table Lookup',
               ),
             ),
-            readOnly: true,
-          ),
-          TextField(
-            controller: packingSlipIdController,
-            decoration: const InputDecoration(
-              labelText: 'Packing Slip Id',
+            const Padding(
+              padding: EdgeInsets.only(top:8, right: 16, bottom: 3),
+              child: Text(
+                'Please fill the form below to create new Goods Receipt Header.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
+              ),
             ),
-          ),
-          TextFormField(
-            controller: transDateController,
-            onTap: _transDatePicker,
-            decoration: InputDecoration(
-              labelText: 'Receipt Date',
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.calendar_month),
-                onPressed: _transDatePicker,
-              )
+            TextField(
+              controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.purchId),
+              decoration: InputDecoration(
+                labelText: 'Purch Id',
+                suffixIcon: IconButton(
+                  onPressed: _purchTableLookup,
+                  icon: const Icon(
+                    Icons.search,
+                    color: Colors.blue,
+                  ),
+                  tooltip: 'Purch Table Lookup',
+                ),
+              ),
+              readOnly: true,
             ),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'^\d{4}-\d{2}-\d{2}')),
-            ],
-            readOnly: true,
-          ),
-          TextField(
-            controller: descriptionController,
-            decoration: const InputDecoration(
-              labelText: 'Description',
+            TextField(
+              controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.packingSlipId),
+              decoration: const InputDecoration(
+                labelText: 'Packing Slip Id',
+              ),
+              onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setPackingSlipId(value),
             ),
-          ),
-          TextField(
-            controller: TextEditingController(text: _purchTableDto.purchName),
-            decoration: const InputDecoration(
-              labelText: 'Purch Name',
+            TextFormField(
+              controller: TextEditingController(text: DateFormat("dd/MM/yyyy").format(_goodsReceiptHeaderDtoBuilder.transDate.isAtSameMomentAs(DateTimeHelper.minDateTime) ? DateTime.now() : _goodsReceiptHeaderDtoBuilder.transDate)),
+              onTap: _transDatePicker,
+              decoration: InputDecoration(
+                labelText: 'Receipt Date',
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.calendar_month),
+                  onPressed: _transDatePicker,
+                )
+              ),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d{4}-\d{2}-\d{2}')),
+              ],
+              readOnly: true,
+              onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setTransDate(DateTime.tryParse(value) ?? DateTime.now()),
             ),
-            readOnly: true,
-          ),
-          TextField(
-            controller: TextEditingController(text: _purchTableDto.orderAccount),
-            decoration: const InputDecoration(
-              labelText: 'Order Account',
+            TextField(
+              controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.description),
+              decoration: const InputDecoration(
+                labelText: 'Description',
+              ),
+              onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setDescription(value),
             ),
-            readOnly: true,
-          ),
-          TextField(
-            controller: TextEditingController(text: _purchTableDto.invoiceAccount),
-            decoration: const InputDecoration(
-              labelText: 'Invoice Account',
+            TextField(
+              controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.purchName),
+              decoration: const InputDecoration(
+                labelText: 'Purch Name',
+              ),
+              readOnly: true,
             ),
-            readOnly: true,
-          ),
-          TextField(
-            controller: TextEditingController(text: _purchTableDto.purchStatus),
-            decoration: const InputDecoration(
-              labelText: 'Purch Status',
+            TextField(
+              controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.orderAccount),
+              decoration: const InputDecoration(
+                labelText: 'Order Account',
+              ),
+              readOnly: true,
             ),
-            readOnly: true,
-          ),
-        ].map((e) => Padding(padding: const EdgeInsets.only(left: 16, right: 16, bottom: 3), child: e)).toList(),
+            TextField(
+              controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.invoiceAccount),
+              decoration: const InputDecoration(
+                labelText: 'Invoice Account',
+              ),
+              readOnly: true,
+            ),
+            TextField(
+              controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.purchStatus),
+              decoration: const InputDecoration(
+                labelText: 'Purch Status',
+              ),
+              readOnly: true,
+            ),
+          ].map((e) => Padding(padding: const EdgeInsets.only(left: 16, right: 16, bottom: 3), child: e)).toList(),
+        ),
       ),
     );
   }
@@ -317,21 +301,16 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
       lastDate: DateTime(2100),
     ).then((value) {
       if (value != null) {
-        setState(() {
-          transDateController.text = DateFormat("dd/MM/yyyy").format(value);
-        });
+        setState(() => _goodsReceiptHeaderDtoBuilder.setTransDate(value));
       }
     });
   }
 
-  void _purchTableLookup() {
-    _navigator.pushNamed('/purchTableLookup').then((value) {
-      var purchTableDto = value as PurchTableDto;
-      setState(() {
-        _purchTableDto = purchTableDto;
-      });
-      _fetchPurchLineList();
-    });
+  Future<void> _purchTableLookup() async {
+    var purchTableDto = await _navigator.pushNamed('/purchTableLookup');
+    if (purchTableDto == null) return;
+    setState(() => _goodsReceiptHeaderDtoBuilder.setFromPurchTableDto(purchTableDto as PurchTableDto));
+    await _fetchPurchLineList();
   }
 
   Widget _buildLineTab() {
@@ -339,8 +318,8 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          child: _purchLineDtoList.isNotEmpty ? ListView.builder(
-            itemCount: _purchLineDtoList.length,
+          child: _goodsReceiptHeaderDtoBuilder.goodsReceiptLines.isNotEmpty ? ListView.builder(
+            itemCount: _goodsReceiptHeaderDtoBuilder.goodsReceiptLines.length,
             itemBuilder: (BuildContext context, int index) {
               return Padding(
                 padding: const EdgeInsets.all(15.0),
@@ -353,7 +332,7 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
                     title: Padding(
                       padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
                       child: Text(
-                        'Item Id: ${_purchLineDtoList[index].itemId}, Line Number: ${_purchLineDtoList[index].lineNumber}',
+                        'Item Id: ${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].itemId}, Line Number: ${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].lineNumber}',
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                     ),
@@ -370,13 +349,18 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
                               ),
                             ),
                             const Spacer(),
-                            Text(
-                              _purchLineDtoList[index].itemName,
-                              style: _purchLineFieldValueStyle(),
+                            Flexible(
+                              flex: 2,
+                              fit: FlexFit.tight,
+                              child: Text(
+                                _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].itemName,
+                                style: _purchLineFieldValueStyle(),
+                                textAlign: TextAlign.right,
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 5),
+                        _sizedBoxLines(),
                         Row(
                           children: [
                             Padding(
@@ -387,13 +371,18 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
                               ),
                             ),
                             const Spacer(),
-                            Text(
-                              '${_purchLineDtoList[index].purchQty} ${_purchLineDtoList[index].purchUnit}',
-                              style: _purchLineFieldValueStyle(),
+                            Flexible(
+                              flex: 2,
+                              fit: FlexFit.tight,
+                              child: Text(
+                                '${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchQty} ${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchUnit}',
+                                style: _purchLineFieldValueStyle(),
+                                textAlign: TextAlign.right,
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 5),
+                        _sizedBoxLines(),
                         // deliver remainder
                         Row(
                           children: [
@@ -405,13 +394,18 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
                               ),
                             ),
                             const Spacer(),
-                            Text(
-                              '${_purchLineDtoList[index].remainPurchPhysical} ${_purchLineDtoList[index].purchUnit}',
-                              style: _purchLineFieldValueStyle(),
+                            Flexible(
+                              flex: 2,
+                              fit: FlexFit.tight,
+                              child: Text(
+                                '${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].remainPurchPhysical} ${_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].purchUnit}',
+                                style: _purchLineFieldValueStyle(),
+                                textAlign: TextAlign.right,
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 5),
+                        _sizedBoxLines(),
                         // product type
                         Row(
                           children: [
@@ -423,13 +417,18 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
                               ),
                             ),
                             const Spacer(),
-                            Text(
-                              _purchLineDtoList[index].productType.toString().split('.').last,
-                              style: _purchLineFieldValueStyle(),
+                            Flexible(
+                              flex: 2,
+                              fit: FlexFit.tight,
+                              child: Text(
+                                _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].productType.toString().split('.').last,
+                                style: _purchLineFieldValueStyle(),
+                                textAlign: TextAlign.right,
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 5),
+                        _sizedBoxLines(),
                       ],
                     ),
                   ),
@@ -443,7 +442,7 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: ElevatedButton(
-            onPressed: _purchLineDtoList.isNotEmpty ? _fetchPurchLineList : null,
+            onPressed: _goodsReceiptHeaderDtoBuilder.goodsReceiptLines.isNotEmpty ? _fetchPurchLineList : null,
             style: ElevatedButton.styleFrom(
               minimumSize: const Size.fromHeight(50),
             ),
@@ -457,4 +456,6 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
   TextStyle _purchLineFieldValueStyle() => const TextStyle(fontSize: 16, color: Colors.black);
 
   TextStyle _purchLineFieldNameStyle() => const TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.black);
+
+  SizedBox _sizedBoxLines() => const SizedBox(height: 10);
 }

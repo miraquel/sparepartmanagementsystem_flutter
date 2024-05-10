@@ -1,88 +1,115 @@
 class ApiPath {
   // GMKSMSServiceGroup
-  static const String getInventTablePagedList = '/api/GMKSMSServiceGroup/GetInventTablePagedList';
-  static const String getPurchTablePagedList = '/api/GMKSMSServiceGroup/GetPurchTablePagedList';
-  static const String getPurchLineList = '/api/GMKSMSServiceGroup/GetPurchLineList';
-  static const String getWMSLocationPagedList = '/api/GMKSMSServiceGroup/GetWMSLocationPagedList';
-  static const String getImageFromNetworkUri = '/api/GMKSMSServiceGroup/GetImageFromNetworkUri';
-  static const String getImageWithResolutionFromNetworkUri = '/api/GMKSMSServiceGroup/GetImageWithResolutionFromNetworkUri';
-  static const String getPurchTable = '/api/GMKSMSServiceGroup/GetPurchTable';
-  static const String getInventSumList = '/api/GMKSMSServiceGroup/GetInventSumList';
-  static const String getWorkOrderPagedList = '/api/GMKSMSServiceGroup/GetWorkOrderPagedList';
+  static const String getInventTablePagedList = '/api/v1/GMKSMSServiceGroup/GetInventTablePagedList';
+  static const String getRawInventTablePagedList = '/api/v1/GMKSMSServiceGroup/GetRawInventTablePagedList';
+  static const String getPurchTablePagedList = '/api/v1/GMKSMSServiceGroup/GetPurchTablePagedList';
+  static const String getPurchLineList = '/api/v1/GMKSMSServiceGroup/GetPurchLineList';
+  static const String getWMSLocationPagedList = '/api/v1/GMKSMSServiceGroup/GetWMSLocationPagedList';
+  static const String getWMSLocation = '/api/v1/GMKSMSServiceGroup/GetWMSLocation';
+  static const String getImageFromNetworkUri = '/api/v1/GMKSMSServiceGroup/GetImageFromNetworkUri';
+  static const String getImageWithResolutionFromNetworkUri = '/api/v1/GMKSMSServiceGroup/GetImageWithResolutionFromNetworkUri';
+  static const String getPurchTable = '/api/v1/GMKSMSServiceGroup/GetPurchTable';
+  static const String getInventSumList = '/api/v1/GMKSMSServiceGroup/GetInventSumList';
+  static const String getWorkOrderPagedList = '/api/v1/GMKSMSServiceGroup/GetWorkOrderPagedList';
+  static const String getWorkOrderLineList = '/api/v1/GMKSMSServiceGroup/GetWorkOrderLineList';
+  static const String getInventLocationList = '/api/v1/GMKSMSServiceGroup/GetInventLocationList';
 
   // GoodsReceipt
-  static const String addGoodsReceipt = '/api/GoodsReceiptService';
-  static const String deleteGoodsReceipt = '/api/GoodsReceiptService';
-  static const String getGoodsReceipt = '/api/GoodsReceiptService';
-  static const String getGoodsReceiptById = '/api/GoodsReceiptService';
-  static const String updateGoodsReceipt = '/api/GoodsReceiptService';
-  static const String getGoodsReceiptPagedList = '/api/GoodsReceiptService/GetAllPagedList';
-  static const String getGoodsReceiptByParams = '/api/GoodsReceiptService/GetByParams';
-  static const String getGoodsReceiptByParamsPagedList = '/api/GoodsReceiptService/GetByParamsPagedList';
-  static const String addGoodsReceiptWithLines = '/api/GoodsReceiptService/AddWithLines';
-  static const String updateGoodsReceiptWithLines = '/api/GoodsReceiptService/UpdateWithLines';
-  static const String getGoodsReceiptByIdWithLines = '/api/GoodsReceiptService/GetByIdWithLines';
-  static const String postToAX = '/api/GoodsReceiptService/PostToAX';
+  static const String addGoodsReceiptHeader = '/api/v1/GoodsReceiptService/AddGoodsReceiptHeader';
+  static const String deleteGoodsReceiptHeader = '/api/v1/GoodsReceiptService/DeleteGoodsReceiptHeader';
+  static const String getAllGoodsReceiptHeader = '/api/v1/GoodsReceiptService/GetAllGoodsReceiptHeader';
+  static const String getGoodsReceiptById = '/api/v1/GoodsReceiptService/GetGoodsReceiptHeaderById';
+  static const String updateGoodsReceipt = '/api/v1/GoodsReceiptService/UpdateGoodsReceiptHeader';
+  static const String getAllGoodsReceiptHeaderPagedList = '/api/v1/GoodsReceiptService/GetAllGoodsReceiptHeaderPagedList';
+  static const String getGoodsReceiptHeaderByParams = '/api/v1/GoodsReceiptService/GetGoodsReceiptHeaderByParams';
+  static const String getGoodsReceiptHeaderByParamsPagedList = '/api/v1/GoodsReceiptService/GetGoodsReceiptHeaderByParamsPagedList';
+  static const String addGoodsReceiptHeaderWithLines = '/api/v1/GoodsReceiptService/AddGoodsReceiptHeaderWithLines';
+  static const String updateGoodsReceiptHeaderWithLines = '/api/v1/GoodsReceiptService/UpdateGoodsReceiptHeaderWithLines';
+  static const String getGoodsReceiptHeaderByIdWithLines = '/api/v1/GoodsReceiptService/GetGoodsReceiptHeaderByIdWithLines';
+  static const String postToAX = '/api/v1/GoodsReceiptService/PostToAX';
 
-  // WorkOrder
-  static const String addWorkOrderHeader = '/api/WorkOrderService/AddWorkOrderHeader';
-  static const String updateWorkOrderHeader = '/api/WorkOrderService/UpdateWorkOrderHeader';
-  static const String deleteWorkOrderHeader = '/api/WorkOrderService/DeleteWorkOrderHeader';
-  static const String getWorkOrderHeaderById = '/api/WorkOrderService/GetWorkOrderHeaderById';
-  static const String getAllWorkOrderHeaderPagedList = '/api/WorkOrderService/GetAllWorkOrderHeaderPagedList';
-  static const String getWorkOrderHeaderByParamsPagedList = '/api/WorkOrderService/GetWorkOrderHeaderByParamsPagedList';
-  static const String addWorkOrderLine = '/api/WorkOrderService/AddWorkOrderLine';
-  static const String updateWorkOrderLine = '/api/WorkOrderService/UpdateWorkOrderLine';
-  static const String deleteWorkOrderLine = '/api/WorkOrderService/DeleteWorkOrderLine';
-  static const String getWorkOrderLineById = '/api/WorkOrderService/GetWorkOrderLineById';
-  static const String getWorkOrderLineByWorkOrderHeaderId = '/api/WorkOrderService/GetWorkOrderLineByWorkOrderHeaderId';
+  // WorkOrderHeader
+  static const String addWorkOrderHeader = '/api/v1/WorkOrderService/AddWorkOrderHeader';
+  static const String addWorkOrderHeaderWithLines = '/api/v1/WorkOrderService/AddWorkOrderHeaderWithLines';
+  static const String updateWorkOrderHeader = '/api/v1/WorkOrderService/UpdateWorkOrderHeader';
+  static const String deleteWorkOrderHeader = '/api/v1/WorkOrderService/DeleteWorkOrderHeader';
+  static const String getWorkOrderHeaderById = '/api/v1/WorkOrderService/GetWorkOrderHeaderById';
+  static const String getAllWorkOrderHeaderPagedList = '/api/v1/WorkOrderService/GetAllWorkOrderHeaderPagedList';
+  static const String getWorkOrderHeaderByParamsPagedList = '/api/v1/WorkOrderService/GetWorkOrderHeaderByParamsPagedList';
+  // WorkOrderLine
+  static const String addWorkOrderLine = '/api/v1/WorkOrderService/AddWorkOrderLine';
+  static const String updateWorkOrderLine = '/api/v1/WorkOrderService/UpdateWorkOrderLine';
+  static const String deleteWorkOrderLine = '/api/v1/WorkOrderService/DeleteWorkOrderLine';
+  static const String getWorkOrderLineById = '/api/v1/WorkOrderService/GetWorkOrderLineById';
+  static const String getWorkOrderLineByWorkOrderHeaderId = '/api/v1/WorkOrderService/GetWorkOrderLineByWorkOrderHeaderId';
+  // ItemRequisition
+  static const String addItemRequisition = '/api/v1/WorkOrderService/AddItemRequisition';
+  static const String updateItemRequisition = '/api/v1/WorkOrderService/UpdateItemRequisition';
+  static const String deleteItemRequisition = '/api/v1/WorkOrderService/DeleteItemRequisition';
+  static const String getItemRequisitionById = '/api/v1/WorkOrderService/GetItemRequisitionById';
+  static const String getItemRequisitionByParams = '/api/v1/WorkOrderService/GetItemRequisitionByParams';
+  static const String getItemRequisitionByWorkOrderLineId = '/api/v1/WorkOrderService/GetItemRequisitionByWorkOrderLineId';
 
   // NumberSequence
-  static const String addNumberSequence = '/api/NumberSequenceService';
-  static const String deleteNumberSequence = '/api/NumberSequenceService';
-  static const String fetchNumberSequence = '/api/NumberSequenceService';
-  static const String fetchNumberSequenceById = '/api/NumberSequenceService';
-  static const String updateNumberSequence = '/api/NumberSequenceService';
+  static const String addNumberSequence = '/api/v1/NumberSequenceService/AddNumberSequence';
+  static const String deleteNumberSequence = '/api/v1/NumberSequenceService/DeleteNumberSequence';
+  static const String getAllNumberSequence = '/api/v1/NumberSequenceService/GetAllNumberSequence';
+  static const String getNumberSequenceById = '/api/v1/NumberSequenceService/GetNumberSequenceById';
+  static const String getNumberSequenceByParams = '/api/v1/NumberSequenceService/GetNumberSequenceByParams';
+  static const String updateNumberSequence = '/api/v1/NumberSequenceService/UpdateNumberSequence';
 
   // Permission
-  static const String addPermission = '/api/PermissionService';
-  static const String deletePermission = '/api/PermissionService';
-  static const String fetchAllModule = '/api/PermissionService/GetAllModules';
-  static const String fetchAllPermissionType = '/api/PermissionService/GetAllPermissionTypes';
-  static const String fetchPermission = '/api/PermissionService';
-  static const String fetchPermissionByRoleId = '/api/PermissionService/GetByRoleId';
+  static const String addPermission = '/api/v1/PermissionService/AddPermission';
+  static const String deletePermission = '/api/v1/PermissionService/DeletePermission';
+  static const String getAllModules = '/api/v1/PermissionService/GetAllModules';
+  static const String getAllPermissionType = '/api/v1/PermissionService/GetAllPermissionTypes';
+  static const String getAllPermission = '/api/v1/PermissionService/GetAllPermission';
+  static const String getPermissionByRoleId = '/api/v1/PermissionService/GetPermissionByRoleId';
+  static const String getPermissionByParams = '/api/v1/PermissionService/GetPermissionByParams';
 
   // Role
-  static const String addRole = '/api/RoleService';
-  static const String addUserToRole = '/api/RoleService/AddUser';
-  static const String deleteRole = '/api/RoleService';
-  static const String deleteUserFromRole = '/api/RoleService/DeleteUser';
-  static const String fetchByIdWithUsers = '/api/RoleService/GetByIdWithUsers';
-  static const String fetchRole = '/api/RoleService';
+  static const String addRole = '/api/v1/RoleService/AddRole';
+  static const String addUserToRole = '/api/v1/RoleService/AddUserToRole';
+  static const String deleteRole = '/api/v1/RoleService/DeleteRole';
+  static const String deleteUserFromRole = '/api/v1/RoleService/DeleteUserFromRole';
+  static const String getRoleByIdWithUsers = '/api/v1/RoleService/GetRoleByIdWithUsers';
+  static const String getAllRole = '/api/v1/RoleService/GetAllRole';
 
   // User
-  static const String loginWithActiveDirectory = '/api/UserService/LoginWithActiveDirectory';
-  static const String getUserByIdWithRoles = '/api/UserService/GetByIdWithRoles';
-  static const String getUserByUsernameWithRoles = '/api/UserService/GetByUsernameWithRoles';
-  static const String getUser = '/api/UserService';
-  static const String getUserById = '/api/UserService';
-  static const String deleteUser = '/api/UserService';
-  static const String addUser = '/api/UserService';
-  static const String addRoleToUser = '/api/UserService/AddRole';
-  static const String deleteRoleFromUser = '/api/UserService/DeleteRole';
-  static const String getUsersFromActiveDirectory = '/api/UserService/GetUsersFromActiveDirectory';
-  static const String updateUser = '/api/UserService';
-  static const String refreshToken = '/api/UserService/RefreshToken';
-  static const String revokeToken = '/api/UserService/RevokeToken';
-  static const String revokeAllTokens = '/api/UserService/RevokeAllTokens';
+  static const String loginWithActiveDirectory = '/api/v1/UserService/LoginWithActiveDirectory';
+  static const String getUserByIdWithRoles = '/api/v1/UserService/GetUserByIdWithRoles';
+  static const String getUserByUsernameWithRoles = '/api/v1/UserService/GetUserByUsernameWithRoles';
+  static const String getAllUser = '/api/v1/UserService/getAllUser';
+  static const String getUserByParams = '/api/v1/UserService/GetUserByParams';
+  static const String getUserById = '/api/v1/UserService/GetUserById';
+  static const String deleteUser = '/api/v1/UserService/DeleteUser';
+  static const String addUser = '/api/v1/UserService/AddUser';
+  static const String addRoleToUser = '/api/v1/UserService/AddRoleToUser';
+  static const String deleteRoleFromUser = '/api/v1/UserService/DeleteRoleFromUser';
+  static const String getUsersFromActiveDirectory = '/api/v1/UserService/GetUsersFromActiveDirectory';
+  static const String updateUser = '/api/v1/UserService/UpdateUser';
+  static const String refreshToken = '/api/v1/UserService/RefreshToken';
+  static const String revokeToken = '/api/v1/UserService/RevokeToken';
+  static const String revokeAllTokens = '/api/v1/UserService/RevokeAllTokens';
+  static const String getUserByIdWithUserWarehouse = '/api/v1/UserService/GetUserByIdWithUserWarehouse';
+
+  // User Warehouse
+  static const String addUserWarehouse = '/api/v1/UserWarehouseService/AddUserWarehouse';
+  static const String deleteUserWarehouse = '/api/v1/UserWarehouseService/DeleteUserWarehouse';
+  static const String updateUserWarehouse = '/api/v1/UserWarehouseService/UpdateUserWarehouse';
+  static const String getAllUserWarehouse = '/api/v1/UserWarehouseService/GetAllUserWarehouse';
+  static const String getUserWarehouseById = '/api/v1/UserWarehouseService/GetUserWarehouseById';
+  static const String getUserWarehouseByParams = '/api/v1/UserWarehouseService/GetUserWarehouseByParams';
+  static const String getUserWarehouseByUserId = '/api/v1/UserWarehouseService/GetUserWarehouseByUserId';
+  static const String getDefaultUserWarehouseByUserId = '/api/v1/UserWarehouseService/GetDefaultUserWarehouseByUserId';
 
   // Row Level Access
-  static const String addRowLevelAccess = '/api/RowLevelAccessService';
-  static const String deleteRowLevelAccess = '/api/RowLevelAccessService';
-  static const String getRowLevelAccess = '/api/RowLevelAccessService';
-  static const String getRowLevelAccessByParams = '/api/RowLevelAccessService/GetByParams';
-  static const String getRowLevelAccessById = '/api/RowLevelAccessService';
-  static const String updateRowLevelAccess = '/api/RowLevelAccessService';
-  static const String getRowLevelAccessByUserId = '/api/RowLevelAccessService/GetByUserId';
-  static const String bulkDeleteRowLevelAccess = '/api/RowLevelAccessService/BulkDelete';
+  static const String addRowLevelAccess = '/api/v1/RowLevelAccessService/AddRowLevelAccess';
+  static const String deleteRowLevelAccess = '/api/v1/RowLevelAccessService/DeleteRowLevelAccess';
+  static const String getAllRowLevelAccess = '/api/v1/RowLevelAccessService/GetAllRowLevelAccess';
+  static const String getRowLevelAccessByParams = '/api/v1/RowLevelAccessService/GetRowLevelAccessByParams';
+  static const String getRowLevelAccessById = '/api/v1/RowLevelAccessService/GetRowLevelAccessById';
+  static const String updateRowLevelAccess = '/api/v1/RowLevelAccessService/UpdateRowLevelAccess';
+  static const String getRowLevelAccessByUserId = '/api/v1/RowLevelAccessService/GetRowLevelAccessByUserId';
+  static const String bulkDeleteRowLevelAccess = '/api/v1/RowLevelAccessService/BulkDeleteRowLevelAccess';
 }

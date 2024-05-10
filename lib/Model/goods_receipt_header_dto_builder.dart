@@ -18,6 +18,10 @@ class GoodsReceiptHeaderDtoBuilder {
   bool? _isSubmitted;
   DateTime _submittedDate = DateTimeHelper.minDateTime;
   String _submittedBy = '';
+  String _createdBy = '';
+  DateTime _createdDateTime = DateTimeHelper.minDateTime;
+  String _modifiedBy = '';
+  DateTime _modifiedDateTime = DateTimeHelper.minDateTime;
   List<GoodsReceiptLineDtoBuilder> _goodsReceiptLines = <GoodsReceiptLineDtoBuilder>[];
 
   GoodsReceiptHeaderDtoBuilder();
@@ -34,6 +38,10 @@ class GoodsReceiptHeaderDtoBuilder {
   bool?                             get isSubmitted => _isSubmitted;
   DateTime                          get submittedDate => _submittedDate;
   String                            get submittedBy => _submittedBy;
+  String                            get createdBy => _createdBy;
+  DateTime                          get createdDateTime => _createdDateTime;
+  String                            get modifiedBy => _modifiedBy;
+  DateTime                          get modifiedDateTime => _modifiedDateTime;
   List<GoodsReceiptLineDtoBuilder>  get goodsReceiptLines => _goodsReceiptLines;
 
   factory GoodsReceiptHeaderDtoBuilder.fromDto(GoodsReceiptHeaderDto goodsReceiptHeaderDto) {
@@ -50,7 +58,40 @@ class GoodsReceiptHeaderDtoBuilder {
       .setIsSubmitted(goodsReceiptHeaderDto.isSubmitted)
       .setSubmittedDate(goodsReceiptHeaderDto.submittedDate)
       .setSubmittedBy(goodsReceiptHeaderDto.submittedBy)
+      .setCreatedBy(goodsReceiptHeaderDto.createdBy)
+      .setCreatedDateTime(goodsReceiptHeaderDto.createdDateTime)
+      .setModifiedBy(goodsReceiptHeaderDto.modifiedBy)
+      .setModifiedDateTime(goodsReceiptHeaderDto.modifiedDateTime)
       .setGoodsReceiptLines(goodsReceiptHeaderDto.goodsReceiptLines.map((e) => GoodsReceiptLineDtoBuilder.fromDto(e)).toList());
+  }
+
+  GoodsReceiptHeaderDtoBuilder setFromPurchTableDto(PurchTableDto purchTableDto) {
+    return this
+        .._purchId = purchTableDto.purchId
+        .._purchName = purchTableDto.purchName
+        .._orderAccount = purchTableDto.orderAccount
+        .._invoiceAccount = purchTableDto.invoiceAccount
+        .._purchStatus = purchTableDto.purchStatus;
+  }
+
+  bool isDefault() {
+    return _goodsReceiptHeaderId == 0 &&
+        _packingSlipId.isEmpty &&
+        _transDate == DateTimeHelper.minDateTime &&
+        _description.isEmpty &&
+        _purchId.isEmpty &&
+        _purchName.isEmpty &&
+        _orderAccount.isEmpty &&
+        _invoiceAccount.isEmpty &&
+        _purchStatus.isEmpty &&
+        _isSubmitted == null &&
+        _submittedDate == DateTimeHelper.minDateTime &&
+        _submittedBy.isEmpty &&
+        _createdBy.isEmpty &&
+        _createdDateTime == DateTimeHelper.minDateTime &&
+        _modifiedBy.isEmpty &&
+        _modifiedDateTime == DateTimeHelper.minDateTime &&
+        _goodsReceiptLines.isEmpty;
   }
 
   GoodsReceiptHeaderDtoBuilder addGoodsReceiptLine(PurchLineDto purchLineDto) {
@@ -120,6 +161,26 @@ class GoodsReceiptHeaderDtoBuilder {
     return this;
   }
 
+  GoodsReceiptHeaderDtoBuilder setCreatedBy(String createdBy) {
+    _createdBy = createdBy;
+    return this;
+  }
+
+  GoodsReceiptHeaderDtoBuilder setCreatedDateTime(DateTime createdDateTime) {
+    _createdDateTime = createdDateTime;
+    return this;
+  }
+
+  GoodsReceiptHeaderDtoBuilder setModifiedBy(String modifiedBy) {
+    _modifiedBy = modifiedBy;
+    return this;
+  }
+
+  GoodsReceiptHeaderDtoBuilder setModifiedDateTime(DateTime modifiedDateTime) {
+    _modifiedDateTime = modifiedDateTime;
+    return this;
+  }
+
   GoodsReceiptHeaderDtoBuilder setGoodsReceiptLines(List<GoodsReceiptLineDtoBuilder> goodsReceiptLines) {
     _goodsReceiptLines = goodsReceiptLines;
     return this;
@@ -184,6 +245,10 @@ class GoodsReceiptHeaderDtoBuilder {
       isSubmitted: _isSubmitted,
       submittedDate: _submittedDate,
       submittedBy: _submittedBy,
+      createdBy: _createdBy,
+      createdDateTime: _createdDateTime,
+      modifiedBy: _modifiedBy,
+      modifiedDateTime: _modifiedDateTime,
       goodsReceiptLines: goodsReceiptLines.map((e) => e.build()).toList(),
     );
   }
