@@ -1,9 +1,8 @@
-import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/purch_line_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/purch_table_dto.dart';
-
-import 'goods_receipt_header_dto.dart';
-import 'goods_receipt_line_dto_builder.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_line_dto_builder.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 
 class GoodsReceiptHeaderDtoBuilder {
   int _goodsReceiptHeaderId = 0;

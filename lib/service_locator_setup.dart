@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
+
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/number_sequence_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/permission_dal.dart';
@@ -10,19 +11,20 @@ import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/row_l
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_warehouse_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/work_order_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/work_order_direct_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/number_sequence_dal_implementation.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/row_level_access_dal_implementation.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/user_warehouse_dal_implementation.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/goods_receipt_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/gmk_sms_service_group_dal_implementation.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/goods_receipt_dal_implementation.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/permission_dal_implementation.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/role_dal_implementation.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/user_dal_implementation.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/work_order_dal_implementation.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/work_order_direct_dal_implementation.dart';
+import 'package:sparepartmanagementsystem_flutter/dio_logging_interceptor.dart';
 import 'package:sparepartmanagementsystem_flutter/route_observer_extension.dart';
-
-import 'DataAccessLayer/Abstract/goods_receipt_dal.dart';
-import 'DataAccessLayer/Implementation/gmk_sms_service_group_dal_implementation.dart';
-import 'DataAccessLayer/Implementation/goods_receipt_dal_implementation.dart';
-import 'DataAccessLayer/Implementation/permission_dal_implementation.dart';
-import 'DataAccessLayer/Implementation/role_dal_implementation.dart';
-import 'DataAccessLayer/Implementation/user_dal_implementation.dart';
-import 'DataAccessLayer/Implementation/work_order_dal_implementation.dart';
-import 'dio_logging_interceptor.dart';
 
 GetIt locator = GetIt.instance;
 final routeObserver = RouteObserverExtension();
@@ -57,5 +59,6 @@ void serviceLocatorSetup() {
   locator.registerFactory<GoodsReceiptDAL>(() => GoodsReceiptDALImplementation());
   locator.registerFactory<RowLevelAccessDAL>(() => RowLevelAccessDALImplementation());
   locator.registerFactory<WorkOrderDAL>(() => WorkOrderDALImplementation());
+  locator.registerFactory<WorkOrderDirectDAL>(() => WorkOrderDirectDALImplementation());
   locator.registerFactory<UserWarehouseDAL>(() => UserWarehouseDALImplementation());
 }

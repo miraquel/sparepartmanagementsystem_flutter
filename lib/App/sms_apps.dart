@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+
 import 'package:sparepartmanagementsystem_flutter/App/goods_receipt_line_add.dart';
 import 'package:sparepartmanagementsystem_flutter/App/home.dart';
 import 'package:sparepartmanagementsystem_flutter/App/invent_table_lookup.dart';
 import 'package:sparepartmanagementsystem_flutter/App/inventory_master_details.dart';
 import 'package:sparepartmanagementsystem_flutter/App/inventory_master_stock_list.dart';
+import 'package:sparepartmanagementsystem_flutter/App/item_requisition_direct_add_location.dart';
 import 'package:sparepartmanagementsystem_flutter/App/login.dart';
 import 'package:sparepartmanagementsystem_flutter/App/purch_table_lookup.dart';
 import 'package:sparepartmanagementsystem_flutter/App/role_create.dart';
@@ -20,22 +22,26 @@ import 'package:sparepartmanagementsystem_flutter/App/user_warehouse_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/wms_location_lookup.dart';
 import 'package:sparepartmanagementsystem_flutter/App/work_order_add.dart';
 import 'package:sparepartmanagementsystem_flutter/App/work_order_details.dart';
+import 'package:sparepartmanagementsystem_flutter/App/work_order_direct_details.dart';
+import 'package:sparepartmanagementsystem_flutter/App/work_order_direct_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/work_order_line_add.dart';
 import 'package:sparepartmanagementsystem_flutter/App/work_order_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/work_order_ax_lookup.dart';
+import 'package:sparepartmanagementsystem_flutter/App/fullscreen_image_viewer.dart';
+import 'package:sparepartmanagementsystem_flutter/App/goods_receipt_add.dart';
+import 'package:sparepartmanagementsystem_flutter/App/goods_receipt_details.dart';
+import 'package:sparepartmanagementsystem_flutter/App/goods_receipt_list.dart';
+import 'package:sparepartmanagementsystem_flutter/App/inventory_master_list.dart';
+import 'package:sparepartmanagementsystem_flutter/App/item_requisition_add.dart';
+import 'package:sparepartmanagementsystem_flutter/App/item_requisition_direct_add.dart';
+import 'package:sparepartmanagementsystem_flutter/App/item_requisition_direct_list.dart';
+import 'package:sparepartmanagementsystem_flutter/App/item_requisition_list.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
-
-import '../Model/user_dto.dart';
-import 'fullscreen_image_viewer.dart';
-import 'goods_receipt_add.dart';
-import 'goods_receipt_details.dart';
-import 'goods_receipt_list.dart';
-import 'inventory_master_list.dart';
-import 'item_requisition_add.dart';
-import 'item_requisition_list.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/user_dto.dart';
 
 class SMSApps extends StatelessWidget {
   const SMSApps({super.key});
@@ -68,6 +74,7 @@ class SMSApps extends StatelessWidget {
         '/rowLevelAccessList': (context) => const RowLeveAccessList(),
         '/rowLevelAccessAdd': (context) => const RowLevelAccessAdd(),
         '/workOrderList': (context) => const WorkOrderList(),
+        '/workOrderDirectList': (context) => const WorkOrderDirectList(),
         '/workOrderAdd': (context) => const WorkOrderAdd(),
         '/workOrderLookup': (context) => const WorkOrderAxLookup(),
         '/workOrderLineAdd': (context) => const WorkOrderLineAdd(),
@@ -158,6 +165,17 @@ class SMSApps extends StatelessWidget {
             },
           );
         }
+        if (settings.name == '/workOrderDirectDetails')
+        {
+          final args = settings.arguments as WorkOrderHeaderDto;
+          return MaterialPageRoute(
+            builder: (context) {
+              return WorkOrderDirectDetails(
+                workOrderHeaderDto: args,
+              );
+            },
+          );
+        }
         if (settings.name == '/itemRequisitionList')
         {
           final args = settings.arguments as int;
@@ -165,6 +183,17 @@ class SMSApps extends StatelessWidget {
             builder: (context) {
               return ItemRequisitionList(
                 workOrderLineId: args,
+              );
+            },
+          );
+        }
+        if (settings.name == '/itemRequisitionDirectList')
+        {
+          final args = settings.arguments as WorkOrderLineDto;
+          return MaterialPageRoute(
+            builder: (context) {
+              return ItemRequisitionDirectList(
+                workOrderLineDto: args,
               );
             },
           );
@@ -180,17 +209,28 @@ class SMSApps extends StatelessWidget {
             },
           );
         }
-        // if (settings.name == '/userWarehouseAdd')
-        // {
-        //   final args = settings.arguments as int;
-        //   return MaterialPageRoute(
-        //     builder: (context) {
-        //       return UserWarehouseAdd(
-        //         userId: args,
-        //       );
-        //     },
-        //   );
-        // }
+        if (settings.name == '/itemRequisitionDirectAdd')
+        {
+          final args = settings.arguments as WorkOrderLineDto;
+          return MaterialPageRoute(
+            builder: (context) {
+              return ItemRequisitionDirectAdd(
+                workOrderLineDto: args,
+              );
+            },
+          );
+        }
+        if (settings.name == '/itemRequisitionDirectAddLocation')
+        {
+          final args = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) {
+              return ItemRequisitionDirectAddLocation(
+                itemId: args,
+              );
+            },
+          );
+        }
         return null;
       }
     );

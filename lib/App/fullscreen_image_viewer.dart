@@ -2,8 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
-import '../DataAccessLayer/api_path.dart';
-import '../environment.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
+import 'package:sparepartmanagementsystem_flutter/environment.dart';
 
 class FullscreenImageViewer extends StatefulWidget {
   final String imageNetworkPath;

@@ -1,16 +1,17 @@
+
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
-
-import '../DataAccessLayer/Abstract/user_dal.dart';
-import '../DataAccessLayer/Abstract/user_warehouse_dal.dart';
-import '../Model/invent_location_dto.dart';
-import '../Model/user_dto.dart';
-import '../Model/user_dto_builder.dart';
-import '../Model/user_warehouse_dto.dart';
-import '../Model/user_warehouse_dto_builder.dart';
-import '../service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_warehouse_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/invent_location_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/user_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/user_dto_builder.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/user_warehouse_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/user_warehouse_dto_builder.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class UserEdit extends StatefulWidget {
   final int userId;
@@ -28,7 +29,6 @@ class _UserEditState extends State<UserEdit> with SingleTickerProviderStateMixin
   final _userDtoBuilder = UserDtoBuilder();
   late final TabController _tabController = TabController(length: 2, vsync: this);
   late ScaffoldMessengerState _scaffoldMessengerState;
-  late NavigatorState _navigatorState;
   var _isLoading = false;
   var _originalUserDto = UserDto();
 
@@ -37,7 +37,6 @@ class _UserEditState extends State<UserEdit> with SingleTickerProviderStateMixin
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scaffoldMessengerState = ScaffoldMessenger.of(context);
-      _navigatorState = Navigator.of(context);
     });
     _getData();
   }
@@ -243,7 +242,7 @@ class _UserEditState extends State<UserEdit> with SingleTickerProviderStateMixin
                   onTap: () {
                     showDialogAddUserWarehouse(context, userWarehouseDto: userWarehouseDtoBuilder.build());
                   },
-                  title: Text(userWarehouseDtoBuilder.inventLocationId),
+                  title: Text("${userWarehouseDtoBuilder.inventSiteId} - ${userWarehouseDtoBuilder.inventLocationId}"),
                   subtitle: Text(userWarehouseDtoBuilder.name),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
@@ -356,6 +355,7 @@ class _UserEditState extends State<UserEdit> with SingleTickerProviderStateMixin
                           if (value != null) {
                             setDialogState(() {
                               userWarehouseDtoBuilder.setInventLocationId(value.inventLocationId);
+                              userWarehouseDtoBuilder.setInventSiteId(value.inventSiteId);
                               userWarehouseDtoBuilder.setName(value.name);
                             });
                           }

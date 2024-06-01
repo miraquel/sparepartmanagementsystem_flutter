@@ -1,13 +1,12 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:sparepartmanagementsystem_flutter/Model/wms_location_dto.dart';
 
-import '../DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
-import '../Model/wms_location_search_dto.dart';
-import '../environment.dart';
-import '../service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/environment.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/wms_location_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/wms_location_search_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
 
 class WMSLocationLookup extends StatefulWidget {
   const WMSLocationLookup({super.key});

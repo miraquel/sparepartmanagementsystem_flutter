@@ -1,14 +1,10 @@
-import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
+
 import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/wms_location_dto.dart';
-
-import '../DataAccessLayer/Abstract/work_order_dal.dart';
-import '../Model/invent_table_dto.dart';
-import '../Model/item_requisition_dto_builder.dart';
-import '../service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/item_requisition_dto_builder.dart';
 
 class ItemRequisitionAdd extends StatefulWidget {
   const ItemRequisitionAdd({super.key});
@@ -18,13 +14,10 @@ class ItemRequisitionAdd extends StatefulWidget {
 }
 
 class _ItemRequisitionAddState extends State<ItemRequisitionAdd> {
-  final _workOrderDAL = locator<WorkOrderDAL>();
-  final _gmkSMSServiceGroupDAL = locator<GMKSMSServiceGroupDAL>();
   final _itemRequisitionDtoBuilder = ItemRequisitionDtoBuilder();
   final _formKey = GlobalKey<FormState>();
   late ScaffoldMessengerState _scaffoldMessenger;
   late NavigatorState _navigator;
-  var _isLoading = false;
 
   @override
   void initState() {
@@ -37,7 +30,6 @@ class _ItemRequisitionAddState extends State<ItemRequisitionAdd> {
 
   Future<void> _saveItemRequisition() async {
     try {
-      setState(() => _isLoading = true);
       // save the item requisition
       _scaffoldMessenger.showSnackBar(
         const SnackBar(
@@ -54,7 +46,6 @@ class _ItemRequisitionAddState extends State<ItemRequisitionAdd> {
       );
     }
     finally {
-      setState(() => _isLoading = false);
     }
   }
 
@@ -122,8 +113,8 @@ class _ItemRequisitionAddState extends State<ItemRequisitionAdd> {
                           return null;
                         },
                         onSaved: (value) {
-                          if (value != null) {
-                            _itemRequisitionDtoBuilder.setQuantity(Decimal.parse(value));
+                          if (value != null && value is double) {
+                            _itemRequisitionDtoBuilder.setQuantity(value as double);
                           }
                         },
                         keyboardType: TextInputType.number,
@@ -139,8 +130,8 @@ class _ItemRequisitionAddState extends State<ItemRequisitionAdd> {
                           return null;
                         },
                         onSaved: (value) {
-                          if (value != null) {
-                            _itemRequisitionDtoBuilder.setRequestQuantity(Decimal.parse(value));
+                          if (value != null && value is double) {
+                            _itemRequisitionDtoBuilder.setRequestQuantity(value as double);
                           }
                         },
                         keyboardType: TextInputType.number,

@@ -1,11 +1,10 @@
 import 'package:dio/dio.dart';
+
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_warehouse_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
-
 import 'package:sparepartmanagementsystem_flutter/Model/user_warehouse_dto.dart';
-
-import '../../service_locator_setup.dart';
-import '../Abstract/user_warehouse_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class UserWarehouseDALImplementation extends UserWarehouseDAL {
   final Dio _dio = locator<Dio>();

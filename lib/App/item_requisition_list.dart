@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../DataAccessLayer/Abstract/work_order_dal.dart';
-import '../Model/item_requisition_dto.dart';
-import '../service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/work_order_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/item_requisition_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class ItemRequisitionList extends StatefulWidget {
   final int workOrderLineId;
@@ -15,14 +15,12 @@ class ItemRequisitionList extends StatefulWidget {
 class _ItemRequisitionListState extends State<ItemRequisitionList> {
   final _workOrderDAL = locator<WorkOrderDAL>();
   final _itemRequisitionList = <ItemRequisitionDto>[];
-  late ScaffoldMessengerState _scaffoldMessenger;
   late NavigatorState _navigator;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scaffoldMessenger = ScaffoldMessenger.of(context);
       _navigator = Navigator.of(context);
     });
     _loadItemRequisitionList();

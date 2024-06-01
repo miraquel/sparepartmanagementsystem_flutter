@@ -1,11 +1,11 @@
 import 'package:sparepartmanagementsystem_flutter/Model/user_warehouse_dto.dart';
-
-import '../Helper/date_time_helper.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 
 class UserWarehouseDtoBuilder {
   int _userWarehouseId = 0;
   int _userId = 0;
   String _inventLocationId = '';
+  String _inventSiteId = '';
   String _name = '';
   bool? _isDefault;
   String _createdBy = '';
@@ -18,6 +18,7 @@ class UserWarehouseDtoBuilder {
   int get userWarehouseId => _userWarehouseId;
   int get userId => _userId;
   String get inventLocationId => _inventLocationId;
+  String get inventSiteId => _inventSiteId;
   String get name => _name;
   bool? get isDefault => _isDefault;
   String get createdBy => _createdBy;
@@ -30,6 +31,7 @@ class UserWarehouseDtoBuilder {
       userWarehouseId: _userWarehouseId,
       userId: _userId,
       inventLocationId: _inventLocationId,
+      inventSiteId: _inventSiteId,
       name: _name,
       isDefault: _isDefault,
       createdBy: _createdBy,
@@ -44,6 +46,7 @@ class UserWarehouseDtoBuilder {
       .._userWarehouseId = userWarehouseDto.userWarehouseId
       .._userId = userWarehouseDto.userId
       .._inventLocationId = userWarehouseDto.inventLocationId
+      .._inventSiteId = userWarehouseDto.inventSiteId
       .._name = userWarehouseDto.name
       .._isDefault = userWarehouseDto.isDefault
       .._createdBy = userWarehouseDto.createdBy
@@ -56,6 +59,7 @@ class UserWarehouseDtoBuilder {
     _userWarehouseId = userWarehouseDto.userWarehouseId;
     _userId = userWarehouseDto.userId;
     _inventLocationId = userWarehouseDto.inventLocationId;
+    _inventSiteId = userWarehouseDto.inventSiteId;
     _name = userWarehouseDto.name;
     _isDefault = userWarehouseDto.isDefault;
     _createdBy = userWarehouseDto.createdBy;
@@ -77,6 +81,11 @@ class UserWarehouseDtoBuilder {
 
   UserWarehouseDtoBuilder setInventLocationId(String inventLocationId) {
     _inventLocationId = inventLocationId;
+    return this;
+  }
+
+  UserWarehouseDtoBuilder setInventSiteId(String inventSiteId) {
+    _inventSiteId = inventSiteId;
     return this;
   }
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../DataAccessLayer/Abstract/user_dal.dart';
-import '../Model/user_dto.dart';
-import '../service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/user_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class UserList extends StatefulWidget {
   const UserList({super.key});

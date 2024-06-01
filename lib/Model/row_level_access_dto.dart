@@ -1,26 +1,28 @@
 import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
-import 'package:sparepartmanagementsystem_flutter/Model/base_model_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/constants/ax_table.dart';
 
-import 'constants/ax_table.dart';
-
-class RowLevelAccessDto extends BaseModelDto {
+class RowLevelAccessDto {
   final int rowLevelAccessId;
   final int userId;
   final AxTable axTable;
   final String query;
+  final String createdBy;
+  final DateTime createdDateTime;
+  final String modifiedBy;
+  final DateTime modifiedDateTime;
 
   RowLevelAccessDto({
     this.rowLevelAccessId = 0,
     this.userId = 0,
     this.axTable = AxTable.none,
     this.query = '',
-    super.createdBy = '',
+    this.createdBy = '',
     DateTime? createdDateTime,
-    super.modifiedBy = '',
+    this.modifiedBy = '',
     DateTime? modifiedDateTime
-  }) : super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
+  }) :  createdDateTime = createdDateTime ?? DateTimeHelper.minDateTime,
+        modifiedDateTime = modifiedDateTime ?? DateTimeHelper.minDateTime;
 
-  @override
   Map<String, dynamic> toJson() {
     return {
       if (rowLevelAccessId > 0) 'RowLevelAccessId': rowLevelAccessId,

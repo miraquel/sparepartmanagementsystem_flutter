@@ -1,24 +1,27 @@
 import 'package:sparepartmanagementsystem_flutter/Model/user_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 
-import '../Helper/date_time_helper.dart';
-import 'base_model_dto.dart';
-
-class RoleDto extends BaseModelDto {
+class RoleDto {
   final int roleId;
   final String roleName;
   final String description;
+  final String createdBy;
+  final DateTime createdDateTime;
+  final String modifiedBy;
+  final DateTime modifiedDateTime;
   final List<UserDto> users;
 
   RoleDto({
-    super.createdBy = '',
+    this.createdBy = '',
     DateTime? createdDateTime,
-    super.modifiedBy = '',
+    this.modifiedBy = '',
     DateTime? modifiedDateTime,
     this.roleId = 0,
     this.roleName = '',
     this.description = '',
     this.users = const <UserDto>[]
-  }) : super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
+  }) :  createdDateTime = createdDateTime ?? DateTimeHelper.minDateTime,
+        modifiedDateTime = modifiedDateTime ?? DateTimeHelper.minDateTime;
 
   factory RoleDto.fromJson(Map<String, dynamic> json) => RoleDto(
       roleId: json['roleId'] as int? ?? 0,
@@ -31,7 +34,6 @@ class RoleDto extends BaseModelDto {
       users: json['users'] != null ? json['users'].map<UserDto>((e) => UserDto.fromJson(e as Map<String, dynamic>)).toList() : <UserDto>[]
   );
 
-  @override
   Map<String, dynamic> toJson() => {
     if (roleId > 0) 'roleId': roleId,
     if (roleName.isNotEmpty) 'roleName': roleName,

@@ -1,15 +1,14 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
+
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 import 'package:sparepartmanagementsystem_flutter/App/reconnect.dart';
-
-import '../DataAccessLayer/Abstract/user_dal.dart';
-import '../Helper/token_helper.dart';
-import '../service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/token_helper.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});

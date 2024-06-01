@@ -1,10 +1,8 @@
 import 'package:sparepartmanagementsystem_flutter/Model/role_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/user_warehouse_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 
-import '../Helper/date_time_helper.dart';
-import 'base_model_dto.dart';
-
-class UserDto extends BaseModelDto {
+class UserDto {
   final int userId;
   final String username;
   final String firstName;
@@ -12,6 +10,10 @@ class UserDto extends BaseModelDto {
   final String email;
   final bool? isAdministrator;
   final bool? isEnabled;
+  final String createdBy;
+  final DateTime createdDateTime;
+  final String modifiedBy;
+  final DateTime modifiedDateTime;
   final List<RoleDto> roles;
   final List<UserWarehouseDto> userWarehouses;
 
@@ -23,13 +25,14 @@ class UserDto extends BaseModelDto {
     this.email = '',
     this.isAdministrator,
     this.isEnabled,
-    super.createdBy = '',
+    this.createdBy = '',
     DateTime? createdDateTime,
-    super.modifiedBy = '',
+    this.modifiedBy = '',
     DateTime? modifiedDateTime,
     this.roles = const <RoleDto>[],
     this.userWarehouses = const <UserWarehouseDto>[]
-  }) : super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
+  }) :  createdDateTime = createdDateTime ?? DateTimeHelper.minDateTime,
+        modifiedDateTime = modifiedDateTime ?? DateTimeHelper.minDateTime;
 
   factory UserDto.fromJson(Map<String, dynamic> json) => UserDto(
     userId: json['userId'] as int? ?? 0,
@@ -47,7 +50,6 @@ class UserDto extends BaseModelDto {
     userWarehouses: json['userWarehouses'] != null ? json['userWarehouses'].map<UserWarehouseDto>((e) => UserWarehouseDto.fromJson(e)).toList() : <UserWarehouseDto>[]
   );
 
-  @override
   Map<String, dynamic> toJson() {
     return {
       if (userId > 0) 'userId': userId,

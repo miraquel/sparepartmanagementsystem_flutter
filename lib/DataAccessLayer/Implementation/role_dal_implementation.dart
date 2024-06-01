@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 
-import '../../Model/api_response_dto.dart';
-import '../../Model/role_dto.dart';
-import '../../service_locator_setup.dart';
-import '../Abstract/role_dal.dart';
-import '../api_path.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/role_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/role_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
 
 class RoleDALImplementation implements RoleDAL {
   final _dio = locator<Dio>();

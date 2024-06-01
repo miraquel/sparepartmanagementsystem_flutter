@@ -1,6 +1,5 @@
 import 'package:sparepartmanagementsystem_flutter/Model/row_level_access_dto.dart';
-
-import 'constants/ax_table.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/constants/ax_table.dart';
 
 class RowLevelAccessDtoBuilder {
   int _rowLevelAccessId = 0;

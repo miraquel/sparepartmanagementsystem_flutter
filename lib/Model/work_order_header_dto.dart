@@ -1,11 +1,8 @@
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/Constants/no_yes.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 
-import '../Helper/date_time_helper.dart';
-import 'base_model_dto.dart';
-
-import 'Constants/no_yes.dart';
-
-class WorkOrderHeaderDto extends BaseModelDto {
+class WorkOrderHeaderDto {
   final int workOrderHeaderId;
   final bool? isSubmitted;
   final DateTime submittedDate;
@@ -23,6 +20,11 @@ class WorkOrderHeaderDto extends BaseModelDto {
   final DateTime woCloseDate;
   final NoYes agseamSuspend;
   final String notes;
+  final String createdBy;
+  final DateTime createdDateTime;
+  final String modifiedBy;
+  final DateTime modifiedDateTime;
+  final int recId;
   final List<WorkOrderLineDto> workOrderLines;
 
   WorkOrderHeaderDto({
@@ -43,12 +45,19 @@ class WorkOrderHeaderDto extends BaseModelDto {
     DateTime? woCloseDate,
     this.agseamSuspend = NoYes.none,
     this.notes = '',
-    super.createdBy = '',
+    this.createdBy = '',
     DateTime? createdDateTime,
-    super.modifiedBy = '',
+    this.modifiedBy = '',
     DateTime? modifiedDateTime,
+    this.recId = 0,
     List<WorkOrderLineDto>? workOrderLines
-  }) : submittedDate = submittedDate ?? DateTimeHelper.minDateTime, agseamPlanningStartDate = agseamPlanningStartDate ?? DateTimeHelper.minDateTime, agseamPlanningEndDate = agseamPlanningEndDate ?? DateTimeHelper.minDateTime, woCloseDate = woCloseDate ?? DateTimeHelper.minDateTime, workOrderLines = workOrderLines ?? <WorkOrderLineDto>[], super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
+  }) :  submittedDate = submittedDate ?? DateTimeHelper.minDateTime,
+        agseamPlanningStartDate = agseamPlanningStartDate ?? DateTimeHelper.minDateTime,
+        agseamPlanningEndDate = agseamPlanningEndDate ?? DateTimeHelper.minDateTime,
+        woCloseDate = woCloseDate ?? DateTimeHelper.minDateTime,
+        workOrderLines = workOrderLines ?? <WorkOrderLineDto>[],
+        createdDateTime = createdDateTime ?? DateTimeHelper.minDateTime,
+        modifiedDateTime = modifiedDateTime ?? DateTimeHelper.minDateTime;
 
   factory WorkOrderHeaderDto.fromJson(Map<String, dynamic> json) => WorkOrderHeaderDto(
     workOrderHeaderId: json['workOrderHeaderId'] as int? ?? 0,
@@ -73,9 +82,9 @@ class WorkOrderHeaderDto extends BaseModelDto {
     createdDateTime: DateTime.tryParse(json['createdDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
     modifiedBy: json['modifiedBy'] as String? ?? '',
     modifiedDateTime: DateTime.tryParse(json['modifiedDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
+    recId: json['recId'] as int? ?? 0
   );
 
-  @override
   Map<String, dynamic> toJson() {
     return {
       if (workOrderHeaderId != 0) 'workOrderHeaderId': workOrderHeaderId,
@@ -100,6 +109,7 @@ class WorkOrderHeaderDto extends BaseModelDto {
       if (createdDateTime != DateTimeHelper.minDateTime) 'createdDateTime': createdDateTime.toIso8601String(),
       if (modifiedBy.isNotEmpty) 'modifiedBy': modifiedBy,
       if (modifiedDateTime != DateTimeHelper.minDateTime) 'modifiedDateTime': modifiedDateTime.toIso8601String(),
+      if (recId != 0) 'recId': recId
     };
   }
 }

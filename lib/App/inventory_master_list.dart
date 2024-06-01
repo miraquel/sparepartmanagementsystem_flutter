@@ -3,16 +3,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:logger/logger.dart';
+
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/environment.dart';
-
-import '../DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
-import '../Helper/scanner_helper.dart';
-import '../Model/invent_table_search_dto.dart';
-import '../Model/paged_list_dto.dart';
-import '../service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/invent_table_search_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/paged_list_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class InventoryMasterList extends StatefulWidget {
   const InventoryMasterList({super.key});
@@ -28,7 +27,6 @@ class _InventoryMasterListState extends State<InventoryMasterList> {
   final _itemIdSearchTextController = TextEditingController();
   final _productNameSearchTextController = TextEditingController();
   final _searchNameSearchTextController = TextEditingController();
-  late NavigatorState _navigator;
 
   final PagingController<int, InventTableDto> _pagingController = PagingController(firstPageKey: 1);
 
@@ -36,7 +34,6 @@ class _InventoryMasterListState extends State<InventoryMasterList> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _navigator = Navigator.of(context);
     });
     _pagingController.addPageRequestListener((pageKey) {
       _fetchPage(pageKey);
@@ -89,7 +86,6 @@ class _InventoryMasterListState extends State<InventoryMasterList> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          var asd = await scanQR();
         },
         child: const Icon(Icons.qr_code_scanner),
       ),

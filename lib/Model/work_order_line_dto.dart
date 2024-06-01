@@ -1,9 +1,7 @@
-import 'package:sparepartmanagementsystem_flutter/Model/base_model_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/Constants/no_yes.dart';
 
-import '../Helper/date_time_helper.dart';
-import 'Constants/no_yes.dart';
-
-class WorkOrderLineDto extends BaseModelDto {
+class WorkOrderLineDto {
   final int workOrderLineId;
   final int workOrderHeaderId;
   final int line;
@@ -19,6 +17,11 @@ class WorkOrderLineDto extends BaseModelDto {
   final String calendarId;
   final String workOrderStatus;
   final NoYes suspend;
+  final String createdBy;
+  final DateTime createdDateTime;
+  final String modifiedBy;
+  final DateTime modifiedDateTime;
+  final int recId;
 
   WorkOrderLineDto({
     this.workOrderLineId = 0,
@@ -36,11 +39,15 @@ class WorkOrderLineDto extends BaseModelDto {
     this.calendarId = '',
     this.workOrderStatus = '',
     this.suspend = NoYes.none,
-    super.createdBy = '',
+    this.createdBy = '',
     DateTime? createdDateTime,
-    super.modifiedBy = '',
+    this.modifiedBy = '',
     DateTime? modifiedDateTime,
-  }) : planningStartDate = planningStartDate ?? DateTimeHelper.minDateTime, planningEndDate = planningEndDate ?? DateTimeHelper.minDateTime, super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
+    this.recId = 0
+  }) :  planningStartDate = planningStartDate ?? DateTimeHelper.minDateTime,
+        planningEndDate = planningEndDate ?? DateTimeHelper.minDateTime,
+        createdDateTime = createdDateTime ?? DateTimeHelper.minDateTime,
+        modifiedDateTime = modifiedDateTime ?? DateTimeHelper.minDateTime;
 
   factory WorkOrderLineDto.fromJson(Map<String, dynamic> json) {
     return WorkOrderLineDto(
@@ -59,10 +66,14 @@ class WorkOrderLineDto extends BaseModelDto {
       calendarId: json['calendarId'] as String? ?? '',
       workOrderStatus: json['workOrderStatus'] as String? ?? '',
       suspend: NoYes.values[json['suspend'] as int? ?? 0],
+      createdBy: json['createdBy'] as String? ?? '',
+      createdDateTime: DateTime.tryParse(json['createdDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
+      modifiedBy: json['modifiedBy'] as String? ?? '',
+      modifiedDateTime: DateTime.tryParse(json['modifiedDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
+      recId: json['recId'] as int? ?? 0
     );
   }
 
-  @override
   Map<String, dynamic> toJson() {
     return {
       if (workOrderLineId != 0) 'workOrderLineId': workOrderLineId,
@@ -80,6 +91,11 @@ class WorkOrderLineDto extends BaseModelDto {
       if (calendarId.isNotEmpty) 'calendarId': calendarId,
       if (workOrderStatus.isNotEmpty) 'workOrderStatus': workOrderStatus,
       if (suspend != NoYes.none) 'suspend': suspend.index,
+      if (createdBy.isNotEmpty) 'createdBy': createdBy,
+      if (createdDateTime != DateTimeHelper.minDateTime) 'createdDateTime': createdDateTime.toIso8601String(),
+      if (modifiedBy.isNotEmpty) 'modifiedBy': modifiedBy,
+      if (modifiedDateTime != DateTimeHelper.minDateTime) 'modifiedDateTime': modifiedDateTime.toIso8601String(),
+      if (recId != 0) 'recId': recId
     };
   }
 

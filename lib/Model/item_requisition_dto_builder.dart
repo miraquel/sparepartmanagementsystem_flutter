@@ -1,7 +1,6 @@
-import 'package:decimal/decimal.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/item_requisition_dto.dart';
 
-import '../Helper/date_time_helper.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 
 class ItemRequisitionDtoBuilder {
   int _itemRequisitionId = 0;
@@ -9,8 +8,8 @@ class ItemRequisitionDtoBuilder {
   String _itemId = '';
   String _itemName = '';
   DateTime _requiredDate = DateTimeHelper.minDateTime;
-  Decimal _quantity = Decimal.zero;
-  Decimal _requestQuantity = Decimal.zero;
+  double _quantity = 0;
+  double _requestQuantity = 0;
   String _inventLocationId = '';
   String _wMSLocationId = '';
   bool _isSelected = false;
@@ -22,8 +21,8 @@ class ItemRequisitionDtoBuilder {
   String get itemId => _itemId;
   String get itemName => _itemName;
   DateTime get requiredDate => _requiredDate;
-  Decimal get quantity => _quantity;
-  Decimal get requestQuantity => _requestQuantity;
+  double get quantity => _quantity;
+  double get requestQuantity => _requestQuantity;
   String get inventLocationId => _inventLocationId;
   String get wMSLocationId => _wMSLocationId;
   bool get isSelected => _isSelected;
@@ -53,12 +52,12 @@ class ItemRequisitionDtoBuilder {
     return this;
   }
 
-  ItemRequisitionDtoBuilder setQuantity(Decimal quantity) {
+  ItemRequisitionDtoBuilder setQuantity(double quantity) {
     _quantity = quantity;
     return this;
   }
 
-  ItemRequisitionDtoBuilder setRequestQuantity(Decimal requestQuantity) {
+  ItemRequisitionDtoBuilder setRequestQuantity(double requestQuantity) {
     _requestQuantity = requestQuantity;
     return this;
   }

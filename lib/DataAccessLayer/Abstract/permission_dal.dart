@@ -1,5 +1,5 @@
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
-import '../../Model/permission_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/permission_dto.dart';
 
 abstract class PermissionDAL {
   Future<ApiResponseDto<List<PermissionDto>>> getAllPermission();

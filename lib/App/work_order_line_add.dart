@@ -9,7 +9,7 @@ class WorkOrderLineAdd extends StatefulWidget {
 }
 
 class _WorkOrderLineAddState extends State<WorkOrderLineAdd> {
-  var _isLoading = false;
+  final _isLoading = false;
   @override
   Widget build(BuildContext context) {
     return LoadingOverlay(

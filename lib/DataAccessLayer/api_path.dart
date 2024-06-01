@@ -50,6 +50,30 @@ class ApiPath {
   static const String getItemRequisitionByParams = '/api/v1/WorkOrderService/GetItemRequisitionByParams';
   static const String getItemRequisitionByWorkOrderLineId = '/api/v1/WorkOrderService/GetItemRequisitionByWorkOrderLineId';
 
+  // Work Order Direct
+  // GET: api/WorkOrderServiceDirect/GetWorkOrderHeader?agsEamWoId=string
+  static const String getWorkOrderHeaderDirect = '/api/v1/WorkOrderServiceDirect/GetWorkOrderHeader';
+  // GET: api/WorkOrderServiceDirect/GetWorkOrderHeaderPagedList?pageNumber=int&pageSize=int&dto=WorkOrderHeaderDto
+  static const String getWorkOrderHeaderPagedListDirect = '/api/v1/WorkOrderServiceDirect/GetWorkOrderHeaderPagedList';
+  // POST: api/WorkOrderServiceDirect/AddWorkOrderLine
+  static const String addWorkOrderLineDirect = '/api/v1/WorkOrderServiceDirect/AddWorkOrderLine';
+  // PUT: api/WorkOrderServiceDirect/UpdateWorkOrderLine
+  static const String updateWorkOrderLineDirect = '/api/v1/WorkOrderServiceDirect/UpdateWorkOrderLine';
+  // GET: api/WorkOrderServiceDirect/GetWorkOrderLine?agsEamWoId=string&line=int
+  static const String getWorkOrderLineDirect = '/api/v1/WorkOrderServiceDirect/GetWorkOrderLine';
+  // GET: api/WorkOrderServiceDirect/GetWorkOrderLineList?agsEamWoId=string
+  static const String getWorkOrderLineListDirect = '/api/v1/WorkOrderServiceDirect/GetWorkOrderLineList';
+  // POST: api/WorkOrderServiceDirect/AddItemRequisition
+  static const String addItemRequisitionDirect = '/api/v1/WorkOrderServiceDirect/AddItemRequisition';
+  // PUT: api/WorkOrderServiceDirect/UpdateItemRequisition
+  static const String updateItemRequisitionDirect = '/api/v1/WorkOrderServiceDirect/UpdateItemRequisition';
+  // DELETE: api/WorkOrderServiceDirect/DeleteItemRequisition
+  static const String deleteItemRequisitionDirect = '/api/v1/WorkOrderServiceDirect/DeleteItemRequisition';
+  // GET: api/WorkOrderServiceDirect/GetItemRequisition?agsEamWoId=string&line=int
+  static const String getItemRequisitionDirect = '/api/v1/WorkOrderServiceDirect/GetItemRequisition';
+  // GET: api/WorkOrderServiceDirect/GetItemRequisitionList?agsWORecId=int
+  static const String getItemRequisitionListDirect = '/api/v1/WorkOrderServiceDirect/GetItemRequisitionList';
+
   // NumberSequence
   static const String addNumberSequence = '/api/v1/NumberSequenceService/AddNumberSequence';
   static const String deleteNumberSequence = '/api/v1/NumberSequenceService/DeleteNumberSequence';

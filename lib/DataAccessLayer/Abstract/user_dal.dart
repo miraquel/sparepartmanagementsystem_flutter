@@ -1,9 +1,8 @@
 import 'package:sparepartmanagementsystem_flutter/Model/active_directory_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/token_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/user_dto.dart';
-
-import '../../Model/api_response_dto.dart';
-import '../../Model/refresh_token_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/refresh_token_dto.dart';
 
 abstract class UserDAL {
   Future<ApiResponseDto<TokenDto>> loginWithActiveDirectory(String username, String password);

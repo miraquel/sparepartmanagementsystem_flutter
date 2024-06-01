@@ -2,11 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:logger/logger.dart';
-import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
 
-import '../DataAccessLayer/api_path.dart';
-import '../environment.dart';
-import '../service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
+import 'package:sparepartmanagementsystem_flutter/environment.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class InventoryMasterDetails extends StatefulWidget {
   final InventTableDto inventTableDto;
