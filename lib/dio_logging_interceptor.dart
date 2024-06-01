@@ -2,14 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
+
 import 'package:sparepartmanagementsystem_flutter/App/reconnect.dart';
 import 'package:sparepartmanagementsystem_flutter/Helper/token_helper.dart';
-import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/environment.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
-
-import 'DataAccessLayer/api_path.dart';
-import 'Model/token_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/token_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 
 class DioLoggingInterceptors extends Interceptor {
   final logger = locator<Logger>();

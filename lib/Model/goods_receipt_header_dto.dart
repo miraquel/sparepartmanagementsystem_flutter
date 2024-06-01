@@ -1,9 +1,7 @@
+import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_line_dto.dart';
 
-import '../Helper/date_time_helper.dart';
-import 'base_model_dto.dart';
-import 'goods_receipt_line_dto.dart';
-
-class GoodsReceiptHeaderDto extends BaseModelDto
+class GoodsReceiptHeaderDto
 {
   final int goodsReceiptHeaderId;
   final String packingSlipId;
@@ -17,6 +15,10 @@ class GoodsReceiptHeaderDto extends BaseModelDto
   final bool? isSubmitted;
   final DateTime submittedDate;
   final String submittedBy;
+  final String createdBy;
+  final DateTime createdDateTime;
+  final String modifiedBy;
+  final DateTime modifiedDateTime;
   final List<GoodsReceiptLineDto> goodsReceiptLines;
 
   GoodsReceiptHeaderDto({
@@ -32,12 +34,16 @@ class GoodsReceiptHeaderDto extends BaseModelDto
     this.isSubmitted,
     DateTime? submittedDate,
     this.submittedBy = '',
-    super.createdBy = '',
+    this.createdBy = '',
     DateTime? createdDateTime,
-    super.modifiedBy = '',
+    this.modifiedBy = '',
     DateTime? modifiedDateTime,
     List<GoodsReceiptLineDto>? goodsReceiptLines,
-  }) : transDate = transDate ?? DateTimeHelper.minDateTime, submittedDate = submittedDate ?? DateTimeHelper.minDateTime, goodsReceiptLines = goodsReceiptLines ?? <GoodsReceiptLineDto>[], super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
+  }) :  transDate = transDate ?? DateTimeHelper.minDateTime,
+        submittedDate = submittedDate ?? DateTimeHelper.minDateTime,
+        createdDateTime = createdDateTime ?? DateTimeHelper.minDateTime,
+        modifiedDateTime = modifiedDateTime ?? DateTimeHelper.minDateTime,
+        goodsReceiptLines = goodsReceiptLines ?? <GoodsReceiptLineDto>[];
 
   factory GoodsReceiptHeaderDto.fromJson(Map<String, dynamic> json) => GoodsReceiptHeaderDto(
     goodsReceiptHeaderId: json['goodsReceiptHeaderId'] as int? ?? 0,
@@ -59,7 +65,6 @@ class GoodsReceiptHeaderDto extends BaseModelDto
     modifiedDateTime: DateTime.tryParse(json['modifiedDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
   );
 
-  @override
   Map<String, dynamic> toJson() => {
     if (goodsReceiptHeaderId > 0) 'goodsReceiptHeaderId': goodsReceiptHeaderId,
     if (packingSlipId.isNotEmpty) 'packingSlipId': packingSlipId,

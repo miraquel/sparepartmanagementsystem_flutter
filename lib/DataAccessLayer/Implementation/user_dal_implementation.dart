@@ -2,14 +2,14 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dio/dio.dart';
 
-import '../../Model/active_directory_dto.dart';
-import '../../Model/api_response_dto.dart';
-import '../../Model/refresh_token_dto.dart';
-import '../../Model/token_dto.dart';
-import '../../Model/user_dto.dart';
-import '../../service_locator_setup.dart';
-import '../Abstract/user_dal.dart';
-import '../api_path.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/active_directory_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/refresh_token_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/token_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/user_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
 
 const storage = FlutterSecureStorage();
 

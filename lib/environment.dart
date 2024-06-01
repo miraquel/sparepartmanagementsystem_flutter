@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import 'Model/user_warehouse_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/user_warehouse_dto.dart';
 
 class Environment {
   static const _storage = FlutterSecureStorage();

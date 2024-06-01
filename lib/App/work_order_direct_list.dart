@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:logger/logger.dart';
 
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/work_order_direct_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto.dart';
-import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/work_order_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/paged_list_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
-class WorkOrderList extends StatefulWidget {
-  const WorkOrderList({super.key});
+class WorkOrderDirectList extends StatefulWidget {
+  const WorkOrderDirectList({super.key});
 
   @override
-  State<WorkOrderList> createState() => _WorkOrderListState();
+  State<WorkOrderDirectList> createState() => _WorkOrderDirectListState();
 }
 
-class _WorkOrderListState extends State<WorkOrderList> {
+class _WorkOrderDirectListState extends State<WorkOrderDirectList> {
   static const _pageSize = 20;
-  final _workOrderDAL = locator<WorkOrderDAL>();
+  final _workOrderDirectDAL = locator<WorkOrderDirectDAL>();
   final _agseamwoidTextController = TextEditingController();
   final _logger = locator<Logger>();
   late NavigatorState _navigator;
@@ -44,7 +44,7 @@ class _WorkOrderListState extends State<WorkOrderList> {
   Future<void> _fetchPage(int pageNumber) async {
     ApiResponseDto<PagedListDto<WorkOrderHeaderDto>> newItems;
     try {
-      newItems = await _workOrderDAL.getWorkOrderHeaderByParamsPagedList(
+      newItems = await _workOrderDirectDAL.getWorkOrderHeaderPagedList(
           pageNumber,
           _pageSize,
           WorkOrderHeaderDto(
@@ -69,12 +69,6 @@ class _WorkOrderListState extends State<WorkOrderList> {
       appBar: AppBar(
         title: const Text('Work Order List'),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _navigator.pushNamed('/workOrderAdd').then((value) => _pagingController.refresh());
-        },
-        child: const Icon(Icons.add),
-      ),
       body: RefreshIndicator(
         onRefresh: () { return Future.sync(() => _pagingController.refresh()); },
         child: PagedListView<int, WorkOrderHeaderDto>(
@@ -84,7 +78,7 @@ class _WorkOrderListState extends State<WorkOrderList> {
               title: Text(item.agseamwoid),
               subtitle: Text(item.name),
               onTap: () {
-                _navigator.pushNamed('/workOrderDetails', arguments: item).then((value) => _pagingController.refresh());
+                _navigator.pushNamed('/workOrderDirectDetails', arguments: item).then((value) => _pagingController.refresh());
               },
             ),
           ),

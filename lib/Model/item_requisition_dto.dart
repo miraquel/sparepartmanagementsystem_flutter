@@ -1,17 +1,19 @@
-import 'package:decimal/decimal.dart';
 import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
-import 'package:sparepartmanagementsystem_flutter/Model/base_model_dto.dart';
 
-class ItemRequisitionDto extends BaseModelDto {
+class ItemRequisitionDto {
   final int itemRequisitionId;
   final int workOrderLineId;
   final String itemId;
   final String itemName;
   final DateTime requiredDate;
-  final Decimal quantity;
-  final Decimal requestQuantity;
+  final double quantity;
+  final double requestQuantity;
   final String inventLocationId;
   final String wMSLocationId;
+  final String createdBy;
+  final DateTime createdDateTime;
+  final String modifiedBy;
+  final DateTime modifiedDateTime;
 
   ItemRequisitionDto({
     this.itemRequisitionId = 0,
@@ -19,15 +21,17 @@ class ItemRequisitionDto extends BaseModelDto {
     this.itemId = '',
     this.itemName = '',
     DateTime? requiredDate,
-    Decimal? quantity,
-    Decimal? requestQuantity,
+    this.quantity = 0,
+    this.requestQuantity = 0,
     this.inventLocationId = '',
     this.wMSLocationId = '',
-    super.createdBy = '',
+    this.createdBy = '',
     DateTime? createdDateTime,
-    super.modifiedBy = '',
+    this.modifiedBy = '',
     DateTime? modifiedDateTime,
-  }) : requiredDate = requiredDate ?? DateTimeHelper.minDateTime, quantity = quantity ?? Decimal.zero, requestQuantity = requestQuantity ?? Decimal.zero, super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
+  }) :  requiredDate = requiredDate ?? DateTimeHelper.minDateTime,
+        createdDateTime = createdDateTime ?? DateTimeHelper.minDateTime,
+        modifiedDateTime = modifiedDateTime ?? DateTimeHelper.minDateTime;
 
   factory ItemRequisitionDto.fromJson(Map<String, dynamic> json) => ItemRequisitionDto(
     itemRequisitionId: json['itemRequisitionId'] as int? ?? 0,
@@ -35,8 +39,8 @@ class ItemRequisitionDto extends BaseModelDto {
     itemId: json['itemId'] as String? ?? '',
     itemName: json['itemName'] as String? ?? '',
     requiredDate: DateTime.tryParse(json['requiredDate'] as String? ?? '') ?? DateTimeHelper.minDateTime,
-    quantity: Decimal.tryParse(json['quantity'] as String? ?? '0') ?? Decimal.zero,
-    requestQuantity: Decimal.tryParse(json['requestQuantity'] as String? ?? '0') ?? Decimal.zero,
+    quantity: json['quantity'] as double? ?? 0,
+    requestQuantity: json['requestQuantity'] as double? ?? 0,
     inventLocationId: json['inventLocationId'] as String? ?? '',
     wMSLocationId: json['wmsLocationId'] as String? ?? '',
     createdBy: json['createdBy'] as String? ?? '',
@@ -45,7 +49,6 @@ class ItemRequisitionDto extends BaseModelDto {
     modifiedDateTime: DateTime.tryParse(json['modifiedDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
   );
 
-  @override
   Map<String, dynamic> toJson() {
     return {
       if (itemRequisitionId != 0) 'itemRequisitionId': itemRequisitionId,
@@ -53,8 +56,8 @@ class ItemRequisitionDto extends BaseModelDto {
       if (itemId.isNotEmpty) 'itemId': itemId,
       if (itemName.isNotEmpty) 'itemName': itemName,
       if (requiredDate != DateTimeHelper.minDateTime) 'requiredDate': requiredDate.toIso8601String(),
-      if (quantity != Decimal.zero) 'quantity': quantity.toString(),
-      if (requestQuantity != Decimal.zero) 'requestQuantity': requestQuantity.toString(),
+      if (quantity != 0) 'quantity': quantity.toString(),
+      if (requestQuantity != 0) 'requestQuantity': requestQuantity.toString(),
       if (inventLocationId.isNotEmpty) 'inventLocationId': inventLocationId,
       if (wMSLocationId.isNotEmpty) 'wmsLocationId': wMSLocationId,
       if (createdBy.isNotEmpty) 'createdBy': createdBy,

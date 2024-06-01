@@ -1,5 +1,5 @@
-import '../Helper/date_time_helper.dart';
-import 'Constants/no_yes.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/Constants/no_yes.dart';
 
 class WorkOrderAxDto {
   final String agseamwoid;

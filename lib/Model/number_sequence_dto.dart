@@ -1,18 +1,21 @@
 import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
-import 'package:sparepartmanagementsystem_flutter/Model/base_model_dto.dart';
 
-class NumberSequenceDto extends BaseModelDto {
+class NumberSequenceDto {
   final String description;
   final String format;
   final int lastNumber;
   final String name;
   final String module;
   final int numberSequenceId;
+  final String createdBy;
+  final DateTime createdDateTime;
+  final String modifiedBy;
+  final DateTime modifiedDateTime;
 
   NumberSequenceDto({
-    super.createdBy = '',
+    this.createdBy = '',
     DateTime? createdDateTime,
-    super.modifiedBy = '',
+    this.modifiedBy = '',
     DateTime? modifiedDateTime,
     this.description = '',
     this.format = '',
@@ -20,7 +23,8 @@ class NumberSequenceDto extends BaseModelDto {
     this.name = '',
     this.module = '',
     this.numberSequenceId = 0
-  }) : super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
+  }) :  createdDateTime = createdDateTime ?? DateTimeHelper.minDateTime,
+        modifiedDateTime = modifiedDateTime ?? DateTimeHelper.minDateTime;
 
   factory NumberSequenceDto.fromJson(Map<String, dynamic> json) => NumberSequenceDto(
     description: json['description'] as String,
@@ -35,7 +39,6 @@ class NumberSequenceDto extends BaseModelDto {
     modifiedDateTime: json['modifiedDateTime'] as DateTime
   );
 
-  @override
   Map<String, dynamic> toJson() => {
     if (description.isNotEmpty) 'description': description,
     if (format.isNotEmpty) 'format': format,

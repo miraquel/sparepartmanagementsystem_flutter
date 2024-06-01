@@ -1,7 +1,7 @@
 
 
-import '../../Model/api_response_dto.dart';
-import '../../Model/row_level_access_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/row_level_access_dto.dart';
 
 abstract class RowLevelAccessDAL {
   Future<ApiResponseDto<List<RowLevelAccessDto>>> getRowLevelAccess();

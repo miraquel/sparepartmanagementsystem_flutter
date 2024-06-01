@@ -1,24 +1,22 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:intl/intl.dart';
+import 'package:unicons/unicons.dart';
+
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 import 'package:sparepartmanagementsystem_flutter/Helper/numerical_min_formatter.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_line_dto_builder.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/purch_line_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/environment.dart';
-import 'package:unicons/unicons.dart';
-
-import '../DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
-import '../DataAccessLayer/Abstract/goods_receipt_dal.dart';
-import '../Model/Enums/product_type.dart';
-import '../Model/goods_receipt_header_dto.dart';
-import '../Model/goods_receipt_header_dto_builder.dart';
-import '../Model/wms_location_dto.dart';
-import '../service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/goods_receipt_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/Enums/product_type.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto_builder.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/wms_location_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class GoodsReceiptDetails extends StatefulWidget {
   final int goodsReceiptHeaderId;
@@ -228,8 +226,8 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
                           TextButton(
                               onPressed: () => _navigator.pop(),
                               style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.all(Colors.white),
-                                backgroundColor: MaterialStateProperty.all(Colors.red),
+                                foregroundColor: WidgetStateProperty.all(Colors.white),
+                                backgroundColor: WidgetStateProperty.all(Colors.red),
                               ),
                               child: const Text('No')
                           ),
@@ -240,8 +238,8 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
                               await _fetchData();
                             },
                             style: ButtonStyle(
-                              foregroundColor: MaterialStateProperty.all(Colors.white),
-                              backgroundColor: MaterialStateProperty.all(Colors.green),
+                              foregroundColor: WidgetStateProperty.all(Colors.white),
+                              backgroundColor: WidgetStateProperty.all(Colors.green),
                             ),
                             child: const Text('Yes'),
                           ),
@@ -266,8 +264,8 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
                           TextButton(
                               onPressed: () => _navigator.pop(),
                               style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.all(Colors.white),
-                                backgroundColor: MaterialStateProperty.all(Colors.red),
+                                foregroundColor: WidgetStateProperty.all(Colors.white),
+                                backgroundColor: WidgetStateProperty.all(Colors.red),
                               ),
                               child: const Text('No')
                           ),
@@ -279,8 +277,8 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
                               await _fetchData();
                             },
                             style: ButtonStyle(
-                              foregroundColor: MaterialStateProperty.all(Colors.white),
-                              backgroundColor: MaterialStateProperty.all(Colors.green),
+                              foregroundColor: WidgetStateProperty.all(Colors.white),
+                              backgroundColor: WidgetStateProperty.all(Colors.green),
                             ),
                             child: const Text('Yes'),
                           ),
@@ -325,8 +323,8 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
                           TextButton(
                             onPressed: () => _navigator.pop(),
                             style: ButtonStyle(
-                              foregroundColor: MaterialStateProperty.all(Colors.white),
-                              backgroundColor: MaterialStateProperty.all(Colors.red),
+                              foregroundColor: WidgetStateProperty.all(Colors.white),
+                              backgroundColor: WidgetStateProperty.all(Colors.red),
                             ),
                             child: const Text('No')
                           ),
@@ -339,8 +337,8 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
                               });
                             },
                             style: ButtonStyle(
-                              foregroundColor: MaterialStateProperty.all(Colors.white),
-                              backgroundColor: MaterialStateProperty.all(Colors.green),
+                              foregroundColor: WidgetStateProperty.all(Colors.white),
+                              backgroundColor: WidgetStateProperty.all(Colors.green),
                             ),
                             child: const Text('Yes'),
                           ),
@@ -583,9 +581,13 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
                             } : null,
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size.fromHeight(40),
+                              padding: const EdgeInsets.all(0),
                             ),
                             // text for the button written as Select Location with edit icon
-                            child: const Icon(UniconsLine.search),
+                            child: const Icon(
+                              UniconsLine.search,
+                              size: 20,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -595,10 +597,14 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
                               scanBarcodeNormal(_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index]);
                             } : null,
                             style: ElevatedButton.styleFrom(
-                                minimumSize: const Size.fromHeight(40)
+                              minimumSize: const Size.fromHeight(40),
+                              padding: const EdgeInsets.all(0)
                             ),
                             // text for the button written as Scan Location with scan icon
-                            child: const Icon(UniconsLine.qrcode_scan),
+                            child: const Icon(
+                              UniconsLine.qrcode_scan,
+                              size: 20,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -606,10 +612,14 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
                           child: ElevatedButton(
                             onPressed: null,
                             style: ElevatedButton.styleFrom(
-                                minimumSize: const Size.fromHeight(40)
+                              minimumSize: const Size.fromHeight(40),
+                              padding: const EdgeInsets.all(0)
                             ),
                             // text for the button written as Default Location with home icon
-                            child: const Icon(UniconsLine.paperclip),
+                            child: const Icon(
+                              UniconsLine.paperclip,
+                              size: 20,
+                            ),
                           ),
                         )
                       ],

@@ -1,8 +1,7 @@
 import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/Enums/product_type.dart';
-import 'package:sparepartmanagementsystem_flutter/Model/base_model_dto.dart';
 
-class GoodsReceiptLineDto extends BaseModelDto
+class GoodsReceiptLineDto
 {
   final int goodsReceiptLineId;
   final int goodsReceiptHeaderId;
@@ -18,6 +17,10 @@ class GoodsReceiptLineDto extends BaseModelDto
   final double lineAmount;
   final String inventLocationId;
   final String wMSLocationId;
+  final String createdBy;
+  final DateTime createdDateTime;
+  final String modifiedBy;
+  final DateTime modifiedDateTime;
 
   GoodsReceiptLineDto({
     this.goodsReceiptLineId = 0,
@@ -34,11 +37,12 @@ class GoodsReceiptLineDto extends BaseModelDto
     this.lineAmount = 0,
     this.inventLocationId = '',
     this.wMSLocationId = '',
-    super.createdBy = '',
+    this.createdBy = '',
     DateTime? createdDateTime,
-    super.modifiedBy = '',
+    this.modifiedBy = '',
     DateTime? modifiedDateTime,
-  }) : super(createdDateTime: createdDateTime ?? DateTimeHelper.minDateTime, modifiedDateTime: modifiedDateTime ?? DateTimeHelper.minDateTime);
+  }) :  createdDateTime = createdDateTime ?? DateTimeHelper.minDateTime,
+        modifiedDateTime = modifiedDateTime ?? DateTimeHelper.minDateTime;
 
   factory GoodsReceiptLineDto.fromJson(Map<String, dynamic> json) => GoodsReceiptLineDto(
     goodsReceiptLineId: json['goodsReceiptLineId'] as int? ?? 0,
@@ -61,7 +65,6 @@ class GoodsReceiptLineDto extends BaseModelDto
     modifiedDateTime: DateTime.tryParse(json['modifiedDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
   );
 
-  @override
   Map<String, dynamic> toJson() => {
     if (goodsReceiptLineId > 0) 'goodsReceiptLineId': goodsReceiptLineId,
     if (goodsReceiptHeaderId > 0) 'goodsReceiptHeaderId': goodsReceiptHeaderId,

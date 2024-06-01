@@ -10,8 +10,9 @@ class Reconnect extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () => Future.value(false),
+    return PopScope(
+      //onWillPop: () => Future.value(false),
+      canPop: false,
       child: AlertDialog(
         title: const Text('Network Error'),
         content: const Text('Please check your network connection and try again.'),

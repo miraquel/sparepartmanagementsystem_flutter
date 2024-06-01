@@ -1,7 +1,6 @@
 import 'package:sparepartmanagementsystem_flutter/Model/paged_list_dto.dart';
-
-import '../../Model/api_response_dto.dart';
-import '../../Model/goods_receipt_header_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
 
 abstract class GoodsReceiptDAL {
   Future<ApiResponseDto<List<GoodsReceiptHeaderDto>>> getGoodsReceiptHeader();

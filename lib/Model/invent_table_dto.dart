@@ -1,4 +1,3 @@
-
 class InventTableDto {
   final String itemId;
   final String productName;

@@ -3,24 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/work_order_direct_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto_builder.dart';
-import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/work_order_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/Constants/no_yes.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto_builder.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
-class WorkOrderDetails extends StatefulWidget {
+class WorkOrderDirectDetails extends StatefulWidget {
   final WorkOrderHeaderDto workOrderHeaderDto;
-  const WorkOrderDetails({super.key, required this.workOrderHeaderDto});
+  const WorkOrderDirectDetails({super.key, required this.workOrderHeaderDto});
 
   @override
-  State<WorkOrderDetails> createState() => _WorkOrderDetailsState();
+  State<WorkOrderDirectDetails> createState() => _WorkOrderDirectDetailsState();
 }
 
-class _WorkOrderDetailsState extends State<WorkOrderDetails> with SingleTickerProviderStateMixin {
-  final _workOrderDAL = locator<WorkOrderDAL>();
+class _WorkOrderDirectDetailsState extends State<WorkOrderDirectDetails> with SingleTickerProviderStateMixin {
+  final _workOrderDirectDAL = locator<WorkOrderDirectDAL>();
   final _workOrderHeaderDtoBuilder = WorkOrderHeaderDtoBuilder();
   late NavigatorState _navigator;
   late ScaffoldMessengerState _scaffoldMessenger;
@@ -34,11 +34,10 @@ class _WorkOrderDetailsState extends State<WorkOrderDetails> with SingleTickerPr
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _navigator = Navigator.of(context);
       _scaffoldMessenger = ScaffoldMessenger.of(context);
-      _tabController = TabController(initialIndex: 0, length: 2, vsync: this);
-      _tabController.animation?.addListener(() => setState(() => _tabIndex = _tabController.index));
-      _workOrderHeaderDtoBuilder.setFromDto(widget.workOrderHeaderDto);
-      _fetchWorkOrderLine();
     });
+    _tabController = TabController(initialIndex: 0, length: 2, vsync: this);
+    _tabController.animation?.addListener(() => setState(() => _tabIndex = _tabController.index));
+    _fetchWorkOrder();
   }
 
   @override
@@ -47,11 +46,13 @@ class _WorkOrderDetailsState extends State<WorkOrderDetails> with SingleTickerPr
     super.dispose();
   }
 
-  Future<void> _fetchWorkOrderLine() async {
+  Future<void> _fetchWorkOrder() async {
     try {
       setState(() => _isLoading = true);
-      final result = await _workOrderDAL.getWorkOrderLineByWorkOrderHeaderId(widget.workOrderHeaderDto.workOrderHeaderId);
-      final workOrderLineDto = result.data ?? <WorkOrderLineDto>[];
+      final headerResult = await _workOrderDirectDAL.getWorkOrderHeader(widget.workOrderHeaderDto.agseamwoid);
+      final lineResult = await _workOrderDirectDAL.getWorkOrderLineList(widget.workOrderHeaderDto.agseamwoid);
+      final workOrderLineDto = lineResult.data ?? <WorkOrderLineDto>[];
+      _workOrderHeaderDtoBuilder.setFromDto(headerResult.data ?? WorkOrderHeaderDto());
       _workOrderHeaderDtoBuilder.setWorkOrderLines(workOrderLineDto.map((e) => WorkOrderLineDtoBuilder.fromDto(e)).toList());
     }
     on DioException catch (error) {
@@ -72,7 +73,7 @@ class _WorkOrderDetailsState extends State<WorkOrderDetails> with SingleTickerPr
       child: Scaffold(
         floatingActionButton: _tabIndex == 1 ? FloatingActionButton(
           onPressed: () {
-            _navigator.pushNamed('/workOrderLineAdd').then((value) => _fetchWorkOrderLine());
+            _navigator.pushNamed('/workOrderLineAdd').then((value) => _fetchWorkOrder());
           },
           child: const Icon(Icons.add),
         ) : null,
@@ -260,14 +261,14 @@ class _WorkOrderDetailsState extends State<WorkOrderDetails> with SingleTickerPr
       itemBuilder: (context, index) {
         final workOrderLine = _workOrderHeaderDtoBuilder.workOrderLines[index];
         return ListTile(
-          title: Text("Line number: ${workOrderLine.line}"),
-          subtitle: Text("Task ID: ${workOrderLine.taskId}"),
-          trailing: IconButton(
-            icon: const Icon(Icons.chevron_right),
-            onPressed: () {
-              _navigator.pushNamed('/itemRequisitionList', arguments: workOrderLine.workOrderLineId).then((value) => _fetchWorkOrderLine());
-            },
-          )
+            title: Text("Line number: ${workOrderLine.line}"),
+            subtitle: Text("Task ID: ${workOrderLine.taskId}"),
+            trailing: IconButton(
+              icon: const Icon(Icons.chevron_right),
+              onPressed: () {
+                _navigator.pushNamed('/itemRequisitionDirectList', arguments: workOrderLine.build()).then((value) => _fetchWorkOrder());
+              },
+            )
         );
       },
     ) : const Column(

@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
+
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/goods_receipt_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/paged_list_dto.dart';
-
-import '../../service_locator_setup.dart';
-import '../api_path.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class GoodsReceiptDALImplementation implements GoodsReceiptDAL {
   final _dio = locator<Dio>();

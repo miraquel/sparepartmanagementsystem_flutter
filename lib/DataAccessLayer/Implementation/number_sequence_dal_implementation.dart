@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import '../../Model/api_response_dto.dart';
-import '../../Model/number_sequence_dto.dart';
-import '../../service_locator_setup.dart';
-import '../Abstract/number_sequence_dal.dart';
-import '../api_path.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/number_sequence_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/number_sequence_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
 
 const storage = FlutterSecureStorage();
 

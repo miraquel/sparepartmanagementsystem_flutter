@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
-import '../DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
-import '../Model/work_order_ax_dto.dart';
-import '../Model/work_order_ax_search_dto.dart';
-import '../service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_ax_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_ax_search_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class WorkOrderAxLookup extends StatefulWidget {
   const WorkOrderAxLookup({super.key});

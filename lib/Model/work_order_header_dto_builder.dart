@@ -1,9 +1,9 @@
-import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
+
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_ax_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto_builder.dart';
-
-import 'Constants/no_yes.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/Constants/no_yes.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 
 class WorkOrderHeaderDtoBuilder {
   int _workOrderHeaderId = 0;
@@ -23,6 +23,11 @@ class WorkOrderHeaderDtoBuilder {
   DateTime _woCloseDate = DateTimeHelper.minDateTime;
   NoYes _agseamSuspend = NoYes.none;
   String _notes = '';
+  String _createdBy = '';
+  DateTime _createdDateTime = DateTimeHelper.minDateTime;
+  String _modifiedBy = '';
+  DateTime _modifiedDateTime = DateTimeHelper.minDateTime;
+  int _recId = 0;
   List<WorkOrderLineDtoBuilder> _workOrderLines = <WorkOrderLineDtoBuilder>[];
 
   WorkOrderHeaderDtoBuilder();
@@ -50,6 +55,11 @@ class WorkOrderHeaderDtoBuilder {
   DateTime get woCloseDate => _woCloseDate;
   NoYes get agseamSuspend => _agseamSuspend;
   String get notes => _notes;
+  String get createdBy => _createdBy;
+  DateTime get createdDateTime => _createdDateTime;
+  String get modifiedBy => _modifiedBy;
+  DateTime get modifiedDateTime => _modifiedDateTime;
+  int get recId => _recId;
   List<WorkOrderLineDtoBuilder> get workOrderLines => _workOrderLines;
 
   WorkOrderHeaderDto build() {
@@ -71,6 +81,10 @@ class WorkOrderHeaderDtoBuilder {
       woCloseDate: _woCloseDate,
       agseamSuspend: _agseamSuspend,
       notes: _notes,
+      createdBy: _createdBy,
+      createdDateTime: _createdDateTime,
+      modifiedBy: _modifiedBy,
+      modifiedDateTime: _modifiedDateTime,
       workOrderLines: _workOrderLines.map((e) => e.build()).toList(),
     );
   }
@@ -112,6 +126,11 @@ class WorkOrderHeaderDtoBuilder {
       .setWoCloseDate(workOrderHeaderDto.woCloseDate)
       .setAgseamSuspend(workOrderHeaderDto.agseamSuspend)
       .setNotes(workOrderHeaderDto.notes)
+      .setCreatedBy(workOrderHeaderDto.createdBy)
+      .setCreatedDateTime(workOrderHeaderDto.createdDateTime)
+      .setModifiedBy(workOrderHeaderDto.modifiedBy)
+      .setModifiedDateTime(workOrderHeaderDto.modifiedDateTime)
+      .setRecId(workOrderHeaderDto.recId)
       .setWorkOrderLines(workOrderHeaderDto.workOrderLines.map((e) => WorkOrderLineDtoBuilder.fromDto(e)).toList());
   }
 
@@ -133,6 +152,11 @@ class WorkOrderHeaderDtoBuilder {
     _woCloseDate = workOrderHeaderDto.woCloseDate;
     _agseamSuspend = workOrderHeaderDto.agseamSuspend;
     _notes = workOrderHeaderDto.notes;
+    _createdBy = workOrderHeaderDto.createdBy;
+    _createdDateTime = workOrderHeaderDto.createdDateTime;
+    _modifiedBy = workOrderHeaderDto.modifiedBy;
+    _modifiedDateTime = workOrderHeaderDto.modifiedDateTime;
+    _recId = workOrderHeaderDto.recId;
     _workOrderLines = workOrderHeaderDto.workOrderLines.map((e) => WorkOrderLineDtoBuilder.fromDto(e)).toList();
     return this;
   }
@@ -237,6 +261,31 @@ class WorkOrderHeaderDtoBuilder {
 
   WorkOrderHeaderDtoBuilder setNotes(String notes) {
     _notes = notes;
+    return this;
+  }
+
+  WorkOrderHeaderDtoBuilder setCreatedBy(String createdBy) {
+    _createdBy = createdBy;
+    return this;
+  }
+
+  WorkOrderHeaderDtoBuilder setCreatedDateTime(DateTime createdDateTime) {
+    _createdDateTime = createdDateTime;
+    return this;
+  }
+
+  WorkOrderHeaderDtoBuilder setModifiedBy(String modifiedBy) {
+    _modifiedBy = modifiedBy;
+    return this;
+  }
+
+  WorkOrderHeaderDtoBuilder setModifiedDateTime(DateTime modifiedDateTime) {
+    _modifiedDateTime = modifiedDateTime;
+    return this;
+  }
+
+  WorkOrderHeaderDtoBuilder setRecId(int recId) {
+    _recId = recId;
     return this;
   }
 

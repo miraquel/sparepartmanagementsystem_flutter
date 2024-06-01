@@ -4,16 +4,15 @@ import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_search_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/wms_location_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/wms_location_search_dto.dart';
-
-import '../../Model/api_response_dto.dart';
-import '../../Model/invent_sum_dto.dart';
-import '../../Model/paged_list_dto.dart';
-import '../../Model/purch_line_dto.dart';
-import '../../Model/purch_table_dto.dart';
-import '../../Model/purch_table_search_dto.dart';
-import '../../Model/work_order_ax_dto.dart';
-import '../../Model/work_order_ax_search_dto.dart';
-import '../../Model/work_order_line_ax_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/invent_sum_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/paged_list_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/purch_line_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/purch_table_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/purch_table_search_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_ax_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_ax_search_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_ax_dto.dart';
 
 abstract class GMKSMSServiceGroupDAL {
   Future<ApiResponseDto<PagedListDto<InventTableDto>>> getInventTablePagedList(int pageNumber, int pageSize, InventTableSearchDto dto);

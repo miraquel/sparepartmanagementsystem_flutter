@@ -19,8 +19,11 @@ class LoadingOverlay extends StatelessWidget {
               OverlayEntry(
                 builder: (context) => Stack(
                   children: [
-                    ModalBarrier(
-                      color: Colors.grey.withOpacity(0.5),
+                    AbsorbPointer(
+                      absorbing: true,
+                      child: ModalBarrier(
+                        color: Colors.grey.withOpacity(0.5),
+                      ),
                     ),
                     Center(
                       child: Container(

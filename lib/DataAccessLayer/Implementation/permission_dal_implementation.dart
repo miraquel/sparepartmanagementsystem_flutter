@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 
-import '../../Model/api_response_dto.dart';
-import '../../Model/permission_dto.dart';
-import '../../service_locator_setup.dart';
-import '../Abstract/permission_dal.dart';
-import '../api_path.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/permission_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/permission_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
 
 class PermissionDALImplementation implements PermissionDAL {
   final _dio = locator<Dio>();

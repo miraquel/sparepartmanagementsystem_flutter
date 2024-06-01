@@ -1,5 +1,5 @@
-import '../../Model/api_response_dto.dart';
-import '../../Model/user_warehouse_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/user_warehouse_dto.dart';
 
 abstract class UserWarehouseDAL {
   Future<ApiResponseDto<UserWarehouseDto>> getUserWarehouseById(int id);

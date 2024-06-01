@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
-
-import '../DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
-import '../Model/invent_sum_dto.dart';
-import '../Model/invent_sum_search_dto.dart';
-import '../service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/invent_sum_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/invent_sum_search_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class InventoryMasterStockList extends StatefulWidget {
   final InventTableDto inventTableDto;

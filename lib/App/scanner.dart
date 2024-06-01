@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:logger/logger.dart';
+
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class Scanner extends StatefulWidget {
   const Scanner({super.key});
@@ -10,6 +13,7 @@ class Scanner extends StatefulWidget {
 }
 
 class _ScannerState extends State<Scanner> {
+  final _logger = locator<Logger>();
   String _scanBarcode = 'Unknown';
 
   @override
@@ -18,7 +22,7 @@ class _ScannerState extends State<Scanner> {
   }
 
   Future<void> startBarcodeScanStream() async {
-    FlutterBarcodeScanner.getBarcodeStreamReceiver('#ff6666', 'Cancel', true, ScanMode.BARCODE)!.listen((barcode) => print(barcode));
+    FlutterBarcodeScanner.getBarcodeStreamReceiver('#ff6666', 'Cancel', true, ScanMode.BARCODE)!.listen((barcode) => _logger.i(barcode));
   }
 
   Future<void> scanQR() async {
@@ -74,15 +78,15 @@ class _ScannerState extends State<Scanner> {
                       children: <Widget>[
                         ElevatedButton(
                             onPressed: () => scanBarcodeNormal(),
-                            child: Text('Start barcode scan')),
+                            child: const Text('Start barcode scan')),
                         ElevatedButton(
                             onPressed: () => scanQR(),
-                            child: Text('Start QR scan')),
+                            child: const Text('Start QR scan')),
                         ElevatedButton(
                             onPressed: () => startBarcodeScanStream(),
-                            child: Text('Start barcode scan stream')),
+                            child: const Text('Start barcode scan stream')),
                         Text('Scan result : $_scanBarcode\n',
-                            style: TextStyle(fontSize: 20))
+                            style: const TextStyle(fontSize: 20))
                       ]));
             })));
   }

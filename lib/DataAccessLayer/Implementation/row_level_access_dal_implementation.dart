@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
+
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/row_level_access_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/row_level_access_dto.dart';
-
-import '../../service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class RowLevelAccessDALImplementation implements RowLevelAccessDAL {
   final _dio = locator<Dio>();

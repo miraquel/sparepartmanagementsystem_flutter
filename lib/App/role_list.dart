@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
-import '../DataAccessLayer/Abstract/role_dal.dart';
-import '../Model/role_dto.dart';
-import '../service_locator_setup.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/role_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/role_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class RoleList extends StatefulWidget {
   const RoleList({super.key});

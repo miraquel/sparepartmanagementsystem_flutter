@@ -1,8 +1,7 @@
-import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_ax_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto.dart';
-
-import 'Constants/no_yes.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/Constants/no_yes.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 
 class WorkOrderLineDtoBuilder {
   int _workOrderLineId = 0;
@@ -20,6 +19,11 @@ class WorkOrderLineDtoBuilder {
   String _calendarId = '';
   String _workOrderStatus = '';
   NoYes _suspend = NoYes.none;
+  String _createdBy = '';
+  DateTime _createdDateTime = DateTimeHelper.minDateTime;
+  String _modifiedBy = '';
+  DateTime _modifiedDateTime = DateTimeHelper.minDateTime;
+  int _recId = 0;
   bool _isSelected = false;
 
   WorkOrderLineDtoBuilder();
@@ -39,6 +43,11 @@ class WorkOrderLineDtoBuilder {
   String get calendarId => _calendarId;
   String get workOrderStatus => _workOrderStatus;
   NoYes get suspend => _suspend;
+  String get createdBy => _createdBy;
+  DateTime get createdDateTime => _createdDateTime;
+  String get modifiedBy => _modifiedBy;
+  DateTime get modifiedDateTime => _modifiedDateTime;
+  int get recId => _recId;
   bool get isSelected => _isSelected;
 
   factory WorkOrderLineDtoBuilder.fromDto(WorkOrderLineDto model) {
@@ -57,6 +66,11 @@ class WorkOrderLineDtoBuilder {
       .._supervisor = model.supervisor
       .._calendarId = model.calendarId
       .._workOrderStatus = model.workOrderStatus
+      .._createdBy = model.createdBy
+      .._createdDateTime = model.createdDateTime
+      .._modifiedBy = model.modifiedBy
+      .._modifiedDateTime = model.modifiedDateTime
+      .._recId = model.recId
       .._suspend = model.suspend;
   }
 
@@ -94,6 +108,11 @@ class WorkOrderLineDtoBuilder {
       calendarId: _calendarId,
       workOrderStatus: _workOrderStatus,
       suspend: _suspend,
+      createdBy: _createdBy,
+      createdDateTime: _createdDateTime,
+      modifiedBy: _modifiedBy,
+      modifiedDateTime: _modifiedDateTime,
+      recId: _recId,
     );
   }
 
@@ -169,6 +188,31 @@ class WorkOrderLineDtoBuilder {
 
   WorkOrderLineDtoBuilder setSuspend(NoYes suspend) {
     _suspend = suspend;
+    return this;
+  }
+
+  WorkOrderLineDtoBuilder setCreatedBy(String createdBy) {
+    _createdBy = createdBy;
+    return this;
+  }
+
+  WorkOrderLineDtoBuilder setCreatedDateTime(DateTime createdDateTime) {
+    _createdDateTime = createdDateTime;
+    return this;
+  }
+
+  WorkOrderLineDtoBuilder setModifiedBy(String modifiedBy) {
+    _modifiedBy = modifiedBy;
+    return this;
+  }
+
+  WorkOrderLineDtoBuilder setModifiedDateTime(DateTime modifiedDateTime) {
+    _modifiedDateTime = modifiedDateTime;
+    return this;
+  }
+
+  WorkOrderLineDtoBuilder setRecId(int recId) {
+    _recId = recId;
     return this;
   }
 
