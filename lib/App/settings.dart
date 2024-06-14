@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
+import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 
 import 'package:sparepartmanagementsystem_flutter/App/shimmer.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/auth_helper.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/user_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
@@ -19,11 +21,16 @@ class _SettingsState extends State<Settings> {
   final _userDAL = locator<UserDAL>();
   final _logger = locator<Logger>();
   bool _isLoading = false;
+  bool _isWaitingLogout = false;
   UserDto _user = UserDto();
+  late final NavigatorState _navigator;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigator = Navigator.of(context);
+    });
 
     fetchData();
   }
@@ -54,23 +61,26 @@ class _SettingsState extends State<Settings> {
       appBar: AppBar(
         title: const Text('Settings'),
       ),
-      backgroundColor: Colors.grey[200],
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                masthead(),
-                const SizedBox(height: 20),
-                content(),
-              ],
+      //backgroundColor: Colors.grey[200],
+      body: LoadingOverlay(
+        isLoading: _isWaitingLogout,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  masthead(),
+                  const SizedBox(height: 20),
+                  content(),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -151,6 +161,21 @@ class _SettingsState extends State<Settings> {
             leading: const SizedBox(
               height: double.infinity,
               child: Icon(Icons.key, size: 25)
+            ),
+            minLeadingWidth: 0,
+          ),
+          // logout button
+          ListTile(
+            onTap: () async {
+              setState(() => _isWaitingLogout = true);
+              await AuthHelper.logout();
+              setState(() => _isWaitingLogout = false);
+              await _navigator.pushReplacementNamed('/');
+            },
+            title: const Text('Logout'),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.logout, size: 25)
             ),
             minLeadingWidth: 0,
           ),

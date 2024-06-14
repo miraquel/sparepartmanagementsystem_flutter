@@ -8,6 +8,7 @@ import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 import 'package:sparepartmanagementsystem_flutter/App/reconnect.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/Helper/token_helper.dart';
+import 'package:sparepartmanagementsystem_flutter/environment.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class Login extends StatefulWidget {
@@ -84,16 +85,30 @@ class _LoginState extends State<Login> {
   Future<void> login() async {
     try {
       setState(() => _isLoading = true);
-      var login = await _userDAL.loginWithActiveDirectory(
-          _usernameController.text, _passwordController.text);
+      var login = await _userDAL.loginWithActiveDirectory(_usernameController.text, _passwordController.text);
       if (login.data != null) {
         await TokenHelper.writeTokenLocally(login.data!.accessToken, login.data!.refreshToken);
         var userId = getUserIdFromToken(login.data?.accessToken);
         await _storage.write(key: 'userId', value: userId);
-        _navigator.pushReplacementNamed('/home');
+        await _navigator.pushReplacementNamed('/home');
       }
-    } catch (e) {
-        _logger.e('Error while logging in', error: e);
+    } on DioException catch (e) {
+      if (e.response?.data['errorMessages'] is List) {
+        var message = e.response?.data['errorMessages'] as List<dynamic>;
+        _scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text(message.first),
+          ),
+        );
+      } else if (e.response?.data['errorMessages'] is String) {
+        var message = e.response?.data['errorMessages'] as String;
+        _scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text(message),
+          ),
+        );
+      }
+      _logger.e('Error while logging in', error: e);
     } finally {
       if (_isLoading) {
         setState(() => _isLoading = false);
@@ -112,16 +127,31 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    final double statusBarHeight = MediaQuery.of(context).padding.top;
     return LoadingOverlay(
       isLoading: _isLoading,
-      child: SafeArea(
-        child: Scaffold(
-          body: Column(
+      child: Scaffold(
+        body: Padding(
+          padding: EdgeInsets.only(top: statusBarHeight),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
+              // show logo of the app_logo.png
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Center(
+                    child: Image.asset(
+                      'assets/images/app_logo.png',
+                      width: 300,
+                      height: 300,
+                    ),
+                  ),
+                ),
+              ),
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 40, top: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -145,6 +175,10 @@ class _LoginState extends State<Login> {
                       controller: _usernameController,
                       decoration: const InputDecoration(
                         labelText: 'Username',
+                        prefixIcon: Icon(Icons.person),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 15),
@@ -152,14 +186,45 @@ class _LoginState extends State<Login> {
                       controller: _passwordController,
                       decoration: const InputDecoration(
                         labelText: 'Password',
+                        prefixIcon: Icon(Icons.lock),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
                       ),
                       obscureText: true,
                     ),
+                    const SizedBox(height: 15),
                     ElevatedButton(
-                      onPressed: () {
-                        login();
-                      },
-                      child: const Text('Login'),
+                      onPressed: login,
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        backgroundColor: Colors.blue,
+                        minimumSize: const Size.fromHeight(55)
+                      ),
+                      child: const Text('Login', style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(10),
+                color: Colors.blue,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      Environment.baseUrl,
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text(
+                      "v${Environment.version}",
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                   ],
                 ),

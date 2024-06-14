@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/dimension_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_location_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_sum_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_sum_search_dto.dart';
@@ -151,5 +152,19 @@ class GMKSMSServiceGroupDALImplementation implements GMKSMSServiceGroupDAL {
   Future<ApiResponseDto<WMSLocationDto>> getWMSLocation(WMSLocationDto dto) async {
     final response = await _dio.get(ApiPath.getWMSLocation, queryParameters: dto.toJson());
     return ApiResponseDto<WMSLocationDto>.fromJson(response.data, (json) => WMSLocationDto.fromJson(json));
+  }
+
+  @override
+  Future<ApiResponseDto<InventTableDto>> getInventTable(String itemId) async {
+    final response = await _dio.get("${ApiPath.getInventTable}/$itemId");
+    return ApiResponseDto<InventTableDto>.fromJson(response.data, (json) => InventTableDto.fromJson(json));
+  }
+
+  @override
+  Future<ApiResponseDto<List<DimensionDto>>> getDimensionList(String dimensionName) async {
+    final response = await _dio.get(ApiPath.getDimensionList, queryParameters: {'dimensionName': dimensionName});
+    return ApiResponseDto<List<DimensionDto>>.fromJson(
+        response.data as Map<String, dynamic>,
+        (json) => json.map<DimensionDto>((e) => DimensionDto.fromJson(e)).toList());
   }
 }

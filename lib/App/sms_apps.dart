@@ -23,6 +23,7 @@ import 'package:sparepartmanagementsystem_flutter/App/wms_location_lookup.dart';
 import 'package:sparepartmanagementsystem_flutter/App/work_order_add.dart';
 import 'package:sparepartmanagementsystem_flutter/App/work_order_details.dart';
 import 'package:sparepartmanagementsystem_flutter/App/work_order_direct_details.dart';
+import 'package:sparepartmanagementsystem_flutter/App/work_order_direct_line_details.dart';
 import 'package:sparepartmanagementsystem_flutter/App/work_order_direct_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/work_order_line_add.dart';
 import 'package:sparepartmanagementsystem_flutter/App/work_order_list.dart';
@@ -33,7 +34,7 @@ import 'package:sparepartmanagementsystem_flutter/App/goods_receipt_details.dart
 import 'package:sparepartmanagementsystem_flutter/App/goods_receipt_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/inventory_master_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/item_requisition_add.dart';
-import 'package:sparepartmanagementsystem_flutter/App/item_requisition_direct_add.dart';
+import 'package:sparepartmanagementsystem_flutter/App/item_requisition_direct_details.dart';
 import 'package:sparepartmanagementsystem_flutter/App/item_requisition_direct_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/item_requisition_list.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
@@ -209,13 +210,14 @@ class SMSApps extends StatelessWidget {
             },
           );
         }
-        if (settings.name == '/itemRequisitionDirectAdd')
+        if (settings.name == '/itemRequisitionDirectDetails')
         {
-          final args = settings.arguments as WorkOrderLineDto;
+          final args = settings.arguments as Map<String, dynamic>;
           return MaterialPageRoute(
             builder: (context) {
-              return ItemRequisitionDirectAdd(
-                workOrderLineDto: args,
+              return ItemRequisitionDirectDetails(
+                workOrderLineDto: args['workOrderLineDto'],
+                inventReqDto: args['inventReqDto'],
               );
             },
           );
@@ -227,6 +229,18 @@ class SMSApps extends StatelessWidget {
             builder: (context) {
               return ItemRequisitionDirectAddLocation(
                 itemId: args,
+              );
+            },
+          );
+        }
+        // await _navigator.pushNamed('/itemRequisitionDirectList', arguments: workOrderLine.build());
+        if (settings.name == '/workOrderDirectLineDetails')
+        {
+          final args = settings.arguments as WorkOrderLineDto;
+          return MaterialPageRoute(
+            builder: (context) {
+              return WorkOrderDirectLineDetails(
+                workOrderLineDto: args,
               );
             },
           );

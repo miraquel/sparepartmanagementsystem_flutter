@@ -1,10 +1,12 @@
 import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/Constants/no_yes.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/default_dimension_dto.dart';
 
 class WorkOrderLineDto {
   final int workOrderLineId;
   final int workOrderHeaderId;
   final int line;
+  final String woid;
   final String lineTitle;
   final String entityId;
   final NoYes entityShutdown;
@@ -15,8 +17,9 @@ class WorkOrderLineDto {
   final DateTime planningEndDate;
   final String supervisor;
   final String calendarId;
-  final String workOrderStatus;
+  final String lineStatus;
   final NoYes suspend;
+  final DefaultDimensionDto defaultDimension;
   final String createdBy;
   final DateTime createdDateTime;
   final String modifiedBy;
@@ -27,6 +30,7 @@ class WorkOrderLineDto {
     this.workOrderLineId = 0,
     this.workOrderHeaderId = 0,
     this.line = 0,
+    this.woid = '',
     this.lineTitle = '',
     this.entityId = '',
     this.entityShutdown = NoYes.none,
@@ -37,8 +41,9 @@ class WorkOrderLineDto {
     DateTime? planningEndDate,
     this.supervisor = '',
     this.calendarId = '',
-    this.workOrderStatus = '',
+    this.lineStatus = '',
     this.suspend = NoYes.none,
+    DefaultDimensionDto? defaultDimension,
     this.createdBy = '',
     DateTime? createdDateTime,
     this.modifiedBy = '',
@@ -47,13 +52,15 @@ class WorkOrderLineDto {
   }) :  planningStartDate = planningStartDate ?? DateTimeHelper.minDateTime,
         planningEndDate = planningEndDate ?? DateTimeHelper.minDateTime,
         createdDateTime = createdDateTime ?? DateTimeHelper.minDateTime,
-        modifiedDateTime = modifiedDateTime ?? DateTimeHelper.minDateTime;
+        modifiedDateTime = modifiedDateTime ?? DateTimeHelper.minDateTime,
+        defaultDimension = defaultDimension ?? DefaultDimensionDto();
 
   factory WorkOrderLineDto.fromJson(Map<String, dynamic> json) {
     return WorkOrderLineDto(
       workOrderLineId: json['workOrderLineId'] as int? ?? 0,
       workOrderHeaderId: json['workOrderHeaderId'] as int? ?? 0,
       line: json['line'] as int? ?? 0,
+      woid: json['woid'] as String? ?? '',
       lineTitle: json['lineTitle'] as String? ?? '',
       entityId: json['entityId'] as String? ?? '',
       entityShutdown: NoYes.values[json['entityShutdown'] as int? ?? 0],
@@ -64,8 +71,9 @@ class WorkOrderLineDto {
       planningEndDate: DateTime.tryParse(json['planningEndDate'] as String? ?? '') ?? DateTimeHelper.minDateTime,
       supervisor: json['supervisor'] as String? ?? '',
       calendarId: json['calendarId'] as String? ?? '',
-      workOrderStatus: json['workOrderStatus'] as String? ?? '',
+      lineStatus: json['lineStatus'] as String? ?? '',
       suspend: NoYes.values[json['suspend'] as int? ?? 0],
+      defaultDimension: DefaultDimensionDto.fromJson(json['defaultDimension'] as Map<String, dynamic>? ?? {}),
       createdBy: json['createdBy'] as String? ?? '',
       createdDateTime: DateTime.tryParse(json['createdDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
       modifiedBy: json['modifiedBy'] as String? ?? '',
@@ -79,6 +87,7 @@ class WorkOrderLineDto {
       if (workOrderLineId != 0) 'workOrderLineId': workOrderLineId,
       if (workOrderHeaderId != 0) 'workOrderHeaderId': workOrderHeaderId,
       if (line != 0) 'line': line,
+      if (woid.isNotEmpty) 'woid': woid,
       if (lineTitle.isNotEmpty) 'lineTitle': lineTitle,
       if (entityId.isNotEmpty) 'entityId': entityId,
       if (entityShutdown != NoYes.none) 'entityShutdown': entityShutdown.index,
@@ -89,8 +98,9 @@ class WorkOrderLineDto {
       if (planningEndDate != DateTimeHelper.minDateTime) 'planningEndDate': planningEndDate.toIso8601String(),
       if (supervisor.isNotEmpty) 'supervisor': supervisor,
       if (calendarId.isNotEmpty) 'calendarId': calendarId,
-      if (workOrderStatus.isNotEmpty) 'workOrderStatus': workOrderStatus,
+      if (lineStatus.isNotEmpty) 'lineStatus': lineStatus,
       if (suspend != NoYes.none) 'suspend': suspend.index,
+      'defaultDimension': defaultDimension.toJson(),
       if (createdBy.isNotEmpty) 'createdBy': createdBy,
       if (createdDateTime != DateTimeHelper.minDateTime) 'createdDateTime': createdDateTime.toIso8601String(),
       if (modifiedBy.isNotEmpty) 'modifiedBy': modifiedBy,
