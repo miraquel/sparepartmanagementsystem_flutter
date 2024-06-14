@@ -48,8 +48,9 @@ dependencies:
   intl: ^0.19.0
   photo_view: ^0.15.0
   flutter_barcode_scanner: ^2.0.0
-  decimal: ^2.3.3
   unicons: ^2.1.1
+  upgrader: ^10.3.0
+  package_info_plus: ^8.0.0
 
 dev_dependencies:
   flutter_test:
@@ -80,6 +81,7 @@ flutter:
   assets:
     - assets/images/no_image.png
     - assets/images/user_profile.png
+    - assets/images/app_logo.png
     - environment.json
 
   # An image asset can refer to one or more resolution-specific "variants", see

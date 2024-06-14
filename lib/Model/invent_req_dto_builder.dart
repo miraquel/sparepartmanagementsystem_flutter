@@ -1,5 +1,6 @@
 
 import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/Constants/no_yes.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_req_dto.dart';
 
 class InventReqDtoBuilder {
@@ -15,11 +16,14 @@ class InventReqDtoBuilder {
   String _inventLocationId = '';
   String _wmsLocationId = '';
   int _agswoRecId = 0;
+  NoYes _process = NoYes.no;
+  String _preparerUserId = '';
   String _createdBy = '';
   DateTime _createdDateTime = DateTimeHelper.minDateTime;
   String _modifiedBy = '';
   DateTime _modifiedDateTime = DateTimeHelper.minDateTime;
   int _recId = 0;
+  bool _isSelected = false;
 
   InventReqDtoBuilder();
 
@@ -35,11 +39,14 @@ class InventReqDtoBuilder {
   String get inventLocationId => _inventLocationId;
   String get wmsLocationId => _wmsLocationId;
   int get agsWoRecId => _agswoRecId;
+  NoYes get process => _process;
+  String get preparerUserId => _preparerUserId;
   String get createdBy => _createdBy;
   DateTime get createdDateTime => _createdDateTime;
   String get modifiedBy => _modifiedBy;
   DateTime get modifiedDateTime => _modifiedDateTime;
   int get recId => _recId;
+  bool get isSelected => _isSelected;
 
   InventReqDtoBuilder setItemId(String itemId) {
     _itemId = itemId;
@@ -96,8 +103,18 @@ class InventReqDtoBuilder {
     return this;
   }
 
+  InventReqDtoBuilder setProcess(NoYes process) {
+    _process = process;
+    return this;
+  }
+
   InventReqDtoBuilder setAgswoRecId(int agsWoRecId) {
     _agswoRecId = agsWoRecId;
+    return this;
+  }
+
+  InventReqDtoBuilder setPreparedUserId(String preparedUserId) {
+    _preparerUserId = preparedUserId;
     return this;
   }
 
@@ -125,6 +142,38 @@ class InventReqDtoBuilder {
     _recId = recId;
     return this;
   }
+
+  InventReqDtoBuilder setIsSelected(bool isSelected) {
+    _isSelected = isSelected;
+    return this;
+  }
+
+  InventReqDtoBuilder setFromInventReqDto(InventReqDto inventReqDto) {
+    _itemId = inventReqDto.itemId;
+    _productName = inventReqDto.productName;
+    _requiredDate = inventReqDto.requiredDate;
+    _qty = inventReqDto.qty;
+    _unitOfMeasure = inventReqDto.unitOfMeasure;
+    _currency = inventReqDto.currency;
+    _costPrice = inventReqDto.costPrice;
+    _costAmount = inventReqDto.costAmount;
+    _inventSiteId = inventReqDto.inventSiteId;
+    _inventLocationId = inventReqDto.inventLocationId;
+    _wmsLocationId = inventReqDto.wmsLocationId;
+    _agswoRecId = inventReqDto.agswoRecId;
+    _process = inventReqDto.process;
+    _preparerUserId = inventReqDto.preparerUserId;
+    _createdBy = inventReqDto.createdBy;
+    _createdDateTime = inventReqDto.createdDateTime;
+    _modifiedBy = inventReqDto.modifiedBy;
+    _modifiedDateTime = inventReqDto.modifiedDateTime;
+    _recId = inventReqDto.recId;
+    return this;
+  }
+
+  factory InventReqDtoBuilder.fromDto(InventReqDto inventReqDto) {
+    return InventReqDtoBuilder().setFromInventReqDto(inventReqDto);
+  }
   
   InventReqDto build() {
     return InventReqDto(
@@ -140,6 +189,8 @@ class InventReqDtoBuilder {
       inventLocationId: _inventLocationId,
       wmsLocationId: _wmsLocationId,
       agswoRecId: _agswoRecId,
+      process: _process,
+      preparerUserId: _preparerUserId,
       createdBy: _createdBy,
       createdDateTime: _createdDateTime,
       modifiedBy: _modifiedBy,

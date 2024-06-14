@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
     <application
-        android:label="sparepartmanagementsystem_flutter"
+        android:label="SMS Apps"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

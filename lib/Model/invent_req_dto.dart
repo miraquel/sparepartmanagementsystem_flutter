@@ -1,4 +1,5 @@
 import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/Constants/no_yes.dart';
 
 class InventReqDto {
   final String itemId;
@@ -13,6 +14,8 @@ class InventReqDto {
   final String inventLocationId;
   final String wmsLocationId;
   final int agswoRecId;
+  final NoYes process;
+  final String preparerUserId;
   final String createdBy;
   final DateTime createdDateTime;
   final String modifiedBy;
@@ -32,6 +35,8 @@ class InventReqDto {
     this.inventLocationId = '',
     this.wmsLocationId = '',
     this.agswoRecId = 0,
+    this.process = NoYes.no,
+    this.preparerUserId = '',
     this.createdBy = '',
     DateTime? createdDateTime,
     this.modifiedBy = '',
@@ -54,7 +59,9 @@ class InventReqDto {
       inventSiteId: json['inventSiteId'] ?? '',
       inventLocationId: json['inventLocationId'] ?? '',
       wmsLocationId: json['wmsLocationId'] ?? '',
-      agswoRecId: json['agsWoRecId'] ?? 0,
+      agswoRecId: json['agswoRecId'] ?? 0,
+      process: NoYes.values[json['process'] as int? ?? 0],
+      preparerUserId: json['preparerUserId'] ?? '',
       createdBy: json['createdBy'] ?? '',
       createdDateTime: DateTime.tryParse(json['createdDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
       modifiedBy: json['modifiedBy'] ?? '',
@@ -77,6 +84,8 @@ class InventReqDto {
       if (inventLocationId.isNotEmpty) 'inventLocationId': inventLocationId,
       if (wmsLocationId.isNotEmpty) 'wmsLocationId': wmsLocationId,
       if (agswoRecId != 0) 'agsWoRecId': agswoRecId,
+      if (process != NoYes.no) 'process': process,
+      if (preparerUserId.isNotEmpty) 'preparerUserId': preparerUserId,
       if (createdBy.isNotEmpty) 'createdBy': createdBy,
       if (createdDateTime.isAfter(DateTimeHelper.minDateTime)) 'createdDateTime': createdDateTime.toIso8601String(),
       if (modifiedBy.isNotEmpty) 'modifiedBy': modifiedBy,

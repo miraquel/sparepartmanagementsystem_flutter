@@ -13,7 +13,7 @@ class WorkOrderLineAxDto {
   final DateTime planningEndDate;
   final String supervisor;
   final String calendarId;
-  final String workOrderStatus;
+  final String lineStatus;
   final NoYes suspend;
 
   WorkOrderLineAxDto({
@@ -28,7 +28,7 @@ class WorkOrderLineAxDto {
     DateTime? planningEndDate,
     this.supervisor = '',
     this.calendarId = '',
-    this.workOrderStatus = '',
+    this.lineStatus = '',
     this.suspend = NoYes.none,
   }) : planningStartDate = planningStartDate ?? DateTimeHelper.minDateTime, planningEndDate = planningEndDate ?? DateTimeHelper.minDateTime;
 
@@ -45,7 +45,7 @@ class WorkOrderLineAxDto {
       planningEndDate: DateTime.tryParse(json['planningEndDate'] as String? ?? '') ?? DateTimeHelper.minDateTime,
       supervisor: json['supervisor'] as String? ?? '',
       calendarId: json['calendarId'] as String? ?? '',
-      workOrderStatus: json['workOrderStatus'] as String? ?? '',
+      lineStatus: json['lineStatus'] as String? ?? '',
       suspend: NoYes.values[json['suspend'] as int? ?? 0],
     );
   }
@@ -63,7 +63,7 @@ class WorkOrderLineAxDto {
       if (planningEndDate != DateTimeHelper.minDateTime) 'planningEndDate': planningEndDate.toIso8601String(),
       if (supervisor.isNotEmpty) 'supervisor': supervisor,
       if (calendarId.isNotEmpty) 'calendarId': calendarId,
-      if (workOrderStatus.isNotEmpty) 'workOrderStatus': workOrderStatus,
+      if (lineStatus.isNotEmpty) 'lineStatus': lineStatus,
       if (suspend != NoYes.none) 'suspend': suspend.index,
     };
   }

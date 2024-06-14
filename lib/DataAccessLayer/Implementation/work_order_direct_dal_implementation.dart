@@ -26,7 +26,7 @@ class WorkOrderDirectDALImplementation implements WorkOrderDirectDAL {
 
   @override
   Future<ApiResponseDto> deleteItemRequisition(InventReqDto dto) {
-    final response = _dio.post(ApiPath.deleteItemRequisitionDirect, data: dto);
+    final response = _dio.delete(ApiPath.deleteItemRequisitionDirect, queryParameters: dto.toJson());
     return response.then((value) => ApiResponseDto.fromJson(value.data));
   }
 
@@ -37,9 +37,9 @@ class WorkOrderDirectDALImplementation implements WorkOrderDirectDAL {
   }
 
   @override
-  Future<ApiResponseDto<List<InventReqDto>>> getItemRequisitionList(int agsWORecId) {
-    final response = _dio.get(ApiPath.getItemRequisitionListDirect, queryParameters: {'agsWORecId': agsWORecId});
-    return response.then((value) => ApiResponseDto<List<InventReqDto>>.fromJson(value.data, (json) => json.map<InventReqDto>((e) => InventReqDto.fromJson(e)).toList()));
+  Future<ApiResponseDto<List<InventReqDto>>> getItemRequisitionList(int agsWORecId) async {
+    final response = await _dio.get(ApiPath.getItemRequisitionListDirect, queryParameters: {'agsWORecId': agsWORecId});
+    return ApiResponseDto<List<InventReqDto>>.fromJson(response.data, (json) => json.map<InventReqDto>((e) => InventReqDto.fromJson(e)).toList());
   }
 
   @override
@@ -68,7 +68,7 @@ class WorkOrderDirectDALImplementation implements WorkOrderDirectDAL {
 
   @override
   Future<ApiResponseDto> updateItemRequisition(InventReqDto dto) {
-    final response = _dio.post(ApiPath.updateItemRequisitionDirect, data: dto);
+    final response = _dio.put(ApiPath.updateItemRequisitionDirect, data: dto);
     return response.then((value) => ApiResponseDto.fromJson(value.data));
   }
 
@@ -76,6 +76,24 @@ class WorkOrderDirectDALImplementation implements WorkOrderDirectDAL {
   Future<ApiResponseDto> updateWorkOrderLine(WorkOrderHeaderDto dto) {
     final response = _dio.post(ApiPath.updateWorkOrderLineDirect, data: dto);
     return response.then((value) => ApiResponseDto.fromJson(value.data));
+  }
+
+  @override
+  Future<ApiResponseDto> createInventJournalTable(WorkOrderLineDto dto) async {
+    final response = await _dio.post(ApiPath.createInventJournalTable, data: dto);
+    return ApiResponseDto.fromJson(response.data);
+  }
+
+  @override
+  Future<ApiResponseDto> deleteItemRequisitionWithListOfRecId(List<int> recIds) async {
+    final response = await _dio.delete(ApiPath.deleteItemRequisitionDirectWithListOfRecId, queryParameters: {'recIds': recIds});
+    return ApiResponseDto.fromJson(response.data);
+  }
+
+  @override
+  Future<ApiResponseDto> closeWorkOrderLineAndPostInventJournal(WorkOrderLineDto dto) async {
+    final response = await _dio.post(ApiPath.closeWorkOrderLineAndPostInventJournalDirect, data: dto);
+    return ApiResponseDto.fromJson(response.data);
   }
 
 }

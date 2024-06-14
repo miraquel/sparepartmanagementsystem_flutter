@@ -1,5 +1,6 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
 import 'package:unicons/unicons.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -8,6 +9,7 @@ import 'package:sparepartmanagementsystem_flutter/Model/user_warehouse_dto.dart'
 import 'package:sparepartmanagementsystem_flutter/environment.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_warehouse_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
+import 'package:upgrader/upgrader.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -22,6 +24,14 @@ class _HomeState extends State<Home> {
   late ScaffoldMessengerState _scaffoldMessenger;
   int _userId = 0;
   var _isLoading = false;
+
+  final upgrader = Upgrader(
+    //debugDisplayAlways: true,
+    storeController: UpgraderStoreController(
+      onAndroid: () => UpgraderAppcastStore(appcastURL: "${Environment.baseUrl}${ApiPath.getVersionFeed}"),
+      oniOS: () => UpgraderAppcastStore(appcastURL: "${Environment.baseUrl}${ApiPath.getVersionFeed}"),
+    ),
+  );
 
   @override
   void initState() {
@@ -39,7 +49,7 @@ class _HomeState extends State<Home> {
       await _setUserId();
       var response = await _userWarehouseDAL.getDefaultUserWarehouseByUserId(_userId);
       if (response.success && response.data != null) {
-        Environment.saveUserWarehouseDto(response.data!);
+        await Environment.saveUserWarehouseDto(response.data!);
       }
     }
     catch (error) {
@@ -87,203 +97,239 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-              child: DropdownSearch<UserWarehouseDto>(
-                selectedItem: Environment.userWarehouseDto,
-                validator:(value) {
-                  if (value == null) {
-                    return 'Please select username';
-                  }
-                  return null;
-                },
-                popupProps: PopupPropsMultiSelection.menu(
-                  itemBuilder: (BuildContext context, UserWarehouseDto item, bool isSelected) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 8),
-                      decoration: !isSelected
-                          ? null
-                          : BoxDecoration(
-                        border: Border.all(color: Theme.of(context).primaryColor),
-                        borderRadius: BorderRadius.circular(5),
-                        color: Colors.white,
-                      ),
-                      child: ListTile(
-                        selected: isSelected,
-                        dense: true,
-                        title: Text(item.inventLocationId),
-                        contentPadding: const EdgeInsets.all(8),
-                        subtitle: Text(item.name),
-                        trailing: item.isDefault != null && item.isDefault! ? const Text("Default") : null,
-                      ),
-                    );
-                  },
-                ),
-                asyncItems: (String searchTerm) async {
-                  var response = await _userWarehouseDAL.getUserWarehouseByUserId(_userId);
-                  var data = response.data?.map((e) => e).toList();
-                  return data ?? [];
-                },
-                dropdownBuilder: (context, selectedItem) {
-                  return selectedItem != null ? Text("${selectedItem.inventLocationId} - ${selectedItem.name}") : const Text('Select warehouse');
-                },
-                dropdownDecoratorProps: const DropDownDecoratorProps(
-                  dropdownSearchDecoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    label: Text('Warehouse'),
-                  ),
-                ),
-                onChanged: (value) async {
-                  if (value != null) {
-                    await Environment.saveUserWarehouseDto(value);
-                  }
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+        body: _buildHome(context),
+      ),
+    );
+  }
+
+  Widget _buildHome(BuildContext context) {
+    return UpgradeAlert(
+        upgrader: upgrader,
+        showIgnore: false,
+        child: Column(
+          children: [
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  const Text(
-                    'Welcome to Spare Part Management System',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  const Text(
-                    'Please select the menu to start',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Material(
-                    type: MaterialType.transparency,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/inventoryMaster');
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                    child: DropdownSearch<UserWarehouseDto>(
+                      selectedItem: Environment.userWarehouseDto,
+                      validator:(value) {
+                        if (value == null) {
+                          return 'Please select username';
+                        }
+                        return null;
                       },
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.blue,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: const Column(
-                          children: [
-                            Icon(
-                              UniconsLine.box,
-                              color: Colors.blue,
-                              size: 50,
+                      popupProps: PopupPropsMultiSelection.menu(
+                        itemBuilder: (BuildContext context, UserWarehouseDto item, bool isSelected) {
+                          return Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: !isSelected
+                                ? null
+                                : BoxDecoration(
+                              border: Border.all(color: Theme.of(context).primaryColor),
+                              borderRadius: BorderRadius.circular(5),
+                              color: Colors.white,
                             ),
-                            Text(
-                              'Inventory Master',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            child: ListTile(
+                              selected: isSelected,
+                              dense: true,
+                              title: Text(item.inventLocationId),
+                              contentPadding: const EdgeInsets.all(8),
+                              subtitle: Text(item.name),
+                              trailing: item.isDefault != null && item.isDefault! ? const Text("Default") : null,
                             ),
-                          ],
+                          );
+                        },
+                      ),
+                      asyncItems: (String searchTerm) async {
+                        var response = await _userWarehouseDAL.getUserWarehouseByUserId(_userId);
+                        var data = response.data?.map((e) => e).toList();
+                        return data ?? [];
+                      },
+                      dropdownBuilder: (context, selectedItem) {
+                        return selectedItem != null ? Text("${selectedItem.inventLocationId} - ${selectedItem.name}") : const Text('Select warehouse');
+                      },
+                      dropdownDecoratorProps: const DropDownDecoratorProps(
+                        dropdownSearchDecoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          label: Text('Warehouse'),
                         ),
                       ),
+                      onChanged: (value) async {
+                        if (value != null) {
+                          await Environment.saveUserWarehouseDto(value);
+                        }
+                      },
                     ),
                   ),
-                  const SizedBox(height: 15),
-                  Material(
-                    type: MaterialType.transparency,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/goodsReceiptHeaderList');
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.blue,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: const Column(
-                          children: [
-                            Icon(
-                              UniconsLine.truck_loading,
-                              color: Colors.blue,
-                              size: 50,
-                            ),
-                            Text(
-                              'Goods Receipt',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        // const Text(
+                        //   'Welcome to Spare Part Management System',
+                        //   style: TextStyle(
+                        //     fontSize: 20,
+                        //     fontWeight: FontWeight.bold,
+                        //   ),
+                        // ),
+                        // const SizedBox(height: 5),
+                        // const Text(
+                        //   'Please select the menu to start',
+                        //   style: TextStyle(
+                        //     fontSize: 15,
+                        //     fontWeight: FontWeight.normal,
+                        //   ),
+                        // ),
+                        const SizedBox(height: 15),
+                        Material(
+                          type: MaterialType.transparency,
+                          child: InkWell(
+                            onTap: () async {
+                              await Navigator.pushNamed(context, '/inventoryMaster');
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.blue,
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: const Column(
+                                children: [
+                                  Icon(
+                                    UniconsLine.box,
+                                    color: Colors.blue,
+                                    size: 50,
+                                  ),
+                                  Text(
+                                    'Inventory Master',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 15),
+                        Material(
+                          type: MaterialType.transparency,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/goodsReceiptHeaderList');
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.blue,
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: const Column(
+                                children: [
+                                  Icon(
+                                    UniconsLine.truck_loading,
+                                    color: Colors.blue,
+                                    size: 50,
+                                  ),
+                                  Text(
+                                    'Goods Receipt',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        Material(
+                          type: MaterialType.transparency,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/workOrderDirectList');
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.blue,
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: const Column(
+                                children: [
+                                  Icon(
+                                    UniconsLine.wrench,
+                                    color: Colors.blue,
+                                    size: 50,
+                                  ),
+                                  Text(
+                                    'Work Order',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 15),
-                  Material(
-                    type: MaterialType.transparency,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/workOrderDirectList');
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.blue,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: const Column(
-                          children: [
-                            Icon(
-                              UniconsLine.wrench,
-                              color: Colors.blue,
-                              size: 50,
-                            ),
-                            Text(
-                              'Work Order',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                ],
+              ),
+            ),
+            // create a footer about the version of the app
+            Container(
+              padding: const EdgeInsets.all(10),
+              color: Colors.blue,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    Environment.baseUrl,
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    "v${Environment.version}",
+                    style: const TextStyle(
+                      color: Colors.white,
                     ),
                   ),
                 ],
               ),
             ),
           ],
-        )
-      ),
-    );
+        ),
+      );
   }
 }
