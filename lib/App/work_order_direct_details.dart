@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sparepartmanagementsystem_flutter/App/confirmation_dialog.dart';
 
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/work_order_direct_dal.dart';
@@ -10,6 +11,7 @@ import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto_buil
 import 'package:sparepartmanagementsystem_flutter/Model/Constants/no_yes.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto_builder.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
+import 'package:unicons/unicons.dart';
 
 class WorkOrderDirectDetails extends StatefulWidget {
   final WorkOrderHeaderDto workOrderHeaderDto;
@@ -26,7 +28,7 @@ class _WorkOrderDirectDetailsState extends State<WorkOrderDirectDetails> with Si
   late ScaffoldMessengerState _scaffoldMessenger;
   late TabController _tabController;
   var _isLoading = false;
-  var _tabIndex = 0;
+  //var _tabIndex = 0;
 
   @override
   void initState() {
@@ -36,7 +38,7 @@ class _WorkOrderDirectDetailsState extends State<WorkOrderDirectDetails> with Si
       _scaffoldMessenger = ScaffoldMessenger.of(context);
     });
     _tabController = TabController(initialIndex: 0, length: 2, vsync: this);
-    _tabController.animation?.addListener(() => setState(() => _tabIndex = _tabController.index));
+    // _tabController.animation?.addListener(() => setState(() => _tabIndex = _tabController.index));
     _fetchWorkOrder();
   }
 
@@ -71,12 +73,12 @@ class _WorkOrderDirectDetailsState extends State<WorkOrderDirectDetails> with Si
     return LoadingOverlay(
       isLoading: _isLoading,
       child: Scaffold(
-        floatingActionButton: _tabIndex == 1 ? FloatingActionButton(
-          onPressed: () {
-            _navigator.pushNamed('/workOrderLineAdd').then((value) => _fetchWorkOrder());
-          },
-          child: const Icon(Icons.add),
-        ) : null,
+        // floatingActionButton: _tabIndex == 1 ? FloatingActionButton(
+        //   onPressed: () {
+        //     _navigator.pushNamed('/workOrderLineAdd').then((value) => _fetchWorkOrder());
+        //   },
+        //   child: const Icon(Icons.add),
+        // ) : null,
         appBar: AppBar(
           title: const Text('Work Order Details'),
           bottom: TabBar(
@@ -261,12 +263,63 @@ class _WorkOrderDirectDetailsState extends State<WorkOrderDirectDetails> with Si
       itemBuilder: (context, index) {
         final workOrderLine = _workOrderHeaderDtoBuilder.workOrderLines[index];
         return ListTile(
-            title: Text("Line number: ${workOrderLine.line}"),
-            subtitle: Text("Task ID: ${workOrderLine.taskId}"),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text("Line Number: ${workOrderLine.line}"),
+                Text("Line Title: ${workOrderLine.lineTitle}"),
+              ],
+            ),
+            leading: workOrderLine.lineStatus == "Closed" ? const Icon(UniconsLine.check_circle, color: Colors.green) : IconButton(
+              icon: const Icon(UniconsLine.times_circle, color: Colors.red),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              style: const ButtonStyle(
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => ConfirmationDialog(
+                    title: const Text('Close Work Order Line'),
+                    content: const Text('Are you sure you want to close this work order line?'),
+                    onConfirm: () async {
+                      try {
+                        await _workOrderDirectDAL.closeWorkOrderLineAndPostInventJournal(workOrderLine.build());
+                        await _fetchWorkOrder();
+                      }
+                      on DioException catch (error) {
+                        _scaffoldMessenger.showSnackBar(SnackBar(content: Text(error.response?.data['message'] ?? error.message)));
+                      }
+                      catch (error) {
+                        _scaffoldMessenger.showSnackBar(SnackBar(content: Text(error.toString())));
+                      }
+                    },
+                  )
+                );
+              },
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text("Task id: ${workOrderLine.taskId}"),
+                Text("Condition: ${workOrderLine.condition}"),
+                Text("Supervisor: ${workOrderLine.supervisor}"),
+                Text("Line status: ${workOrderLine.lineStatus}"),
+              ],
+            ),
             trailing: IconButton(
               icon: const Icon(Icons.chevron_right),
-              onPressed: () {
-                _navigator.pushNamed('/itemRequisitionDirectList', arguments: workOrderLine.build()).then((value) => _fetchWorkOrder());
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              style: const ButtonStyle(
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              onPressed: () async {
+                await _navigator.pushNamed('/workOrderDirectLineDetails', arguments: workOrderLine.build());
+                await _fetchWorkOrder();
               },
             )
         );

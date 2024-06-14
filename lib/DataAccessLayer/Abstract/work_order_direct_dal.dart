@@ -11,12 +11,12 @@ abstract class WorkOrderDirectDAL {
   Future<ApiResponseDto> updateWorkOrderLine(WorkOrderHeaderDto dto);
   Future<ApiResponseDto<WorkOrderLineDto>> getWorkOrderLine(String agsEamWoId, int line);
   Future<ApiResponseDto<List<WorkOrderLineDto>>> getWorkOrderLineList(String agsEamWoId);
+  Future<ApiResponseDto> closeWorkOrderLineAndPostInventJournal(WorkOrderLineDto dto);
   Future<ApiResponseDto> addItemRequisition(InventReqDto dto);
   Future<ApiResponseDto> updateItemRequisition(InventReqDto dto);
   Future<ApiResponseDto> deleteItemRequisition(InventReqDto dto);
+  Future<ApiResponseDto> deleteItemRequisitionWithListOfRecId(List<int> agsWORecId);
   Future<ApiResponseDto<InventReqDto>> getItemRequisition(InventReqDto dto);
   Future<ApiResponseDto<List<InventReqDto>>> getItemRequisitionList(int agsWORecId);
-
-
-
+  Future<ApiResponseDto> createInventJournalTable(WorkOrderLineDto dto);
 }

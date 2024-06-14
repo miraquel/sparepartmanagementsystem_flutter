@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:sparepartmanagementsystem_flutter/Model/user_warehouse_dto.dart';
 
@@ -10,9 +11,11 @@ class Environment {
   static const _storage = FlutterSecureStorage();
   static String _baseUrl = '';
   static UserWarehouseDto _userWarehouseDto = UserWarehouseDto();
+  static String _version = '';
 
   static String get baseUrl => _baseUrl;
   static UserWarehouseDto get userWarehouseDto => _userWarehouseDto;
+  static String get version => _version;
 
   static Future<void> initialize() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +25,8 @@ class Environment {
       final config = jsonDecode(environment) as Map<String, dynamic>;
       _baseUrl = config['API_URL'] ?? '';
     }
+    final packageInfo = await PackageInfo.fromPlatform();
+    _version = packageInfo.version;
   }
 
   static Future<void> saveBaseUrl(String newBaseUrl) async {
