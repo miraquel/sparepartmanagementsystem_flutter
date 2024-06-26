@@ -7,8 +7,8 @@ import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto.da
 abstract class WorkOrderDirectDAL {
   Future<ApiResponseDto<WorkOrderHeaderDto>> getWorkOrderHeader(String agsEamWoId);
   Future<ApiResponseDto<PagedListDto<WorkOrderHeaderDto>>> getWorkOrderHeaderPagedList(int pageNumber, int pageSize, WorkOrderHeaderDto dto);
-  Future<ApiResponseDto> addWorkOrderLine(WorkOrderHeaderDto dto);
-  Future<ApiResponseDto> updateWorkOrderLine(WorkOrderHeaderDto dto);
+  Future<ApiResponseDto> addWorkOrderLine(WorkOrderLineDto dto);
+  Future<ApiResponseDto> updateWorkOrderLine(WorkOrderLineDto dto);
   Future<ApiResponseDto<WorkOrderLineDto>> getWorkOrderLine(String agsEamWoId, int line);
   Future<ApiResponseDto<List<WorkOrderLineDto>>> getWorkOrderLineList(String agsEamWoId);
   Future<ApiResponseDto> closeWorkOrderLineAndPostInventJournal(WorkOrderLineDto dto);

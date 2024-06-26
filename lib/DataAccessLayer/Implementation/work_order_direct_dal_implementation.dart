@@ -19,7 +19,7 @@ class WorkOrderDirectDALImplementation implements WorkOrderDirectDAL {
   }
 
   @override
-  Future<ApiResponseDto> addWorkOrderLine(WorkOrderHeaderDto dto) {
+  Future<ApiResponseDto> addWorkOrderLine(WorkOrderLineDto dto) {
     final response = _dio.post(ApiPath.addWorkOrderLineDirect, data: dto);
     return response.then((value) => ApiResponseDto.fromJson(value.data));
   }
@@ -73,7 +73,7 @@ class WorkOrderDirectDALImplementation implements WorkOrderDirectDAL {
   }
 
   @override
-  Future<ApiResponseDto> updateWorkOrderLine(WorkOrderHeaderDto dto) {
+  Future<ApiResponseDto> updateWorkOrderLine(WorkOrderLineDto dto) {
     final response = _dio.post(ApiPath.updateWorkOrderLineDirect, data: dto);
     return response.then((value) => ApiResponseDto.fromJson(value.data));
   }

@@ -159,50 +159,61 @@ class _WorkOrderDirectLineDetailsState extends State<WorkOrderDirectLineDetails>
   }
 
   Widget _financialDimensions() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Financial Dimensions',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const Text(
-                'Dimension values are used to categorize transactions and to provide additional information about transactions. The default dimension values are used when no other dimension values are specified.'),
-            ...[
-              // _financialDimensionField('Bank', _workOrderLineDtoBuilder.defaultDimension.bank,
-              //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setBank(value!.value))),
-              // _financialDimensionField('Brand', _workOrderLineDtoBuilder.defaultDimension.brand,
-              //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setBrand(value!.value))),
-              // _financialDimensionField('BusinessUnit', _workOrderLineDtoBuilder.defaultDimension.businessUnit,
-              //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setBusinessUnit(value!.value))),
-              _financialDimensionField('CostCenter', _workOrderLineDtoBuilder.defaultDimension.costCenter,
-                  (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setCostCenter(value!.value))),
-              // _financialDimensionField('CustLevel2', _workOrderLineDtoBuilder.defaultDimension.custLevel2,
-              //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setCustLevel2(value!.value))),
-              // _financialDimensionField('Customer', _workOrderLineDtoBuilder.defaultDimension.customer,
-              //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setCustomer(value!.value))),
-              _financialDimensionField('Department', _workOrderLineDtoBuilder.defaultDimension.department,
-                  (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setDepartment(value!.value))),
-              // _financialDimensionField('Distributor', _workOrderLineDtoBuilder.defaultDimension.distributor,
-              //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setDistributor(value!.value))),
-              // _financialDimensionField('Divisi', _workOrderLineDtoBuilder.defaultDimension.divisi,
-              //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setDivisi(value!.value))),
-              // _financialDimensionField('Investment', _workOrderLineDtoBuilder.defaultDimension.investment,
-              //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setInvestment(value!.value))),
-              // _financialDimensionField('SubDistributor', _workOrderLineDtoBuilder.defaultDimension.subDistributor,
-              //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setSubDistributor(value!.value))),
-              // _financialDimensionField('Worker', _workOrderLineDtoBuilder.defaultDimension.worker,
-              //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setWorker(value!.value))),
-              // _financialDimensionField('WorkerStatus', _workOrderLineDtoBuilder.defaultDimension.workerStatus,
-              //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setWorkerStatus(value!.value))),
-              // _financialDimensionField('WorkerType', _workOrderLineDtoBuilder.defaultDimension.workerType,
-              //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setWorkerType(value!.value))),
-            ].map((e) =>
-                Padding(padding: const EdgeInsets.only(top: 10), child: e)),
-          ],
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Financial Dimensions',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const Text(
+                      'Dimension values are used to categorize transactions and to provide additional information about transactions. The default dimension values are used when no other dimension values are specified.'),
+                  ...[
+                    // _financialDimensionField('Bank', _workOrderLineDtoBuilder.defaultDimension.bank,
+                    //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setBank(value!.value))),
+                    // _financialDimensionField('Brand', _workOrderLineDtoBuilder.defaultDimension.brand,
+                    //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setBrand(value!.value))),
+                    // _financialDimensionField('BusinessUnit', _workOrderLineDtoBuilder.defaultDimension.businessUnit,
+                    //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setBusinessUnit(value!.value))),
+                    _financialDimensionField('CostCenter', _workOrderLineDtoBuilder.defaultDimension.costCenter,
+                        (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setCostCenter(value!.value))),
+                    // _financialDimensionField('CustLevel2', _workOrderLineDtoBuilder.defaultDimension.custLevel2,
+                    //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setCustLevel2(value!.value))),
+                    // _financialDimensionField('Customer', _workOrderLineDtoBuilder.defaultDimension.customer,
+                    //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setCustomer(value!.value))),
+                    _financialDimensionField('Department', _workOrderLineDtoBuilder.defaultDimension.department,
+                        (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setDepartment(value!.value))),
+                    // _financialDimensionField('Distributor', _workOrderLineDtoBuilder.defaultDimension.distributor,
+                    //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setDistributor(value!.value))),
+                    // _financialDimensionField('Divisi', _workOrderLineDtoBuilder.defaultDimension.divisi,
+                    //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setDivisi(value!.value))),
+                    // _financialDimensionField('Investment', _workOrderLineDtoBuilder.defaultDimension.investment,
+                    //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setInvestment(value!.value))),
+                    // _financialDimensionField('SubDistributor', _workOrderLineDtoBuilder.defaultDimension.subDistributor,
+                    //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setSubDistributor(value!.value))),
+                    // _financialDimensionField('Worker', _workOrderLineDtoBuilder.defaultDimension.worker,
+                    //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setWorker(value!.value))),
+                    // _financialDimensionField('WorkerStatus', _workOrderLineDtoBuilder.defaultDimension.workerStatus,
+                    //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setWorkerStatus(value!.value))),
+                    // _financialDimensionField('WorkerType', _workOrderLineDtoBuilder.defaultDimension.workerType,
+                    //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setWorkerType(value!.value))),
+                  ].map((e) => Padding(padding: const EdgeInsets.only(top: 10), child: e)),
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
+        ElevatedButton(
+          onPressed: () async {
+            await _workOrderLineDAL.updateWorkOrderLine(_workOrderLineDtoBuilder.build());
+          },
+          child: const Text('Save'),
+        )
+      ],
     );
   }
 

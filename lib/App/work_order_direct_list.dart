@@ -77,8 +77,9 @@ class _WorkOrderDirectListState extends State<WorkOrderDirectList> {
             itemBuilder: (context, item, index) => ListTile(
               title: Text(item.agseamwoid),
               subtitle: Text(item.name),
-              onTap: () {
-                _navigator.pushNamed('/workOrderDirectDetails', arguments: item).then((value) => _pagingController.refresh());
+              onTap: () async {
+                await _navigator.pushNamed('/workOrderDirectDetails', arguments: item);
+                _pagingController.refresh();
               },
             ),
           ),
