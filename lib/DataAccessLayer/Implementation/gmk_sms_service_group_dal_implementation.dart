@@ -11,6 +11,7 @@ import 'package:sparepartmanagementsystem_flutter/Model/invent_table_search_dto.
 import 'package:sparepartmanagementsystem_flutter/Model/purch_line_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/purch_table_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/purch_table_search_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/vend_packing_slip_jour_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/wms_location_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/wms_location_search_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_ax_dto.dart';
@@ -166,5 +167,13 @@ class GMKSMSServiceGroupDALImplementation implements GMKSMSServiceGroupDAL {
     return ApiResponseDto<List<DimensionDto>>.fromJson(
         response.data as Map<String, dynamic>,
         (json) => json.map<DimensionDto>((e) => DimensionDto.fromJson(e)).toList());
+  }
+
+  @override
+  Future<ApiResponseDto<VendPackingSlipJourDto>> getVendPackingSlipJourWithLines(String packingSlipId) async {
+    final response = await _dio.get(ApiPath.getVendPackingSlipJourWithLines, queryParameters: {'packingSlipId': packingSlipId});
+    return ApiResponseDto<VendPackingSlipJourDto>.fromJson(
+        response.data as Map<String, dynamic>,
+        (json) => VendPackingSlipJourDto.fromJson(json));
   }
 }

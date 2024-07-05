@@ -108,7 +108,7 @@ class _WorkOrderDirectDetailsState extends State<WorkOrderDirectDetails> with Si
           const Padding(
             padding: EdgeInsets.only(top: 16, left: 16, right: 16),
             child: Text(
-              'New Goods Receipt',
+              'Work order details',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -116,9 +116,9 @@ class _WorkOrderDirectDetailsState extends State<WorkOrderDirectDetails> with Si
             ),
           ),
           const Padding(
-            padding: EdgeInsets.only(top: 8, left: 16, right: 16),
+            padding: EdgeInsets.only(left: 16, right: 16, bottom: 8),
             child: Text(
-              'Please fill the form below to create new Goods Receipt Header.',
+              'below are the details of the work order.',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.black,
@@ -126,97 +126,108 @@ class _WorkOrderDirectDetailsState extends State<WorkOrderDirectDetails> with Si
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             child: TextFormField(
               controller: TextEditingController(text: _workOrderHeaderDtoBuilder.agseamwoid),
-              decoration: const InputDecoration(labelText: 'Agseamwoid'),
+              decoration: const InputDecoration(labelText: 'Agseamwoid', border: OutlineInputBorder()),
               readOnly: true,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             child: TextFormField(
               controller: TextEditingController(text: _workOrderHeaderDtoBuilder.agseamwrid),
-              decoration: const InputDecoration(labelText: 'Work request Id'),
+              decoration: const InputDecoration(labelText: 'Work request Id', border: OutlineInputBorder()),
               readOnly: true,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             child: TextFormField(
               controller: TextEditingController(text: _workOrderHeaderDtoBuilder.agseamEntityID),
-              decoration: const InputDecoration(labelText: 'Entity Id'),
+              decoration: const InputDecoration(labelText: 'Entity Id', border: OutlineInputBorder()),
               readOnly: true,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             child: TextFormField(
               controller: TextEditingController(text: _workOrderHeaderDtoBuilder.name),
-              decoration: const InputDecoration(labelText: 'Name'),
+              decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
               readOnly: true,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             child: TextFormField(
               controller: TextEditingController(text: _workOrderHeaderDtoBuilder.headerTitle),
-              decoration: const InputDecoration(labelText: 'Work Order Title'),
+              decoration: const InputDecoration(labelText: 'Work Order Title', border: OutlineInputBorder()),
               readOnly: true,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             child: TextFormField(
               controller: TextEditingController(text: _workOrderHeaderDtoBuilder.agseamPriorityID),
-              decoration: const InputDecoration(labelText: 'Priority'),
+              decoration: const InputDecoration(labelText: 'Priority', border: OutlineInputBorder()),
               readOnly: true,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             child: TextFormField(
               controller: TextEditingController(text: _workOrderHeaderDtoBuilder.agseamwotype),
-              decoration: const InputDecoration(labelText: 'Work Order Type'),
+              decoration: const InputDecoration(labelText: 'Work Order Type', border: OutlineInputBorder()),
               readOnly: true,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             child: TextFormField(
               controller: TextEditingController(text: _workOrderHeaderDtoBuilder.agseamwoStatusID),
-              decoration: const InputDecoration(labelText: 'Status'),
+              decoration: const InputDecoration(labelText: 'Status', border: OutlineInputBorder()),
               readOnly: true,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             child: TextFormField(
               // format date with intl
               controller: TextEditingController(text: DateFormat.yMd().add_jm().format(_workOrderHeaderDtoBuilder.agseamPlanningStartDate)),
-              decoration: const InputDecoration(labelText: 'Planning Start Date'),
+              decoration: const InputDecoration(labelText: 'Planning Start Date', border: OutlineInputBorder()),
               readOnly: true,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             child: TextFormField(
               controller: TextEditingController(text: DateFormat.yMd().add_jm().format(_workOrderHeaderDtoBuilder.agseamPlanningEndDate)),
-              decoration: const InputDecoration(labelText: 'Planning End Date'),
+              decoration: const InputDecoration(labelText: 'Planning End Date', border: OutlineInputBorder()),
+              readOnly: true,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+            child: TextFormField(
+              controller: TextEditingController(text: DateFormat.yMd().add_jm().format(_workOrderHeaderDtoBuilder.woCloseDate)),
+              decoration: const InputDecoration(labelText: 'Work Order Close Date', border: OutlineInputBorder()),
               readOnly: true,
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0),
             child: TextFormField(
-              controller: TextEditingController(text: DateFormat.yMd().add_jm().format(_workOrderHeaderDtoBuilder.woCloseDate)),
-              decoration: const InputDecoration(labelText: 'Work Order Close Date'),
+              controller: TextEditingController(text: _workOrderHeaderDtoBuilder.notes),
+              maxLines: null,
+              keyboardType: TextInputType.multiline,
+              decoration: const InputDecoration(labelText: 'Notes', border: OutlineInputBorder()),
               readOnly: true,
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 const Text('Entity Shut Down'),
                 Switch(
@@ -227,8 +238,9 @@ class _WorkOrderDirectDetailsState extends State<WorkOrderDirectDetails> with Si
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 const Text('Suspend'),
                 Switch(
@@ -236,16 +248,6 @@ class _WorkOrderDirectDetailsState extends State<WorkOrderDirectDetails> with Si
                   onChanged: (value) { },
                 ),
               ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-            child: TextFormField(
-              controller: TextEditingController(text: _workOrderHeaderDtoBuilder.notes),
-              maxLines: null,
-              keyboardType: TextInputType.multiline,
-              decoration: const InputDecoration(labelText: 'Notes'),
-              readOnly: true,
             ),
           ),
         ],
@@ -272,28 +274,31 @@ class _WorkOrderDirectDetailsState extends State<WorkOrderDirectDetails> with Si
               ],
             ),
             leading: workOrderLine.lineStatus == "Closed" ? const Icon(UniconsLine.check_circle, color: Colors.green) : IconButton(
-              icon: const Icon(UniconsLine.times_circle, color: Colors.red),
+              icon: const Icon(UniconsLine.message),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
               style: const ButtonStyle(
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              onPressed: () {
-                showDialog(
+              onPressed: () async {
+                await showDialog(
                   context: context,
                   builder: (context) => ConfirmationDialog(
                     title: const Text('Close Work Order Line'),
                     content: const Text('Are you sure you want to close this work order line?'),
                     onConfirm: () async {
                       try {
+                        setState(() => _isLoading = true);
                         await _workOrderDirectDAL.closeWorkOrderLineAndPostInventJournal(workOrderLine.build());
                         await _fetchWorkOrder();
                       }
                       on DioException catch (error) {
-                        _scaffoldMessenger.showSnackBar(SnackBar(content: Text(error.response?.data['message'] ?? error.message)));
+                        var messages = error.response?.data['errorMessages'] as List<dynamic>;
+                        _scaffoldMessenger.showSnackBar(SnackBar(content: Text(messages.first)));
                       }
-                      catch (error) {
-                        _scaffoldMessenger.showSnackBar(SnackBar(content: Text(error.toString())));
+                      finally {
+                        setState(() => _isLoading = false);
+                        _scaffoldMessenger.showSnackBar(const SnackBar(content: Text('Work order line closed successfully')));
                       }
                     },
                   )

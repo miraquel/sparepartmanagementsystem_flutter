@@ -1,5 +1,6 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:sparepartmanagementsystem_flutter/App/confirmation_dialog.dart';
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/work_order_direct_dal.dart';
@@ -7,6 +8,7 @@ import 'package:sparepartmanagementsystem_flutter/Model/dimension_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto_builder.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
+import 'package:unicons/unicons.dart';
 
 class WorkOrderDirectLineDetails extends StatefulWidget {
   final WorkOrderLineDto workOrderLineDto;
@@ -25,25 +27,37 @@ class _WorkOrderDirectLineDetailsState extends State<WorkOrderDirectLineDetails>
   late final TabController _tabController =
       TabController(length: 2, vsync: this);
   late NavigatorState _navigator;
+  late ScaffoldMessengerState _scaffoldMessenger;
   var _isLoading = false;
+  var _isItemRequirementCanBeAdded = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _navigator = Navigator.of(context);
+      _scaffoldMessenger = ScaffoldMessenger.of(context);
     });
 
     _workOrderLineDtoBuilder.setFromDto(widget.workOrderLineDto);
+
+    if (_workOrderLineDtoBuilder.defaultDimension.costCenter.isNotEmpty &&
+        _workOrderLineDtoBuilder.defaultDimension.department.isNotEmpty) {
+      _isItemRequirementCanBeAdded = true;
+    }
   }
 
-  Future<void> _getWorkOrderLine() async {
+  Future<void> _refreshData() async {
     try {
       setState(() => _isLoading = true);
       final response = await _workOrderLineDAL.getWorkOrderLine(
           widget.workOrderLineDto.woid, widget.workOrderLineDto.line);
       if (response.success) {
         _workOrderLineDtoBuilder.setFromDto(response.data!);
+        if (_workOrderLineDtoBuilder.defaultDimension.costCenter.isNotEmpty &&
+            _workOrderLineDtoBuilder.defaultDimension.department.isNotEmpty) {
+          _isItemRequirementCanBeAdded = true;
+        }
       }
     } finally {
       setState(() => _isLoading = false);
@@ -56,7 +70,7 @@ class _WorkOrderDirectLineDetailsState extends State<WorkOrderDirectLineDetails>
       isLoading: _isLoading,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Work Order Line Details'),
+          title: const Text('Work Order Line Details', style: TextStyle(fontSize: 21)),
           bottom: TabBar(
             controller: _tabController,
             tabs: const [
@@ -66,8 +80,13 @@ class _WorkOrderDirectLineDetailsState extends State<WorkOrderDirectLineDetails>
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: _getWorkOrderLine,
+              icon: const Icon(UniconsLine.box),
+              onPressed: _isItemRequirementCanBeAdded
+                  ? () async {
+                      await _navigator.pushNamed('/itemRequisitionDirectList',
+                          arguments: widget.workOrderLineDto);
+                    }
+                  : null,
             )
           ],
         ),
@@ -82,73 +101,67 @@ class _WorkOrderDirectLineDetailsState extends State<WorkOrderDirectLineDetails>
     return SingleChildScrollView(
       child: Column(
         children: [
-          Padding(
-            padding:
-                const EdgeInsets.only(top: 15, left: 8, right: 8, bottom: 5),
-            child: ElevatedButton(
-              onPressed: () async {
-                await _navigator.pushNamed('/itemRequisitionDirectList',
-                    arguments: widget.workOrderLineDto);
-              },
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-              ),
-              child: const Text('Item requisitions',
-                  style: TextStyle(fontSize: 17, color: Colors.white)),
-            ),
-          ),
           ListTile(
             title: const Text('Line'),
             subtitle: Text(_workOrderLineDtoBuilder.line.toString()),
           ),
+          const Divider(height: 0, thickness: 1),
           ListTile(
             title: const Text('Line Title'),
             subtitle: Text(_workOrderLineDtoBuilder.lineTitle),
           ),
+          const Divider(height: 0, thickness: 1),
           ListTile(
             title: const Text('Entity Id'),
             subtitle: Text(_workOrderLineDtoBuilder.entityId),
           ),
+          const Divider(height: 0, thickness: 1),
           ListTile(
             title: const Text('Entity Shutdown'),
             subtitle: Text(_workOrderLineDtoBuilder.entityShutdown.toString()),
           ),
+          const Divider(height: 0, thickness: 1),
           ListTile(
             title: const Text('Work Order Type'),
             subtitle: Text(_workOrderLineDtoBuilder.workOrderType),
           ),
+          const Divider(height: 0, thickness: 1),
           ListTile(
             title: const Text('Task Id'),
             subtitle: Text(_workOrderLineDtoBuilder.taskId),
           ),
+          const Divider(height: 0, thickness: 1),
           ListTile(
             title: const Text('Condition'),
             subtitle: Text(_workOrderLineDtoBuilder.condition),
           ),
+          const Divider(height: 0, thickness: 1),
           ListTile(
             title: const Text('Planning Start Date'),
             subtitle:
                 Text(_workOrderLineDtoBuilder.planningStartDate.toString()),
           ),
+          const Divider(height: 0, thickness: 1),
           ListTile(
             title: const Text('Planning End Date'),
             subtitle: Text(_workOrderLineDtoBuilder.planningEndDate.toString()),
           ),
+          const Divider(height: 0, thickness: 1),
           ListTile(
             title: const Text('Supervisor'),
             subtitle: Text(_workOrderLineDtoBuilder.supervisor),
           ),
+          const Divider(height: 0, thickness: 1),
           ListTile(
             title: const Text('Calendar Id'),
             subtitle: Text(_workOrderLineDtoBuilder.calendarId),
           ),
+          const Divider(height: 0, thickness: 1),
           ListTile(
             title: const Text('Line Status'),
             subtitle: Text(_workOrderLineDtoBuilder.lineStatus),
           ),
+          const Divider(height: 0, thickness: 1),
           ListTile(
             title: const Text('Suspend'),
             subtitle: Text(_workOrderLineDtoBuilder.suspend.toString()),
@@ -171,7 +184,7 @@ class _WorkOrderDirectLineDetailsState extends State<WorkOrderDirectLineDetails>
                   const Text('Financial Dimensions',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   const Text(
-                      'Dimension values are used to categorize transactions and to provide additional information about transactions. The default dimension values are used when no other dimension values are specified.'),
+                      'To update the item requisition, please fill the financial dimensions first.'),
                   ...[
                     // _financialDimensionField('Bank', _workOrderLineDtoBuilder.defaultDimension.bank,
                     //     (value) async => setState(() => _workOrderLineDtoBuilder.defaultDimension.setBank(value!.value))),
@@ -207,11 +220,43 @@ class _WorkOrderDirectLineDetailsState extends State<WorkOrderDirectLineDetails>
             ),
           ),
         ),
-        ElevatedButton(
-          onPressed: () async {
-            await _workOrderLineDAL.updateWorkOrderLine(_workOrderLineDtoBuilder.build());
-          },
-          child: const Text('Save'),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ElevatedButton(
+            onPressed: () async {
+              await showDialog(context: context,
+                builder: (_) => ConfirmationDialog(
+                  title: const Text('Save Financial Dimensions'),
+                  content: const Text('Are you sure you want to save the financial dimensions?'),
+                  onConfirm: () async {
+                    try {
+                      setState(() => _isLoading = true);
+                      final response = await _workOrderLineDAL.updateWorkOrderLine(_workOrderLineDtoBuilder.build());
+                      if (response.success) {
+                        _scaffoldMessenger.showSnackBar(
+                          const SnackBar(
+                            content: Text('Financial dimension updated successfully'),
+                          ),
+                        );
+                      }
+                    } finally {
+                      await _refreshData();
+                      setState(() => _isLoading = false);
+                    }
+                  }
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size.fromHeight(50),
+              backgroundColor: Colors.blue,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            child: const Text('Save',
+              style: TextStyle(fontSize: 17, color: Colors.white)
+            ),
+          ),
         )
       ],
     );

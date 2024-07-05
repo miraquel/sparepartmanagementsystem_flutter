@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/work_order_direct_dal.dart';
@@ -71,18 +72,33 @@ class _WorkOrderDirectListState extends State<WorkOrderDirectList> {
       ),
       body: RefreshIndicator(
         onRefresh: () { return Future.sync(() => _pagingController.refresh()); },
-        child: PagedListView<int, WorkOrderHeaderDto>(
+        child: PagedListView<int, WorkOrderHeaderDto>.separated(
           pagingController: _pagingController,
           builderDelegate: PagedChildBuilderDelegate<WorkOrderHeaderDto>(
             itemBuilder: (context, item, index) => ListTile(
               title: Text(item.agseamwoid),
-              subtitle: Text(item.name),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(item.headerTitle),
+                  Text(item.agseamEntityID),
+                  Text(item.agseamPriorityID),
+                ],
+              ),
+              trailing: Text(DateFormat('dd-MMM-yyyy').format(item.createdDateTime)),
               onTap: () async {
                 await _navigator.pushNamed('/workOrderDirectDetails', arguments: item);
                 _pagingController.refresh();
               },
             ),
           ),
+          separatorBuilder: (BuildContext context, int index) {
+            return const Divider(
+              height: 0,
+              thickness: 1,
+              color: Colors.black,
+            );
+          },
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:sparepartmanagementsystem_flutter/App/status_bar.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
 import 'package:unicons/unicons.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -87,13 +88,20 @@ class _HomeState extends State<Home> {
       isLoading: _isLoading,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('SMS Apps'),
+          title: const Text(
+            'Samson Apps',
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          toolbarHeight: 40,
+          backgroundColor: Colors.blue,
           actions: [
             IconButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/settings');
               },
-              icon: const Icon(Icons.settings),
+              icon: const Icon(Icons.settings, color: Colors.white),
             ),
           ],
         ),
@@ -307,27 +315,7 @@ class _HomeState extends State<Home> {
               ),
             ),
             // create a footer about the version of the app
-            Container(
-              padding: const EdgeInsets.all(10),
-              color: Colors.blue,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    Environment.baseUrl,
-                    style: const TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    "v${Environment.version}",
-                    style: const TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            const StatusBar(),
           ],
         ),
       );

@@ -62,18 +62,24 @@ class _GoodsReceiptListState extends State<GoodsReceiptList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Goods Receipt Header List'),
+        title: const Text('Goods Receipt List'),
       ),
       body: RefreshIndicator(
         onRefresh: () {
           return Future.sync(() => _pagingController.refresh());
         },
-        child: PagedListView<int, GoodsReceiptHeaderDto>(
+        child: PagedListView<int, GoodsReceiptHeaderDto>.separated(
           pagingController: _pagingController,
           builderDelegate: PagedChildBuilderDelegate<GoodsReceiptHeaderDto>(
             itemBuilder: (context, item, index) => ListTile(
-              title: Text('${item.purchId}${item.packingSlipId.isNotEmpty ? ' - ${item.packingSlipId}' : ''}'),
-              subtitle: Text(item.orderAccount),
+              title: Text(item.purchId),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(item.orderAccount, overflow: TextOverflow.ellipsis),
+                  Text(item.purchName, overflow: TextOverflow.ellipsis),
+                ],
+              ),
               trailing: item.isSubmitted != null && item.isSubmitted == true ? const Text('Submitted', style: TextStyle(fontSize: 13, color: Colors.green)) : const Text('Not Submitted', style: TextStyle(fontSize: 13, color: Colors.red)),
               onTap: () {
                 Navigator.pushNamed(context, '/goodsReceiptHeaderDetails', arguments: item.goodsReceiptHeaderId)
@@ -81,6 +87,13 @@ class _GoodsReceiptListState extends State<GoodsReceiptList> {
               },
             ),
           ),
+          separatorBuilder: (BuildContext context, int index) {
+            return const Divider(
+              height: 1,
+              thickness: 1,
+              color: Colors.black,
+            );
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(

@@ -93,7 +93,7 @@ class _PurchTableLookupState extends State<PurchTableLookup> {
             child: TextField(
               controller: _purchIdSearchTextController,
               decoration: const InputDecoration(
-                labelText: 'Purch Id',
+                labelText: 'PO Number',
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) {

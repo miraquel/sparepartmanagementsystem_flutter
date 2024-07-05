@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:intl/intl.dart';
 import 'package:sparepartmanagementsystem_flutter/App/confirmation_dialog.dart';
@@ -7,6 +11,7 @@ import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/work_order_direct_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/printer_helper.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_req_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_sum_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_req_dto_builder.dart';
@@ -45,16 +50,84 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
       _navigator = Navigator.of(context);
     });
 
+    // It is editing if the inventReqDto is not null, but adding if it is null
     if (widget.inventReqDto != null) {
       _inventReqDto.setFromInventReqDto(widget.inventReqDto!);
+
+      if (_inventReqDto.inventLocationId.isNotEmpty && _inventReqDto.wmsLocationId.isNotEmpty) {
+        _getInventSum();
+      }
     }
     else {
       _inventReqDto.setAgswoRecId(widget.workOrderLineDto.recId);
       _inventReqDto.setInventSiteId(Environment.userWarehouseDto.inventSiteId);
+
+      // Zebra scanner device, only for Android devices
+      // It is only activated when adding a new item requisition
+      if (Platform.isAndroid)
+      {
+        Environment.zebraMethodChannel.invokeMethod("registerReceiver");
+        Environment.zebraMethodChannel.setMethodCallHandler((call) async {
+          if (call.method == "displayScanResult") {
+            var scanData = call.arguments["scanData"];
+            var itemId = PrinterHelper.getItemIdFromUrl(scanData);
+            await _getInventTable(itemId);
+          }
+          if (call.method == "showToast") {
+            _scaffoldMessenger.showSnackBar(SnackBar(
+              content: Text(call.arguments as String),
+            ));
+          }
+          return null;
+        });
+      }
+      // end - Zebra scanner device
+    }
+  }
+
+  Future<void> scanBarcodeNormal() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode('#ff6666', 'Cancel', true, ScanMode.BARCODE);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
     }
 
-    if (_inventReqDto.inventLocationId.isNotEmpty && _inventReqDto.wmsLocationId.isNotEmpty) {
-      _getInventSum();
+    if (!mounted) return;
+
+    if (barcodeScanRes == '-1') {
+      return;
+    }
+
+    if (barcodeScanRes.isEmpty) {
+      return;
+    }
+
+    await _getInventTable(barcodeScanRes);
+  }
+
+  Future<void> _getInventTable(String itemId) async {
+    try {
+      setState(() => _isLoading = true);
+      final result = await _gmkSMSServiceGroupDAL.getInventTable(itemId);
+      if (result.success && result.data != null) {
+        final item = result.data!;
+        setState(() {
+          _inventReqDto.setItemId(item.itemId);
+          _inventReqDto.setProductName(item.productName);
+        });
+      }
+    }
+    on DioException catch (_) {
+      _scaffoldMessenger.showSnackBar(
+        const SnackBar(
+          content: Text("Item not found"),
+        ),
+      );
+    }
+    finally {
+      setState(() => _isLoading = false);
     }
   }
 
@@ -171,14 +244,7 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
                                     // barcode scanner
                                     final barcode = await FlutterBarcodeScanner.scanBarcode('#ff6666', 'Cancel', true, ScanMode.BARCODE);
                                     if (barcode != '-1') {
-                                      final result = await _gmkSMSServiceGroupDAL.getInventTable(barcode);
-                                      if (result.success && result.data != null) {
-                                        final item = result.data!;
-                                        setState(() {
-                                          _inventReqDto.setItemId(item.itemId);
-                                          _inventReqDto.setProductName(item.productName);
-                                        });
-                                      }
+                                      _getInventTable(barcode);
                                     }
                                   },
                                 ),
@@ -357,21 +423,18 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
-                //onPressed: widget.inventReqDto == null ? _saveItemRequisition : _updateItemRequisition,
-                // confirmation dialog
                 onPressed: () async {
                   if (!_formKey.currentState!.validate()) {
                     return;
                   }
                   _formKey.currentState!.save();
 
-                  showDialog(
+                  await showDialog(
                     context: context,
                     builder: (context) => ConfirmationDialog(
                       title: const Text('Confirmation'),
                       content: const Text('Are you sure you want to continue?'),
                       onConfirm: () async {
-                        _navigator.pop();
                         if (widget.inventReqDto == null) {
                           await _saveItemRequisition();
                         }

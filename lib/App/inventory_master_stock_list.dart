@@ -69,7 +69,7 @@ class _InventoryMasterStockListState extends State<InventoryMasterStockList> {
             element.wMSLocationId.toLowerCase().contains(_wMSLocationIdController.text.toLowerCase());
       }).toList();
       if (!_showZeroStock) {
-        _inventSumDtoListFiltered = _inventSumDtoListFiltered.where((element) => element.availOrdered > 0).toList();
+        _inventSumDtoListFiltered = _inventSumDtoListFiltered.where((element) => element.physicalInvent > 0).toList();
       }
     });
   }
@@ -99,7 +99,7 @@ class _InventoryMasterStockListState extends State<InventoryMasterStockList> {
                     child: TextField(
                       controller: _inventLocationIdController,
                       decoration: const InputDecoration(
-                        labelText: 'Invent Location Id',
+                        labelText: 'Warehouse',
                         border: OutlineInputBorder(),
                       ),
                       onChanged: (value) {
@@ -115,7 +115,7 @@ class _InventoryMasterStockListState extends State<InventoryMasterStockList> {
                     child: TextField(
                       controller: _wMSLocationIdController,
                       decoration: const InputDecoration(
-                        labelText: 'WMS Location Id',
+                        labelText: 'Location',
                         border: OutlineInputBorder(),
                       ),
                       onChanged: (value) {

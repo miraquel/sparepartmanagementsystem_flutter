@@ -15,6 +15,7 @@ class ApiPath {
   static const String getWorkOrderLineList                          = '/api/v1/GMKSMSServiceGroup/GetWorkOrderLineList';
   static const String getInventLocationList                         = '/api/v1/GMKSMSServiceGroup/GetInventLocationList';
   static const String getDimensionList                              = '/api/v1/GMKSMSServiceGroup/GetDimensionList';
+  static const String getVendPackingSlipJourWithLines               = '/api/v1/GMKSMSServiceGroup/GetVendPackingSlipJourWithLines';
 
   // GoodsReceipt
   static const String addGoodsReceiptHeader                         = '/api/v1/GoodsReceiptService/AddGoodsReceiptHeader';

@@ -3,6 +3,7 @@ import 'package:sparepartmanagementsystem_flutter/Model/invent_location_dto.dart
 import 'package:sparepartmanagementsystem_flutter/Model/invent_sum_search_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_search_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/vend_packing_slip_jour_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/wms_location_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/wms_location_search_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
@@ -31,4 +32,5 @@ abstract class GMKSMSServiceGroupDAL {
   Future<ApiResponseDto<List<WorkOrderLineAxDto>>> getWorkOrderLineList(String workOrderHeaderId);
   Future<ApiResponseDto<List<InventLocationDto>>> getInventLocationList(InventLocationDto dto);
   Future<ApiResponseDto<List<DimensionDto>>> getDimensionList(String dimensionName);
+  Future<ApiResponseDto<VendPackingSlipJourDto>> getVendPackingSlipJourWithLines(String packingSlipId);
 }

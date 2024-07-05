@@ -41,14 +41,14 @@ class _InventoryMasterDetailsState extends State<InventoryMasterDetails> {
               expandedHeight: 200.0,
               floating: false,
               pinned: true,
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () {
-                    // Navigator.pushNamed(context, '/inventoryMasterEdit', arguments: widget.inventTableDto);
-                  },
-                ),
-              ],
+              // actions: [
+              //   IconButton(
+              //     icon: const Icon(Icons.edit),
+              //     onPressed: () {
+              //       // Navigator.pushNamed(context, '/inventoryMasterEdit', arguments: widget.inventTableDto);
+              //     },
+              //   ),
+              // ],
               flexibleSpace: FlexibleSpaceBar(
                 title: GestureDetector(
                   onTap: () {
@@ -116,27 +116,27 @@ class _InventoryMasterDetailsState extends State<InventoryMasterDetails> {
                       ),
                       child: const Text('View On Hand Stock')),
                   ListTile(
-                    title: const Text('Item Id'),
+                    title: const Text('Item Id', style: TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text(widget.inventTableDto.itemId),
                   ),
                   ListTile(
-                    title: const Text('Product Name'),
+                    title: const Text('Product Name', style: TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text(widget.inventTableDto.productName),
                   ),
                   ListTile(
-                    title: const Text('Search Name'),
+                    title: const Text('Search Name', style: TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text(widget.inventTableDto.searchName),
                   ),
                   ListTile(
-                    title: const Text('Description'),
+                    title: const Text('Description', style: TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text(widget.inventTableDto.description),
                   ),
                   ListTile(
-                    title: const Text('Product Type'),
+                    title: const Text('Product Type', style: TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text(widget.inventTableDto.productType),
                   ),
                   ListTile(
-                    title: const Text('Production Type'),
+                    title: const Text('Production Type', style: TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text(widget.inventTableDto.productionType),
                   ),
                 ],

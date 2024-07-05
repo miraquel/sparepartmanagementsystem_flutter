@@ -1,7 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:intl/intl.dart';
+import 'package:sparepartmanagementsystem_flutter/App/confirmation_dialog.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/printer_helper.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/vend_packing_slip_jour_dto.dart';
 import 'package:unicons/unicons.dart';
 
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
@@ -30,22 +36,25 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
   final _goodsReceiptHeaderDAL = locator<GoodsReceiptDAL>();
   final _gmkSMSServiceGroupDAL = locator<GMKSMSServiceGroupDAL>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  late ScaffoldMessengerState _scaffoldMessengerState;
+  late ScaffoldMessengerState _scaffoldMessenger;
   late NavigatorState _navigator;
   var _isLoading = false;
   var _isEditing = false;
+  var _canPop = false;
   late TabController _tabController;
   int tabIndex = 0;
+  GoodsReceiptLineDtoBuilder? _goodsReceiptLineDtoBuilderScan;
 
   var _goodsReceiptHeader = GoodsReceiptHeaderDto();
   var _goodsReceiptHeaderDtoBuilder = GoodsReceiptHeaderDtoBuilder();
+  var _vendPackingSlipJour = VendPackingSlipJourDto();
   final _controllers = <TextEditingController>[];
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scaffoldMessengerState = ScaffoldMessenger.of(context);
+      _scaffoldMessenger = ScaffoldMessenger.of(context);
       _navigator = Navigator.of(context);
     });
     _tabController = TabController(initialIndex: 0, length: 2, vsync: this);
@@ -55,6 +64,33 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
       });
     });
     _fetchData();
+
+    // Zebra scanner device, only for Android devices
+    // It is only activated when adding a new item requisition
+    if (Platform.isAndroid)
+    {
+      Environment.zebraMethodChannel.invokeMethod("registerReceiver");
+      Environment.zebraMethodChannel.setMethodCallHandler((call) async {
+        if (call.method == "displayScanResult") {
+          if (_goodsReceiptLineDtoBuilderScan == null) {
+            _scaffoldMessenger.showSnackBar(const SnackBar(
+              content: Text('Please scan the location by selecting the button scan on each line'),
+            ));
+            return null;
+          }
+          var scanData = call.arguments["scanData"];
+          await _getWMSLocation(scanData, _goodsReceiptLineDtoBuilderScan!);
+          _goodsReceiptLineDtoBuilderScan = null;
+        }
+        if (call.method == "showToast") {
+          _scaffoldMessenger.showSnackBar(SnackBar(
+            content: Text(call.arguments as String),
+          ));
+        }
+        return null;
+      });
+    }
+    // end - Zebra scanner device
   }
 
   @override
@@ -75,15 +111,19 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
             _goodsReceiptHeaderDtoBuilder.setTransDate(DateTime.now());
           }
         });
+        if (_goodsReceiptHeaderDtoBuilder.isSubmitted == true) {
+          final vendPackingSlipJour = await _gmkSMSServiceGroupDAL.getVendPackingSlipJourWithLines(_goodsReceiptHeaderDtoBuilder.packingSlipId);
+          setState(() => _vendPackingSlipJour = vendPackingSlipJour.data!);
+        }
       }
-      final purchTableResponse = await _gmkSMSServiceGroupDAL.getPurchTable(goodsReceiptHeaderResponse.data!.purchId);
-      if (purchTableResponse.success) {
-      }
-      final purchLineResponse = await _gmkSMSServiceGroupDAL.getPurchLineList(goodsReceiptHeaderResponse.data!.purchId);
-      if (purchLineResponse.success) {
-      }
+      // final purchTableResponse = await _gmkSMSServiceGroupDAL.getPurchTable(goodsReceiptHeaderResponse.data!.purchId);
+      // if (purchTableResponse.success) {
+      // }
+      // final purchLineResponse = await _gmkSMSServiceGroupDAL.getPurchLineList(goodsReceiptHeaderResponse.data!.purchId);
+      // if (purchLineResponse.success) {
+      // }
     } catch (error) {
-      _scaffoldMessengerState.showSnackBar(SnackBar(
+      _scaffoldMessenger.showSnackBar(SnackBar(
         content: Text('Error fetching goods receipt header details: $error')
       ));
     } finally {
@@ -96,7 +136,7 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
       setState(() => _isLoading = true);
       final goodsReceiptHeaderResponse = await _goodsReceiptHeaderDAL.updateGoodsReceiptHeaderWithLines(_goodsReceiptHeaderDtoBuilder.build());
       if (goodsReceiptHeaderResponse.success) {
-        _scaffoldMessengerState.showSnackBar(const SnackBar(
+        _scaffoldMessenger.showSnackBar(const SnackBar(
           content: Text('Goods receipt header has been saved')
         ));
       }
@@ -104,7 +144,7 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
         throw Exception('response is received but not successful');
       }
     } catch (error) {
-      _scaffoldMessengerState.showSnackBar(SnackBar(
+      _scaffoldMessenger.showSnackBar(SnackBar(
         content: Text('Error saving goods receipt header to AX: $error')
       ));
     } finally {
@@ -117,7 +157,7 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
       setState(() => _isLoading = true);
       final goodsReceiptHeaderResponse = await _goodsReceiptHeaderDAL.postToAX(_goodsReceiptHeaderDtoBuilder.build());
       if (goodsReceiptHeaderResponse.success) {
-        _scaffoldMessengerState.showSnackBar(const SnackBar(
+        _scaffoldMessenger.showSnackBar(const SnackBar(
           content: Text('Goods receipt header posted to AX')
         ));
       }
@@ -150,13 +190,17 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
       return;
     }
 
+    await _getWMSLocation(barcodeScanRes, lineDtoBuilder);
+  }
+
+  Future<void> _getWMSLocation(String barcodeScanRes, GoodsReceiptLineDtoBuilder lineDtoBuilder) async {
     setState(() => _isLoading = true);
     var response = await _gmkSMSServiceGroupDAL.getWMSLocation(WMSLocationDto(wMSLocationId: barcodeScanRes, inventLocationId: Environment.userWarehouseDto.inventLocationId));
     if (response.success) {
       var wMSLocationDto = response.data!;
 
       if (wMSLocationDto.isDefault()) {
-        _scaffoldMessengerState.showSnackBar(SnackBar(
+        _scaffoldMessenger.showSnackBar(SnackBar(
           content: Text('Location $barcodeScanRes not found in warehouse ${Environment.userWarehouseDto.inventLocationId}')
         ));
       } else {
@@ -173,190 +217,210 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
   Widget build(BuildContext context) {
     // create 2 tabs, one for the header and one for the lines
     var transDateTextController = TextEditingController(text: DateFormat("dd/MM/yyyy").format(_goodsReceiptHeaderDtoBuilder.transDate));
-    return LoadingOverlay(
-      isLoading: _isLoading,
-      child: Scaffold(
-        key: _scaffoldKey,
-        floatingActionButton: _goodsReceiptHeaderDtoBuilder.isSubmitted == false && tabIndex == 1 ? FloatingActionButton(
-          onPressed: () async {
-            var result = await _navigator.pushNamed('/goodsReceiptLineAdd', arguments: _goodsReceiptHeader);
-            if (result != null) {
-              var goodsReceiptLines = result as List<PurchLineDto>;
-              for (var purchLine in goodsReceiptLines) {
-                _goodsReceiptHeaderDtoBuilder.addGoodsReceiptLine(purchLine);
-              }
-              setState(() {});
+    return PopScope(
+      canPop: _goodsReceiptHeaderDtoBuilder.isSubmitted == false ? _canPop : true,
+      onPopInvoked: (bool didPop) {
+        if (!didPop) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return ConfirmationDialog(
+                title: const Text('Exit'),
+                content: const Text('Are you sure you want to exit without saving?'),
+                onConfirm: () {
+                  setState(() => _canPop = true);
+                  _navigator.pop();
+                },
+              );
             }
-          },
-          child: const Icon(Icons.add),
-        ) : null,
-        appBar: AppBar(
-          title: Text('Goods Receipt Details${_goodsReceiptHeaderDtoBuilder.build().compare(_goodsReceiptHeader) ? '' : ' *'}'),
-          bottom: TabBar(
-            controller: _tabController,
-            tabs: const <Widget>[
-              Tab(
-                text: 'Header',
-              ),
-              Tab(
-                text: 'Lines',
-              ),
-            ],
-          ),
-          actions: [
-            if (!_isEditing) ...[
-              IconButton(
-                icon: const Icon(Icons.send),
-                onPressed:  _goodsReceiptHeader.isSubmitted == false && _goodsReceiptHeaderDtoBuilder.goodsReceiptLines.isNotEmpty ? () async {
-                  // confirmation dialog
-                  if (!_goodsReceiptHeaderDtoBuilder.build().compare(_goodsReceiptHeader)) {
-                    _scaffoldMessengerState.showSnackBar(const SnackBar(
-                      content: Text('Goods receipt header has been modified, please save first'),
-                    ));
-                    return;
-                  }
-                  await showDialog<bool>(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Post to AX'),
-                        content: const Text('Are you sure you want to post this goods receipt to AX?'),
-                        actions: <Widget>[
-                          TextButton(
-                              onPressed: () => _navigator.pop(),
-                              style: ButtonStyle(
-                                foregroundColor: WidgetStateProperty.all(Colors.white),
-                                backgroundColor: WidgetStateProperty.all(Colors.red),
-                              ),
-                              child: const Text('No')
-                          ),
-                          TextButton(
-                            onPressed: () async {
-                              _navigator.pop();
-                              await _postData();
-                              await _fetchData();
-                            },
-                            style: ButtonStyle(
-                              foregroundColor: WidgetStateProperty.all(Colors.white),
-                              backgroundColor: WidgetStateProperty.all(Colors.green),
-                            ),
-                            child: const Text('Yes'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                } : null,
-              ),
-              IconButton(
-                icon: const Icon(Icons.save),
-                onPressed: _goodsReceiptHeader.isSubmitted == false ? () async {
-                  // show confirmation dialog
-                  await showDialog<bool>(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Save to AX'),
-                        content: const Text('Are you sure you want to save this goods receipt as draft?'),
-                        actions: <Widget>[
-                          TextButton(
-                              onPressed: () => _navigator.pop(),
-                              style: ButtonStyle(
-                                foregroundColor: WidgetStateProperty.all(Colors.white),
-                                backgroundColor: WidgetStateProperty.all(Colors.red),
-                              ),
-                              child: const Text('No')
-                          ),
-                          TextButton(
-                            onPressed: () async {
-                              // close confirmation dialog
-                              _navigator.pop();
-                              await _saveData();
-                              await _fetchData();
-                            },
-                            style: ButtonStyle(
-                              foregroundColor: WidgetStateProperty.all(Colors.white),
-                              backgroundColor: WidgetStateProperty.all(Colors.green),
-                            ),
-                            child: const Text('Yes'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                } : null,
-              ),
-            ]
-            else ...[
-              if (!_goodsReceiptHeaderDtoBuilder.isAllGoodsReceiptLinesSelected())
+          );
+        }
+      },
+      child: LoadingOverlay(
+        isLoading: _isLoading,
+        child: Scaffold(
+          key: _scaffoldKey,
+          floatingActionButton: _goodsReceiptHeaderDtoBuilder.isSubmitted == false && tabIndex == 1 ? FloatingActionButton(
+            onPressed: () async {
+              var result = await _navigator.pushNamed('/goodsReceiptLineAdd', arguments: _goodsReceiptHeader);
+              if (result != null) {
+                var goodsReceiptLines = result as List<PurchLineDto>;
+                for (var purchLine in goodsReceiptLines) {
+                  _goodsReceiptHeaderDtoBuilder.addGoodsReceiptLine(purchLine);
+                }
+                setState(() {});
+              }
+            },
+            child: const Icon(Icons.add),
+          ) : null,
+          appBar: AppBar(
+            title: Text('Goods Receipt Details${_goodsReceiptHeaderDtoBuilder.build().compare(_goodsReceiptHeader) ? '' : ' *'}'),
+            bottom: TabBar(
+              controller: _tabController,
+              tabs: const <Widget>[
+                Tab(
+                  text: 'Header',
+                ),
+                Tab(
+                  text: 'Lines',
+                ),
+              ],
+            ),
+            actions: [
+              if (!_isEditing) ...[
                 IconButton(
-                  icon: const Icon(Icons.select_all),
+                  icon: const Icon(Icons.send),
+                  onPressed:  _goodsReceiptHeader.isSubmitted == false && _goodsReceiptHeaderDtoBuilder.goodsReceiptLines.isNotEmpty ? () async {
+                    // confirmation dialog
+                    if (!_goodsReceiptHeaderDtoBuilder.build().compare(_goodsReceiptHeader)) {
+                      _scaffoldMessenger.showSnackBar(const SnackBar(
+                        content: Text('Goods receipt header has been modified, please save first'),
+                      ));
+                      return;
+                    }
+                    await showDialog<bool>(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Post to AX'),
+                          content: const Text('Are you sure you want to post this goods receipt to AX?'),
+                          actions: <Widget>[
+                            TextButton(
+                                onPressed: () => _navigator.pop(),
+                                style: ButtonStyle(
+                                  foregroundColor: WidgetStateProperty.all(Colors.white),
+                                  backgroundColor: WidgetStateProperty.all(Colors.red),
+                                ),
+                                child: const Text('No')
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                _navigator.pop();
+                                await _postData();
+                                await _fetchData();
+                              },
+                              style: ButtonStyle(
+                                foregroundColor: WidgetStateProperty.all(Colors.white),
+                                backgroundColor: WidgetStateProperty.all(Colors.green),
+                              ),
+                              child: const Text('Yes'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } : null,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.save),
+                  onPressed: _goodsReceiptHeader.isSubmitted == false ? () async {
+                    // show confirmation dialog
+                    await showDialog<bool>(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Save data'),
+                          content: const Text('Are you sure you want to save this goods receipt as draft?'),
+                          actions: <Widget>[
+                            TextButton(
+                                onPressed: () => _navigator.pop(),
+                                style: ButtonStyle(
+                                  foregroundColor: WidgetStateProperty.all(Colors.white),
+                                  backgroundColor: WidgetStateProperty.all(Colors.red),
+                                ),
+                                child: const Text('No')
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                // close confirmation dialog
+                                _navigator.pop();
+                                await _saveData();
+                                await _fetchData();
+                              },
+                              style: ButtonStyle(
+                                foregroundColor: WidgetStateProperty.all(Colors.white),
+                                backgroundColor: WidgetStateProperty.all(Colors.green),
+                              ),
+                              child: const Text('Yes'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } : null,
+                ),
+              ]
+              else ...[
+                if (!_goodsReceiptHeaderDtoBuilder.isAllGoodsReceiptLinesSelected())
+                  IconButton(
+                    icon: const Icon(Icons.select_all),
+                    onPressed: () {
+                      setState(() {
+                        _goodsReceiptHeaderDtoBuilder.selectAllGoodsReceiptLines();
+                      });
+                    },
+                  ),
+                if (_goodsReceiptHeaderDtoBuilder.isAtLeastOneGoodsReceiptLineSelected())
+                IconButton(
+                  icon: const Icon(Icons.deselect),
                   onPressed: () {
                     setState(() {
-                      _goodsReceiptHeaderDtoBuilder.selectAllGoodsReceiptLines();
+                      _goodsReceiptHeaderDtoBuilder.deselectAllGoodsReceiptLines();
+                      _isEditing = false;
                     });
                   },
                 ),
-              if (_goodsReceiptHeaderDtoBuilder.isAtLeastOneGoodsReceiptLineSelected())
-              IconButton(
-                icon: const Icon(Icons.deselect),
-                onPressed: () {
-                  setState(() {
-                    _goodsReceiptHeaderDtoBuilder.deselectAllGoodsReceiptLines();
-                    _isEditing = false;
-                  });
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () {
-                  // create a confirmation dialog
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Delete selected lines'),
-                        content: const Text('Are you sure you want to delete the selected lines?'),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => _navigator.pop(),
-                            style: ButtonStyle(
-                              foregroundColor: WidgetStateProperty.all(Colors.white),
-                              backgroundColor: WidgetStateProperty.all(Colors.red),
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () {
+                    // create a confirmation dialog
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Delete selected lines'),
+                          content: const Text('Are you sure you want to delete the selected lines?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => _navigator.pop(),
+                              style: ButtonStyle(
+                                foregroundColor: WidgetStateProperty.all(Colors.white),
+                                backgroundColor: WidgetStateProperty.all(Colors.red),
+                              ),
+                              child: const Text('No')
                             ),
-                            child: const Text('No')
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              _navigator.pop();
-                              setState(() {
-                                _goodsReceiptHeaderDtoBuilder.deleteSelectedGoodsReceiptLines();
-                                _isEditing = false;
-                              });
-                            },
-                            style: ButtonStyle(
-                              foregroundColor: WidgetStateProperty.all(Colors.white),
-                              backgroundColor: WidgetStateProperty.all(Colors.green),
+                            TextButton(
+                              onPressed: () {
+                                _navigator.pop();
+                                setState(() {
+                                  _goodsReceiptHeaderDtoBuilder.deleteSelectedGoodsReceiptLines();
+                                  _isEditing = false;
+                                });
+                              },
+                              style: ButtonStyle(
+                                foregroundColor: WidgetStateProperty.all(Colors.white),
+                                backgroundColor: WidgetStateProperty.all(Colors.green),
+                              ),
+                              child: const Text('Yes'),
                             ),
-                            child: const Text('Yes'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-            ]
-          ],
-        ),
-        body: TabBarView(
-          controller: _tabController,
-          children: <Widget>[
-            _buildHeaderTab(transDateTextController, context),
-            _buildLineTab(),
-          ],
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ]
+            ],
+          ),
+          body: TabBarView(
+            controller: _tabController,
+            children: <Widget>[
+              _buildHeaderTab(transDateTextController, context),
+              _buildLineTab(),
+            ],
+          ),
         ),
       ),
     );
@@ -393,7 +457,8 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
               controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.packingSlipId),
               onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setPackingSlipId(value),
               decoration: const InputDecoration(
-                labelText: 'Packing Slip Id',
+                labelText: 'Product receipt',
+                border: OutlineInputBorder(),
               ),
               readOnly: _goodsReceiptHeader.isSubmitted == false ? false : true
             ),
@@ -404,6 +469,7 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
               controller: transDateTextController,
               decoration: InputDecoration(
                 labelText: 'Receipt Date',
+                border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.calendar_month),
                   onPressed: _goodsReceiptHeader.isSubmitted == false ? () {
@@ -435,7 +501,8 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
               controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.description),
               onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setDescription(value),
               decoration: const InputDecoration(
-                labelText: 'Description',
+                labelText: 'Reference GR',
+                border: OutlineInputBorder(),
               ),
               readOnly: _goodsReceiptHeader.isSubmitted == false ? false : true,
             ),
@@ -445,7 +512,8 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
               controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.purchId),
               onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setPurchId(value),
               decoration: const InputDecoration(
-                labelText: 'Purch Id',
+                labelText: 'PO Number',
+                border: OutlineInputBorder(),
               ),
               readOnly: true,
             ),
@@ -480,7 +548,7 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
               readOnly: true,
             ),
           ),
-          Padding(padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+          Padding(padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
             child: TextFormField(
               controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.purchStatus),
               onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setPurchStatus(value),
@@ -490,15 +558,15 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
               readOnly: true,
             ),
           ),
-          Padding(padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(50)
-              ),
-              child: const Text('View Original Purchase Order'),
-            )
-          ),
+          // Padding(padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+          //   child: ElevatedButton(
+          //     onPressed: () {},
+          //     style: ElevatedButton.styleFrom(
+          //       minimumSize: const Size.fromHeight(50)
+          //     ),
+          //     child: const Text('View Original Purchase Order'),
+          //   )
+          // ),
         ],
       ),
     );
@@ -610,19 +678,47 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
                         const SizedBox(width: 10),
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: null,
+                            onPressed: () async {
+                              _goodsReceiptLineDtoBuilderScan = _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index];
+                              await Environment.zebraMethodChannel.invokeMethod("toggleSoftScan");
+                            },
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size.fromHeight(40),
                               padding: const EdgeInsets.all(0)
                             ),
                             // text for the button written as Default Location with home icon
                             child: const Icon(
-                              UniconsLine.paperclip,
+                              Icons.barcode_reader,
                               size: 20,
                             ),
                           ),
                         )
                       ],
+                    )
+                  else if (!_isEditing && _goodsReceiptHeaderDtoBuilder.isSubmitted == true)
+                    ElevatedButton(
+                      onPressed: () async {
+                        // print label
+                        var arguments = await _navigator.pushNamed('/printerList') as Map<String, dynamic>;
+                        var printer = arguments['printer'] as BluetoothDevice;
+                        var copies = arguments['copies'] as int;
+                        var barcode = PrinterHelper.vendPackingSlipTemplate(
+                            _vendPackingSlipJour,
+                            _vendPackingSlipJour.vendPackingSlipTrans.where((element) => element.itemId == _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].itemId).single,
+                            copies);
+                        await PrinterHelper.printLabel(printer, barcode);
+                                            },
+                      child:
+                        const Row(
+                          children: [
+                            Icon(
+                              UniconsLine.print,
+                              size: 20,
+                            ),
+                            SizedBox(width: 10),
+                            Text('Print Label'),
+                          ],
+                        ),
                     )
                 ]
               ],
