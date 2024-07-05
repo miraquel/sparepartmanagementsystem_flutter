@@ -7,6 +7,7 @@ import 'package:sparepartmanagementsystem_flutter/App/inventory_master_details.d
 import 'package:sparepartmanagementsystem_flutter/App/inventory_master_stock_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/item_requisition_direct_add_location.dart';
 import 'package:sparepartmanagementsystem_flutter/App/login.dart';
+import 'package:sparepartmanagementsystem_flutter/App/printer_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/purch_table_lookup.dart';
 import 'package:sparepartmanagementsystem_flutter/App/role_create.dart';
 import 'package:sparepartmanagementsystem_flutter/App/role_list.dart';
@@ -37,6 +38,8 @@ import 'package:sparepartmanagementsystem_flutter/App/item_requisition_add.dart'
 import 'package:sparepartmanagementsystem_flutter/App/item_requisition_direct_details.dart';
 import 'package:sparepartmanagementsystem_flutter/App/item_requisition_direct_list.dart';
 import 'package:sparepartmanagementsystem_flutter/App/item_requisition_list.dart';
+import 'package:sparepartmanagementsystem_flutter/App/zebra_scanner_settings.dart';
+import 'package:sparepartmanagementsystem_flutter/App/zebra_scanner_test.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto.dart';
@@ -81,6 +84,9 @@ class SMSApps extends StatelessWidget {
         '/workOrderLineAdd': (context) => const WorkOrderLineAdd(),
         '/itemRequisitionAdd': (context) => const ItemRequisitionAdd(),
         '/inventTableLookup': (context) => const InventTableLookup(),
+        '/zebraScannerSettings': (context) => const ZebraScannerSettings(),
+        '/zebraScannerTest': (context) => const ZebraScannerTest(),
+        '/printerList': (context) => const PrinterList(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/userEdit') {

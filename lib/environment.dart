@@ -12,19 +12,24 @@ class Environment {
   static String _baseUrl = '';
   static UserWarehouseDto _userWarehouseDto = UserWarehouseDto();
   static String _version = '';
+  static const MethodChannel _zebraMethodChannel = MethodChannel('com.gandummas.sms_flutter.channel.process.data');
+  static String _masterSecretKey = '';
 
   static String get baseUrl => _baseUrl;
   static UserWarehouseDto get userWarehouseDto => _userWarehouseDto;
   static String get version => _version;
+  static MethodChannel get zebraMethodChannel => _zebraMethodChannel;
+  static String get masterSecretKey => _masterSecretKey;
 
   static Future<void> initialize() async {
     WidgetsFlutterBinding.ensureInitialized();
     _baseUrl = await _storage.read(key: 'baseUrl') ?? '';
+    final environment = await rootBundle.loadString('environment.json');
+    final config = jsonDecode(environment) as Map<String, dynamic>;
     if (_baseUrl.isEmpty) {
-      final environment = await rootBundle.loadString('environment.json');
-      final config = jsonDecode(environment) as Map<String, dynamic>;
       _baseUrl = config['API_URL'] ?? '';
     }
+    _masterSecretKey = config['MASTER_SECRET_KEY'] ?? '';
     final packageInfo = await PackageInfo.fromPlatform();
     _version = packageInfo.version;
   }

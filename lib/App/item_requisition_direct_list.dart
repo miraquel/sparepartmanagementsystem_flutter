@@ -113,13 +113,12 @@ class _ItemRequisitionDirectListState extends State<ItemRequisitionDirectList> {
                 icon: const Icon(Icons.send),
                 onPressed: () async {
                   // confirmation dialog with Cancel and Submit buttons with white text and with background color red and green respectively.
-                  showDialog(
+                  await showDialog(
                     context: context,
                     builder: (context) => ConfirmationDialog(
                       title: const Text('Confirmation'),
                       content: const Text('Are you sure you want to submit the item requisition?'),
                       onConfirm: () async {
-                        Navigator.of(context).pop();
                         await _createInventJournalTable();
                         await _loadItemRequisitionList();
                       },
@@ -167,12 +166,11 @@ class _ItemRequisitionDirectListState extends State<ItemRequisitionDirectList> {
                 icon: const Icon(Icons.delete),
                 onPressed: () async {
                   // confirmation dialog with Cancel and Delete buttons with white text and with background color red and green respectively.
-                  showDialog(
+                  await showDialog(
                     context: context,
                     builder: (context) => ConfirmationDialog(
                       content: const Text('Are you sure you want to delete the selected item requisition?'),
                       onConfirm: () async {
-                        Navigator.of(context).pop();
                         await _deleteItemRequisition();
                         setState(() => _isDeleting = false);
                       },

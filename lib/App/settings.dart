@@ -164,6 +164,28 @@ class _SettingsState extends State<Settings> {
             ),
             minLeadingWidth: 0,
           ),
+          ListTile(
+            onTap: () {
+              Navigator.pushNamed(context, '/zebraScannerSettings');
+            },
+            title: const Text('Zebra Scanner Settings'),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.qr_code, size: 25)
+            ),
+            minLeadingWidth: 0,
+          ),
+          ListTile(
+            onTap: () {
+              Navigator.pushNamed(context, '/printerList');
+            },
+            title: const Text('Printer List'),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.print, size: 25)
+            ),
+            minLeadingWidth: 0,
+          ),
           // logout button
           ListTile(
             onTap: () async {

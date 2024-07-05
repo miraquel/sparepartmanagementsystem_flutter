@@ -74,7 +74,7 @@ class WorkOrderDirectDALImplementation implements WorkOrderDirectDAL {
 
   @override
   Future<ApiResponseDto> updateWorkOrderLine(WorkOrderLineDto dto) {
-    final response = _dio.post(ApiPath.updateWorkOrderLineDirect, data: dto);
+    final response = _dio.put(ApiPath.updateWorkOrderLineDirect, data: dto);
     return response.then((value) => ApiResponseDto.fromJson(value.data));
   }
 

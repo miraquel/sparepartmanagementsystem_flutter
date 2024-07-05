@@ -6,9 +6,9 @@ import 'package:logger/logger.dart';
 
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 import 'package:sparepartmanagementsystem_flutter/App/reconnect.dart';
+import 'package:sparepartmanagementsystem_flutter/App/status_bar.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_dal.dart';
 import 'package:sparepartmanagementsystem_flutter/Helper/token_helper.dart';
-import 'package:sparepartmanagementsystem_flutter/environment.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class Login extends StatefulWidget {
@@ -139,95 +139,86 @@ class _LoginState extends State<Login> {
             children: <Widget>[
               // show logo of the app_logo.png
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Center(
-                    child: Image.asset(
-                      'assets/images/app_logo.png',
-                      width: 300,
-                      height: 300,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 20, top: 15, bottom: 15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 15),
+                          child: Center(
+                            child: Image.asset(
+                              'assets/images/app_logo_samson.png',
+                              height: 200,
+                              fit: BoxFit.scaleDown,
+                            ),
+                          ),
+                        ),
+                        const FittedBox(
+                          child: Text(
+                            'Welcome to Spare Part Management System Online',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        const Text(
+                          'Please login to start',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        TextField(
+                          controller: _usernameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Username',
+                            prefixIcon: Icon(Icons.person),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                            ),
+                          ),
+                          textInputAction: TextInputAction.next,
+                          autofocus: false,
+                        ),
+                        const SizedBox(height: 15),
+                        TextField(
+                          controller: _passwordController,
+                          decoration: const InputDecoration(
+                            labelText: 'Password',
+                            prefixIcon: Icon(Icons.lock),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                            ),
+                          ),
+                          obscureText: true,
+                          textInputAction: TextInputAction.done,
+                          autofocus: false,
+                        ),
+                        const SizedBox(height: 15),
+                        ElevatedButton(
+                          onPressed: login,
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            backgroundColor: Colors.blue,
+                            minimumSize: const Size.fromHeight(55)
+                          ),
+                          child: const Text('Login', style: TextStyle(color: Colors.white)),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 40, top: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      'Welcome to Spare Part Management System',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    const Text(
-                      'Please login to start',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    TextField(
-                      controller: _usernameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                        prefixIcon: Icon(Icons.person),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    TextField(
-                      controller: _passwordController,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: Icon(Icons.lock),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                      ),
-                      obscureText: true,
-                    ),
-                    const SizedBox(height: 15),
-                    ElevatedButton(
-                      onPressed: login,
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        backgroundColor: Colors.blue,
-                        minimumSize: const Size.fromHeight(55)
-                      ),
-                      child: const Text('Login', style: TextStyle(color: Colors.white)),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                color: Colors.blue,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      Environment.baseUrl,
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      "v${Environment.version}",
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
+              const Expanded(
+                flex: 0,
+                child: StatusBar(editMode: true),
               ),
             ],
           ),

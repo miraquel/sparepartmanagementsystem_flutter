@@ -1,10 +1,17 @@
 
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:logger/logger.dart';
+import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/printer_helper.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/scanner_helper.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/environment.dart';
@@ -27,6 +34,9 @@ class _InventoryMasterListState extends State<InventoryMasterList> {
   final _itemIdSearchTextController = TextEditingController();
   final _productNameSearchTextController = TextEditingController();
   final _searchNameSearchTextController = TextEditingController();
+  late NavigatorState _navigator;
+  late ScaffoldMessengerState _scaffoldMessenger;
+  var _isLoading = false;
 
   final PagingController<int, InventTableDto> _pagingController = PagingController(firstPageKey: 1);
 
@@ -34,10 +44,32 @@ class _InventoryMasterListState extends State<InventoryMasterList> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigator = Navigator.of(context);
     });
     _pagingController.addPageRequestListener((pageKey) {
       _fetchPage(pageKey);
     });
+
+    // Zebra scanner device, only for Android devices
+    // It is only activated when adding a new item requisition
+    if (Platform.isAndroid)
+    {
+      Environment.zebraMethodChannel.invokeMethod("registerReceiver");
+      Environment.zebraMethodChannel.setMethodCallHandler((call) async {
+        if (call.method == "displayScanResult") {
+          var scanData = call.arguments["scanData"];
+          var itemId = PrinterHelper.getItemIdFromUrl(scanData);
+          await _redirectToDetails(itemId);
+        }
+        if (call.method == "showToast") {
+          _scaffoldMessenger.showSnackBar(SnackBar(
+            content: Text(call.arguments as String),
+          ));
+        }
+        return null;
+      });
+    }
+    // end - Zebra scanner device
   }
 
   @override
@@ -70,52 +102,111 @@ class _InventoryMasterListState extends State<InventoryMasterList> {
     }
   }
 
+  Future<void> _redirectToDetails(String itemId) async {
+    try {
+      setState(() => _isLoading = true);
+      var inventTable = await _inventTableDAL.getInventTable(itemId);
+      if (inventTable.success) {
+        if (inventTable.data != null) {
+          _navigator.pushNamed('/inventoryMasterDetails', arguments: inventTable.data);
+        } else {
+          _scaffoldMessenger.showSnackBar(const SnackBar(
+            content: Text('Item not found'),
+          ));
+        }
+      }
+    } catch (e) {
+      _logger.e('Error while redirecting to details', error: e);
+      _scaffoldMessenger.showSnackBar(const SnackBar(
+        content: Text('Error while redirecting to details, please try again later.'),
+      ));
+    } finally {
+      if (_isLoading) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _scanBarcodeNormal() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode('#ff6666', 'Cancel', true, ScanMode.BARCODE);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+
+    if (!mounted) return;
+
+    if (barcodeScanRes == '-1') {
+      return;
+    }
+
+    if (barcodeScanRes.isEmpty) {
+      return;
+    }
+
+    var itemId = PrinterHelper.getItemIdFromUrl(barcodeScanRes);
+    await _redirectToDetails(itemId);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Inventory Master'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              buildSearchModal(context);
-            },
+    return LoadingOverlay(
+      isLoading: _isLoading,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Inventory Master'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                buildSearchModal(context);
+              },
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            await _scanBarcodeNormal();
+          },
+          child: const Icon(Icons.qr_code_scanner),
+        ),
+        body: PagedListView<int, InventTableDto>.separated(
+          pagingController: _pagingController,
+          builderDelegate: PagedChildBuilderDelegate<InventTableDto>(
+            itemBuilder: (context, item, index) => ListTile(
+              leading: item.image.isNotEmpty ?
+                Hero(
+                  tag: item.image,
+                  child: CachedNetworkImage(
+                    imageUrl: "${Environment.baseUrl}${ApiPath.getImageWithResolutionFromNetworkUri}?networkUri=${item.image}&maxLength=50",
+                    width: 50,
+                    height: 50,
+                    fadeInDuration: const Duration(seconds: 0),
+                    fadeOutDuration: const Duration(seconds: 0),
+                    progressIndicatorBuilder: (context, url, downloadProgress) =>
+                        CircularProgressIndicator(value: downloadProgress.progress),
+                    errorWidget: (context, url, error) {
+                      _logger.e('Error loading image', error: error);
+                      return SizedBox.fromSize(size: const Size.square(50), child: const Icon(Icons.error));
+                    },
+                  ),
+                ) : const Image(image: AssetImage('assets/images/no_image.png'), width: 50, height: 50),
+              title: Text(item.itemId),
+              subtitle: Text(item.productName),
+              onTap: () {
+                _redirectToDetails(item.itemId);
+              },
+            ),
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-        },
-        child: const Icon(Icons.qr_code_scanner),
-      ),
-      body: PagedListView(
-        pagingController: _pagingController,
-        builderDelegate: PagedChildBuilderDelegate<InventTableDto>(
-          itemBuilder: (context, item, index) => ListTile(
-            leading: item.image.isNotEmpty ?
-              Hero(
-                tag: item.image,
-                child: CachedNetworkImage(
-                  imageUrl: "${Environment.baseUrl}${ApiPath.getImageWithResolutionFromNetworkUri}?networkUri=${item.image}&maxLength=50",
-                  width: 50,
-                  height: 50,
-                  fadeInDuration: const Duration(seconds: 0),
-                  fadeOutDuration: const Duration(seconds: 0),
-                  progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      CircularProgressIndicator(value: downloadProgress.progress),
-                  errorWidget: (context, url, error) {
-                    _logger.e('Error loading image', error: error);
-                    return SizedBox.fromSize(size: const Size.square(50), child: const Icon(Icons.error));
-                  },
-                ),
-              ) : const Image(image: AssetImage('assets/images/no_image.png'), width: 50, height: 50),
-            title: Text(item.itemId),
-            subtitle: Text(item.productName),
-            onTap: () {
-              Navigator.pushNamed(context, '/inventoryMasterDetails', arguments: item);
-            },
-          ),
+          separatorBuilder: (BuildContext context, int index) {
+            return const Divider(
+              height: 0,
+              thickness: 1,
+              color: Colors.black,
+            );
+          },
         ),
       ),
     );
@@ -124,8 +215,9 @@ class _InventoryMasterListState extends State<InventoryMasterList> {
   Future<dynamic> buildSearchModal(BuildContext context) {
     return showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
       builder: (context) => Padding(
-        padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0.0),
+        padding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, MediaQuery.of(context).viewInsets.bottom),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

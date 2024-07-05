@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:sparepartmanagementsystem_flutter/App/confirmation_dialog.dart';
 
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
@@ -29,6 +30,7 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
   late NavigatorState _navigator;
   late ScaffoldMessengerState _scaffoldMessenger;
   var _isLoading = false;
+  var _canPop = false;
 
   // form fields
   // var _purchTableDto = PurchTableDto();
@@ -50,7 +52,7 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
     try {
       setState(() => _isLoading = true);
       if (_goodsReceiptHeaderDtoBuilder.isDefault()) throw ArgumentError('You have not selected any Purchase Order, please select one.');
-      if (_goodsReceiptHeaderDtoBuilder.packingSlipId.isEmpty) throw ArgumentError('Packing Slip Id is required.');
+      if (_goodsReceiptHeaderDtoBuilder.packingSlipId.isEmpty) throw ArgumentError('Product receipt is required.');
       if (_goodsReceiptHeaderDtoBuilder.goodsReceiptLines.isEmpty) throw ArgumentError('No Purchase Line found.');
 
       _goodsReceiptHeaderDtoBuilder.setIsSubmitted(false);
@@ -114,72 +116,93 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
 
   @override
   Widget build(BuildContext context) {
-    return LoadingOverlay(
-      isLoading: _isLoading,
-      child: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('New Goods Receipt'),
-            actions: [
-              IconButton(
-                onPressed: !_goodsReceiptHeaderDtoBuilder.isDefault() ? () {
-                  // confirmation dialog
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Confirmation'),
-                        content: const Text('Are you sure you want to save this record?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              _navigator.pop();
-                            },
-                            style: ButtonStyle(
-                              foregroundColor: WidgetStateProperty.all(Colors.white),
-                              backgroundColor: WidgetStateProperty.all(Colors.red),
+    return PopScope(
+      canPop: _canPop,
+      onPopInvoked: (bool didPop) {
+        if (!didPop) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return ConfirmationDialog(
+                title: const Text('Confirmation'),
+                content: const Text('Are you sure you want to exit without saving?'),
+                onConfirm: () {
+                  setState(() => _canPop = true);
+                  _navigator.pop();
+                },
+              );
+            }
+          );
+        }
+      },
+      child: LoadingOverlay(
+        isLoading: _isLoading,
+        child: DefaultTabController(
+          length: 2,
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text('New Goods Receipt'),
+              actions: [
+                IconButton(
+                  onPressed: !_goodsReceiptHeaderDtoBuilder.isDefault() ? () {
+                    // confirmation dialog
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Confirmation'),
+                          content: const Text('Are you sure you want to save this record?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                _navigator.pop();
+                              },
+                              style: ButtonStyle(
+                                foregroundColor: WidgetStateProperty.all(Colors.white),
+                                backgroundColor: WidgetStateProperty.all(Colors.red),
+                              ),
+                              child: const Text('No'),
                             ),
-                            child: const Text('No'),
-                          ),
-                          TextButton(
-                            onPressed: () async {
-                              _navigator.pop();
-                              await saveData();
-                            },
-                            style: ButtonStyle(
-                              foregroundColor: WidgetStateProperty.all(Colors.white),
-                              backgroundColor: WidgetStateProperty.all(Colors.green),
+                            TextButton(
+                              onPressed: () async {
+                                _navigator.pop();
+                                await saveData();
+                                //_navigator.pushReplacementNamed('/goodsReceiptHeaderDetails', arguments: item.goodsReceiptHeaderId)
+                              },
+                              style: ButtonStyle(
+                                foregroundColor: WidgetStateProperty.all(Colors.white),
+                                backgroundColor: WidgetStateProperty.all(Colors.green),
+                              ),
+                              child: const Text('Yes'),
                             ),
-                            child: const Text('Yes'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                } : null,
-                icon: const Icon(Icons.save),
-                tooltip: 'Save',
-              ),
-            ],
-            bottom: const TabBar(
-              tabs: <Widget>[
-                Tab(
-                  text: 'Header',
-                ),
-                Tab(
-                  text: 'Lines',
+                          ],
+                        );
+                      },
+                    );
+                  } : null,
+                  icon: const Icon(Icons.save),
+                  tooltip: 'Save',
                 ),
               ],
+              bottom: const TabBar(
+                tabs: <Widget>[
+                  Tab(
+                    text: 'Header',
+                  ),
+                  Tab(
+                    text: 'Lines',
+                  ),
+                ],
+              ),
             ),
+            body: TabBarView(
+              children: <Widget>[
+                _buildHeaderTab(),
+                _buildLineTab(),
+              ]
+            )
           ),
-          body: TabBarView(
-            children: <Widget>[
-              _buildHeaderTab(),
-              _buildLineTab(),
-            ]
-          )
         ),
       ),
     );
@@ -215,7 +238,7 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
             TextField(
               controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.purchId),
               decoration: InputDecoration(
-                labelText: 'Purch Id',
+                labelText: 'PO Number',
                 suffixIcon: IconButton(
                   onPressed: _purchTableLookup,
                   icon: const Icon(
@@ -230,7 +253,7 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
             TextField(
               controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.packingSlipId),
               decoration: const InputDecoration(
-                labelText: 'Packing Slip Id',
+                labelText: 'Product receipt',
               ),
               onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setPackingSlipId(value),
             ),
@@ -253,7 +276,7 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
             TextField(
               controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.description),
               decoration: const InputDecoration(
-                labelText: 'Description',
+                labelText: 'Reference GR',
               ),
               onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setDescription(value),
             ),
