@@ -5,7 +5,9 @@ import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart'
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_req_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/paged_list_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_ax_search_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_search_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
@@ -49,7 +51,7 @@ class WorkOrderDirectDALImplementation implements WorkOrderDirectDAL {
   }
 
   @override
-  Future<ApiResponseDto<PagedListDto<WorkOrderHeaderDto>>> getWorkOrderHeaderPagedList(int pageNumber, int pageSize, WorkOrderHeaderDto dto) {
+  Future<ApiResponseDto<PagedListDto<WorkOrderHeaderDto>>> getWorkOrderHeaderPagedList(int pageNumber, int pageSize, WorkOrderHeaderSearchDto dto) {
     final response = _dio.get(ApiPath.getWorkOrderHeaderPagedListDirect, queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize, ...dto.toJson()});
     return response.then((value) => ApiResponseDto<PagedListDto<WorkOrderHeaderDto>>.fromJson(value.data, (json) => PagedListDto<WorkOrderHeaderDto>.fromJson(json as Map<String, dynamic>, (json) => json.map<WorkOrderHeaderDto>((e) => WorkOrderHeaderDto.fromJson(e)).toList())));
   }

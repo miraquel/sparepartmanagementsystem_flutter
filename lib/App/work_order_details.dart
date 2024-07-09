@@ -126,7 +126,7 @@ class _WorkOrderDetailsState extends State<WorkOrderDetails> with SingleTickerPr
             padding: const EdgeInsets.only(left: 16.0, right: 16.0),
             child: TextFormField(
               controller: TextEditingController(text: _workOrderHeaderDtoBuilder.agseamwoid),
-              decoration: const InputDecoration(labelText: 'Agseamwoid'),
+              decoration: const InputDecoration(labelText: 'Work Order Id'),
               readOnly: true,
             ),
           ),
@@ -134,7 +134,7 @@ class _WorkOrderDetailsState extends State<WorkOrderDetails> with SingleTickerPr
             padding: const EdgeInsets.only(left: 16.0, right: 16.0),
             child: TextFormField(
               controller: TextEditingController(text: _workOrderHeaderDtoBuilder.agseamwrid),
-              decoration: const InputDecoration(labelText: 'Work request Id'),
+              decoration: const InputDecoration(labelText: 'Work Request Id'),
               readOnly: true,
             ),
           ),

@@ -181,7 +181,7 @@ class _PurchTableLookupState extends State<PurchTableLookup> {
                 : const Icon(UniconsLine.angle_double_up, size: 30),
           ),
           Expanded(
-            child: PagedListView<int, PurchTableDto>(
+            child: PagedListView<int, PurchTableDto>.separated(
               pagingController: _pagingController,
               builderDelegate: PagedChildBuilderDelegate<PurchTableDto>(
                 itemBuilder: (context, item, index) => ListTile(
@@ -191,7 +191,13 @@ class _PurchTableLookupState extends State<PurchTableLookup> {
                     Navigator.pop(context, item);
                   },
                 ),
-              ),
+              ), separatorBuilder: (BuildContext context, int index) {
+                return const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Colors.black,
+                );
+              },
             ),
           ),
         ],

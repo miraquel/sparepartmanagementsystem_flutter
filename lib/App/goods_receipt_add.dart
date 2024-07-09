@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +16,7 @@ import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/goods
 import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto_builder.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/purch_table_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/environment.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class GoodsReceiptAdd extends StatefulWidget {
@@ -46,6 +49,50 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
       _navigator = Navigator.of(context);
       _scaffoldMessenger = ScaffoldMessenger.of(context);
     });
+
+    // Zebra scanner device, only for Android devices
+    // It is only activated when adding a new item requisition
+    if (Platform.isAndroid)
+    {
+      Environment.zebraMethodChannel.invokeMethod("registerReceiver");
+      Environment.zebraMethodChannel.setMethodCallHandler((call) async {
+        if (call.method == "displayScanResult") {
+          var scanData = call.arguments["scanData"];
+          try {
+            var purchOrder = await _gmkSmsServiceGroupDAL.getPurchTable(scanData);
+            if (purchOrder.success && purchOrder.data!.purchId.isNotEmpty) {
+              setState(() => _goodsReceiptHeaderDtoBuilder.setFromPurchTableDto(purchOrder.data!));
+              await _fetchPurchLineList();
+            } else {
+              _scaffoldMessenger.showSnackBar(
+                SnackBar(
+                  content: Text(purchOrder.message),
+                ),
+              );
+            }
+          } catch (error) {
+            _scaffoldMessenger.showSnackBar(
+              SnackBar(
+                content: Text(error.toString()),
+              ),
+            );
+          }
+        }
+        if (call.method == "showToast") {
+          _scaffoldMessenger.showSnackBar(SnackBar(
+            content: Text(call.arguments as String),
+          ));
+        }
+        return null;
+      });
+    }
+    // end - Zebra scanner device
+  }
+
+  @override
+  void dispose() {
+    Environment.zebraMethodChannel.invokeMethod("unregisterReceiver");
+    super.dispose();
   }
 
   Future<void> saveData() async {
@@ -57,10 +104,15 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
 
       _goodsReceiptHeaderDtoBuilder.setIsSubmitted(false);
 
-      final response = await _goodsReceiptHeaderDAL.addGoodsReceiptHeaderWithLines(_goodsReceiptHeaderDtoBuilder.build());
+      final response = await _goodsReceiptHeaderDAL.addAndReturnGoodsReceiptHeaderWithLines(_goodsReceiptHeaderDtoBuilder.build());
 
       if (response.success) {
-        _navigator.pop();
+        _scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text(response.message),
+          ),
+        );
+        _navigator.pushReplacementNamed('/goodsReceiptHeaderDetails', arguments: response.data!);
       } else {
         throw Exception(response.message);
       }
@@ -89,6 +141,7 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
     try {
       setState(() => _isLoading = true);
       final response = await _gmkSmsServiceGroupDAL.getPurchLineList(_goodsReceiptHeaderDtoBuilder.purchId);
+      _goodsReceiptHeaderDtoBuilder.goodsReceiptLines.clear();
       if (response.success) {
         var purchLineDtoList = response.data!;
         setState(() => _goodsReceiptHeaderDtoBuilder.goodsReceiptLines.addAll(purchLineDtoList.map((e) => GoodsReceiptLineDtoBuilder.fromPurchLineDto(e)).toList()));
@@ -168,7 +221,6 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
                               onPressed: () async {
                                 _navigator.pop();
                                 await saveData();
-                                //_navigator.pushReplacementNamed('/goodsReceiptHeaderDetails', arguments: item.goodsReceiptHeaderId)
                               },
                               style: ButtonStyle(
                                 foregroundColor: WidgetStateProperty.all(Colors.white),
@@ -330,6 +382,7 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
   Future<void> _purchTableLookup() async {
     var purchTableDto = await _navigator.pushNamed('/purchTableLookup');
     if (purchTableDto == null) return;
+
     setState(() => _goodsReceiptHeaderDtoBuilder.setFromPurchTableDto(purchTableDto as PurchTableDto));
     await _fetchPurchLineList();
   }
