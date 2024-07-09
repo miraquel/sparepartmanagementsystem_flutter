@@ -110,14 +110,26 @@ class SMSApps extends StatelessWidget {
           );
         }
         if (settings.name == '/goodsReceiptHeaderDetails') {
-          final args = settings.arguments as int;
-          return MaterialPageRoute(
-            builder: (context) {
-              return GoodsReceiptDetails(
-                goodsReceiptHeaderId: args,
-              );
-            },
-          );
+          // check the type of the settings.arguments
+          if (settings.arguments is int) {
+            final goodsReceiptHeaderId = settings.arguments as int;
+            return MaterialPageRoute(
+              builder: (context) {
+                return GoodsReceiptDetails(
+                  goodsReceiptHeaderId: goodsReceiptHeaderId,
+                );
+              },
+            );
+          } else {
+            final goodsReceiptHeaderDto = settings.arguments as GoodsReceiptHeaderDto;
+            return MaterialPageRoute(
+              builder: (context) {
+                return GoodsReceiptDetails(
+                  goodsReceiptHeaderDto: goodsReceiptHeaderDto,
+                );
+              },
+            );
+          };
         }
         if (settings.name == '/goodsReceiptLineAdd') {
           final args = settings.arguments as GoodsReceiptHeaderDto;

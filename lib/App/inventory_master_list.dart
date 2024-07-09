@@ -75,6 +75,7 @@ class _InventoryMasterListState extends State<InventoryMasterList> {
   @override
   void dispose() {
     _pagingController.dispose();
+    Environment.zebraMethodChannel.invokeMethod("unregisterReceiver");
     super.dispose();
   }
 

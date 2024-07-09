@@ -1,12 +1,13 @@
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_req_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/paged_list_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_search_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto.dart';
 
 abstract class WorkOrderDirectDAL {
   Future<ApiResponseDto<WorkOrderHeaderDto>> getWorkOrderHeader(String agsEamWoId);
-  Future<ApiResponseDto<PagedListDto<WorkOrderHeaderDto>>> getWorkOrderHeaderPagedList(int pageNumber, int pageSize, WorkOrderHeaderDto dto);
+  Future<ApiResponseDto<PagedListDto<WorkOrderHeaderDto>>> getWorkOrderHeaderPagedList(int pageNumber, int pageSize, WorkOrderHeaderSearchDto dto);
   Future<ApiResponseDto> addWorkOrderLine(WorkOrderLineDto dto);
   Future<ApiResponseDto> updateWorkOrderLine(WorkOrderLineDto dto);
   Future<ApiResponseDto<WorkOrderLineDto>> getWorkOrderLine(String agsEamWoId, int line);

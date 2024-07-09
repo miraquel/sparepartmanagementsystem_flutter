@@ -99,4 +99,11 @@ class GoodsReceiptDALImplementation implements GoodsReceiptDAL {
     var responseBody = response.data as Map<String, dynamic>;
     return ApiResponseDto.fromJson(responseBody);
   }
+
+  @override
+  Future<ApiResponseDto<GoodsReceiptHeaderDto>> addAndReturnGoodsReceiptHeaderWithLines(GoodsReceiptHeaderDto goodsReceiptHeader) async {
+    final response = await _dio.post(ApiPath.addAndReturnGoodsReceiptHeaderWithLines, data: goodsReceiptHeader);
+    var responseBody = response.data as Map<String, dynamic>;
+    return ApiResponseDto<GoodsReceiptHeaderDto>.fromJson(responseBody, (json) => GoodsReceiptHeaderDto.fromJson(json as Map<String, dynamic>));
+  }
 }

@@ -1,6 +1,7 @@
 class InventSumDto {
   final String itemId;
   final String itemName;
+  final String inventSiteId;
   final String inventLocationId;
   final String wMSLocationId;
   final double physicalInvent;
@@ -14,6 +15,7 @@ class InventSumDto {
   InventSumDto({
     this.itemId = '',
     this.itemName = '',
+    this.inventSiteId = '',
     this.inventLocationId = '',
     this.wMSLocationId = '',
     this.physicalInvent = 0,
@@ -29,6 +31,7 @@ class InventSumDto {
     return InventSumDto(
       itemId: json['itemId'] as String? ?? '',
       itemName: json['itemName'] as String? ?? '',
+      inventSiteId: json['inventSiteId'] as String? ?? '',
       inventLocationId: json['inventLocationId'] as String? ?? '',
       wMSLocationId: json['wmsLocationId'] as String? ?? '',
       physicalInvent: json['physicalInvent'] as double? ?? 0,
@@ -45,6 +48,7 @@ class InventSumDto {
     return {
       if (itemId.isNotEmpty) 'itemId': itemId,
       if (itemName.isNotEmpty) 'itemName': itemName,
+      if (inventSiteId.isNotEmpty) 'inventSiteId': inventSiteId,
       if (inventLocationId.isNotEmpty) 'inventLocationId': inventLocationId,
       if (wMSLocationId.isNotEmpty) 'wmsLocationId': wMSLocationId,
       if (physicalInvent != 0) 'physicalInvent': physicalInvent,

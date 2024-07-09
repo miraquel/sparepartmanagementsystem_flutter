@@ -59,8 +59,9 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
       }
     }
     else {
-      _inventReqDto.setAgswoRecId(widget.workOrderLineDto.recId);
-      _inventReqDto.setInventSiteId(Environment.userWarehouseDto.inventSiteId);
+      setState(() {
+        _inventReqDto.setAgswoRecId(widget.workOrderLineDto.recId);
+      });
 
       // Zebra scanner device, only for Android devices
       // It is only activated when adding a new item requisition
@@ -83,6 +84,12 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
       }
       // end - Zebra scanner device
     }
+  }
+
+  @override
+  void dispose() {
+    Environment.zebraMethodChannel.invokeMethod("unregisterReceiver");
+    super.dispose();
   }
 
   Future<void> scanBarcodeNormal() async {
@@ -281,7 +288,7 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
                         ],
                         const SizedBox(height: 10),
                         TextFormField(
-                          controller: TextEditingController(text: _inventReqDto.requiredDate.isAfter(DateTimeHelper.minDateTime) ? DateFormat('dd MMMM yyyy').format(_inventReqDto.requiredDate) : ''),
+                          controller: TextEditingController(text: _inventReqDto.requiredDate.isAfter(DateTimeHelper.minDateTime) ? DateFormat('dd MMMM yyyy').format(_inventReqDto.requiredDate) : DateFormat('dd MMMM yyyy').format(DateTime.now())),
                           decoration: const InputDecoration(
                             labelText: 'Required Date',
                             suffixIcon: Icon(Icons.calendar_today),
@@ -315,14 +322,14 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
                                 child: Column(
                                   children: [
                                     TextFormField(
-                                      controller: TextEditingController(text: _inventReqDto.inventLocationId),
+                                      controller: TextEditingController(text: "${_inventReqDto.inventSiteId} - ${_inventReqDto.inventLocationId}"),
                                       decoration: const InputDecoration(
-                                        labelText: 'Site',
+                                        labelText: 'Site - Warehouse',
                                         border: OutlineInputBorder(),
                                       ),
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return 'Please enter a site';
+                                          return 'Please enter a warehouse';
                                         }
                                         return null;
                                       },
@@ -332,12 +339,12 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
                                     TextFormField(
                                       controller: TextEditingController(text: _inventReqDto.wmsLocationId),
                                       decoration: const InputDecoration(
-                                        labelText: 'Warehouse Location',
+                                        labelText: 'Location',
                                         border: OutlineInputBorder(),
                                       ),
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return 'Please enter a warehouse location';
+                                          return 'Please enter a location';
                                         }
                                         return null;
                                       },
@@ -361,6 +368,7 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
                                       final location = await _navigator.pushNamed('/itemRequisitionDirectAddLocation', arguments: _inventReqDto.itemId) as InventSumDto?;
                                       if (location != null) {
                                         setState(() {
+                                          _inventReqDto.setInventSiteId(location.inventSiteId);
                                           _inventReqDto.setInventLocationId(location.inventLocationId);
                                           _inventReqDto.setWmsLocationId(location.wMSLocationId);
                                           _maxQuantity = location.availPhysical;

@@ -25,8 +25,9 @@ import 'package:sparepartmanagementsystem_flutter/Model/wms_location_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
 class GoodsReceiptDetails extends StatefulWidget {
-  final int goodsReceiptHeaderId;
-  const GoodsReceiptDetails({super.key, required this.goodsReceiptHeaderId});
+  final int? goodsReceiptHeaderId;
+  final GoodsReceiptHeaderDto? goodsReceiptHeaderDto;
+  const GoodsReceiptDetails({super.key, this.goodsReceiptHeaderId, this.goodsReceiptHeaderDto});
 
   @override
   State<GoodsReceiptDetails> createState() => _GoodsReceiptDetailsState();
@@ -96,25 +97,35 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
   @override
   void dispose() {
     _tabController.dispose();
+    Environment.zebraMethodChannel.invokeMethod("unregisterReceiver");
     super.dispose();
   }
 
   Future<void> _fetchData() async {
     try {
       setState(() => _isLoading = true);
-      final goodsReceiptHeaderResponse = await _goodsReceiptHeaderDAL.getGoodsReceiptHeaderByIdWithLines(widget.goodsReceiptHeaderId);
-      if (goodsReceiptHeaderResponse.success) {
+      if (widget.goodsReceiptHeaderDto != null) {
         setState(() {
-          _goodsReceiptHeader = goodsReceiptHeaderResponse.data!;
-          _goodsReceiptHeaderDtoBuilder = GoodsReceiptHeaderDtoBuilder.fromDto(goodsReceiptHeaderResponse.data!);
-          if (_goodsReceiptHeaderDtoBuilder.transDate.isAtSameMomentAs(DateTimeHelper.minDateTime)) {
-            _goodsReceiptHeaderDtoBuilder.setTransDate(DateTime.now());
-          }
+          _goodsReceiptHeader = widget.goodsReceiptHeaderDto!;
+          _goodsReceiptHeaderDtoBuilder = GoodsReceiptHeaderDtoBuilder.fromDto(widget.goodsReceiptHeaderDto!);
         });
-        if (_goodsReceiptHeaderDtoBuilder.isSubmitted == true) {
-          final vendPackingSlipJour = await _gmkSMSServiceGroupDAL.getVendPackingSlipJourWithLines(_goodsReceiptHeaderDtoBuilder.packingSlipId);
-          setState(() => _vendPackingSlipJour = vendPackingSlipJour.data!);
+        return;
+      }
+      else {
+        final goodsReceiptHeaderResponse = await _goodsReceiptHeaderDAL.getGoodsReceiptHeaderByIdWithLines(widget.goodsReceiptHeaderId!);
+        if (goodsReceiptHeaderResponse.success) {
+          setState(() {
+            _goodsReceiptHeader = goodsReceiptHeaderResponse.data!;
+            _goodsReceiptHeaderDtoBuilder = GoodsReceiptHeaderDtoBuilder.fromDto(goodsReceiptHeaderResponse.data!);
+            if (_goodsReceiptHeaderDtoBuilder.transDate.isAtSameMomentAs(DateTimeHelper.minDateTime)) {
+              _goodsReceiptHeaderDtoBuilder.setTransDate(DateTime.now());
+            }
+          });
         }
+      }
+      if (_goodsReceiptHeaderDtoBuilder.isSubmitted == true) {
+        final vendPackingSlipJour = await _gmkSMSServiceGroupDAL.getVendPackingSlipJourWithLines(_goodsReceiptHeaderDtoBuilder.packingSlipId);
+        setState(() => _vendPackingSlipJour = vendPackingSlipJour.data!);
       }
       // final purchTableResponse = await _gmkSMSServiceGroupDAL.getPurchTable(goodsReceiptHeaderResponse.data!.purchId);
       // if (purchTableResponse.success) {

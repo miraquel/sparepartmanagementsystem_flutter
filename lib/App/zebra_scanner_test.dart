@@ -44,6 +44,12 @@ class _ZebraScannerTestState extends State<ZebraScannerTest> with SingleTickerPr
   }
 
   @override
+  void dispose() {
+    Environment.zebraMethodChannel.invokeMethod("unregisterReceiver");
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

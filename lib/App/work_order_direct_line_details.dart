@@ -223,7 +223,7 @@ class _WorkOrderDirectLineDetailsState extends State<WorkOrderDirectLineDetails>
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: ElevatedButton(
-            onPressed: () async {
+            onPressed: _workOrderLineDtoBuilder.lineStatus != 'Planning' ? null : () async {
               await showDialog(context: context,
                 builder: (_) => ConfirmationDialog(
                   title: const Text('Save Financial Dimensions'),
@@ -285,7 +285,7 @@ class _WorkOrderDirectLineDetailsState extends State<WorkOrderDirectLineDetails>
             await _gmkSMSServiceGroupDAL.getDimensionList(dimensionName);
         return result.data!;
       },
-      enabled: !_isLoading,
+      enabled: !_isLoading && _workOrderLineDtoBuilder.lineStatus == 'Planning',
       onChanged: onChanged,
       autoValidateMode: AutovalidateMode.onUserInteraction,
       popupProps: PopupProps.menu(

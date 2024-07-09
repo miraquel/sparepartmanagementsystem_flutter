@@ -98,7 +98,7 @@ class _ItemRequisitionDirectListState extends State<ItemRequisitionDirectList> {
     return LoadingOverlay(
       isLoading: _isLoading,
       child: Scaffold(
-        floatingActionButton: _isLoading || _isDeleting ? null : FloatingActionButton(
+        floatingActionButton: _isLoading || _isDeleting || widget.workOrderLineDto.lineStatus != 'Planning' ? null : FloatingActionButton(
           onPressed: () async {
             await _navigator.pushNamed('/itemRequisitionDirectDetails', arguments: { 'workOrderLineDto': widget.workOrderLineDto });
             await _loadItemRequisitionList();

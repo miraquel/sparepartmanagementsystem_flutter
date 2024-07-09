@@ -27,6 +27,7 @@ class ApiPath {
   static const String getGoodsReceiptHeaderByParams                 = '/api/v1/GoodsReceiptService/GetGoodsReceiptHeaderByParams';
   static const String getGoodsReceiptHeaderByParamsPagedList        = '/api/v1/GoodsReceiptService/GetGoodsReceiptHeaderByParamsPagedList';
   static const String addGoodsReceiptHeaderWithLines                = '/api/v1/GoodsReceiptService/AddGoodsReceiptHeaderWithLines';
+  static const String addAndReturnGoodsReceiptHeaderWithLines       = '/api/v1/GoodsReceiptService/AddAndReturnGoodsReceiptHeaderWithLines';
   static const String updateGoodsReceiptHeaderWithLines             = '/api/v1/GoodsReceiptService/UpdateGoodsReceiptHeaderWithLines';
   static const String getGoodsReceiptHeaderByIdWithLines            = '/api/v1/GoodsReceiptService/GetGoodsReceiptHeaderByIdWithLines';
   static const String postToAX                                      = '/api/v1/GoodsReceiptService/PostToAX';

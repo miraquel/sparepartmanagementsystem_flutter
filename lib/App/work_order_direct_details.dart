@@ -116,7 +116,7 @@ class _WorkOrderDirectDetailsState extends State<WorkOrderDirectDetails> with Si
             ),
           ),
           const Padding(
-            padding: EdgeInsets.only(left: 16, right: 16, bottom: 8),
+            padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
             child: Text(
               'below are the details of the work order.',
               style: TextStyle(
@@ -129,7 +129,7 @@ class _WorkOrderDirectDetailsState extends State<WorkOrderDirectDetails> with Si
             padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             child: TextFormField(
               controller: TextEditingController(text: _workOrderHeaderDtoBuilder.agseamwoid),
-              decoration: const InputDecoration(labelText: 'Agseamwoid', border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: 'Work Order Id', border: OutlineInputBorder()),
               readOnly: true,
             ),
           ),
@@ -137,7 +137,7 @@ class _WorkOrderDirectDetailsState extends State<WorkOrderDirectDetails> with Si
             padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             child: TextFormField(
               controller: TextEditingController(text: _workOrderHeaderDtoBuilder.agseamwrid),
-              decoration: const InputDecoration(labelText: 'Work request Id', border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: 'Work Request Id', border: OutlineInputBorder()),
               readOnly: true,
             ),
           ),
