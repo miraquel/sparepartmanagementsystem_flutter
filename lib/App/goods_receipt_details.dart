@@ -708,32 +708,35 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
                           ),
                         )
                       ],
-                    )
-                  else if (!_isEditing && _goodsReceiptHeaderDtoBuilder.isSubmitted == true)
-                    ElevatedButton(
-                      onPressed: () async {
-                        // print label
-                        var arguments = await _navigator.pushNamed('/printerList') as Map<String, dynamic>;
-                        var printer = arguments['printer'] as BluetoothDevice;
-                        var copies = arguments['copies'] as int;
-                        var barcode = PrinterHelper.vendPackingSlipTemplate(
-                            _vendPackingSlipJour,
-                            _vendPackingSlipJour.vendPackingSlipTrans.where((element) => element.itemId == _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].itemId).single,
-                            copies);
-                        await PrinterHelper.printLabel(printer, barcode);
-                                            },
-                      child:
-                        const Row(
-                          children: [
-                            Icon(
-                              UniconsLine.print,
-                              size: 20,
-                            ),
-                            SizedBox(width: 10),
-                            Text('Print Label'),
-                          ],
+                    ),
+                ],
+                if (!_isEditing && _goodsReceiptHeaderDtoBuilder.isSubmitted == true) ...[
+                  ElevatedButton(
+                    onPressed: () async {
+                      // print label
+                      var arguments = await _navigator.pushNamed('/printerList') as Map<String, dynamic>;
+                      var printer = arguments['printer'] as BluetoothDevice;
+                      var copies = arguments['copies'] as int;
+                      var barcode = PrinterHelper.vendPackingSlipTemplate(
+                          _vendPackingSlipJour,
+                          _vendPackingSlipJour.vendPackingSlipTrans.where((element) => element.itemId == _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].itemId).single,
+                          copies);
+                      await PrinterHelper.printLabel(printer, barcode);
+                    },
+                    child:
+                    const Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          UniconsLine.print,
+                          size: 20,
                         ),
-                    )
+                        SizedBox(width: 10),
+                        Text('Print Label'),
+                      ],
+                    ),
+                  ),
                 ]
               ],
             ),
