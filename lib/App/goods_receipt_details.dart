@@ -66,7 +66,16 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
         tabIndex = _tabController.index;
       });
     });
-    _fetchData();
+
+    if (widget.goodsReceiptHeaderDto != null) {
+      setState(() {
+        _goodsReceiptHeader = widget.goodsReceiptHeaderDto!;
+        _goodsReceiptHeaderDtoBuilder = GoodsReceiptHeaderDtoBuilder.fromDto(widget.goodsReceiptHeaderDto!);
+      });
+    }
+    else {
+      _fetchData();
+    }
 
     // Zebra scanner device, only for Android devices
     // It is only activated when adding a new item requisition
@@ -106,24 +115,15 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
   Future<void> _fetchData() async {
     try {
       setState(() => _isLoading = true);
-      if (widget.goodsReceiptHeaderDto != null) {
+      final goodsReceiptHeaderResponse = await _goodsReceiptHeaderDAL.getGoodsReceiptHeaderByIdWithLines(widget.goodsReceiptHeaderId!);
+      if (goodsReceiptHeaderResponse.success) {
         setState(() {
-          _goodsReceiptHeader = widget.goodsReceiptHeaderDto!;
-          _goodsReceiptHeaderDtoBuilder = GoodsReceiptHeaderDtoBuilder.fromDto(widget.goodsReceiptHeaderDto!);
+          _goodsReceiptHeader = goodsReceiptHeaderResponse.data!;
+          _goodsReceiptHeaderDtoBuilder = GoodsReceiptHeaderDtoBuilder.fromDto(goodsReceiptHeaderResponse.data!);
+          if (_goodsReceiptHeaderDtoBuilder.transDate.isAtSameMomentAs(DateTimeHelper.minDateTime)) {
+            _goodsReceiptHeaderDtoBuilder.setTransDate(DateTimeHelper.today);
+          }
         });
-        return;
-      }
-      else {
-        final goodsReceiptHeaderResponse = await _goodsReceiptHeaderDAL.getGoodsReceiptHeaderByIdWithLines(widget.goodsReceiptHeaderId!);
-        if (goodsReceiptHeaderResponse.success) {
-          setState(() {
-            _goodsReceiptHeader = goodsReceiptHeaderResponse.data!;
-            _goodsReceiptHeaderDtoBuilder = GoodsReceiptHeaderDtoBuilder.fromDto(goodsReceiptHeaderResponse.data!);
-            if (_goodsReceiptHeaderDtoBuilder.transDate.isAtSameMomentAs(DateTimeHelper.minDateTime)) {
-              _goodsReceiptHeaderDtoBuilder.setTransDate(DateTimeHelper.today);
-            }
-          });
-        }
       }
       if (_goodsReceiptHeaderDtoBuilder.isSubmitted == true) {
         final vendPackingSlipJour = await _gmkSMSServiceGroupDAL.getVendPackingSlipJourWithLines(_goodsReceiptHeaderDtoBuilder.packingSlipId);
