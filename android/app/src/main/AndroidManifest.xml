@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
 
     <application
-        android:label="SMS Apps"
+        android:label="SAMSON"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
