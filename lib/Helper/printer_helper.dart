@@ -58,8 +58,12 @@ class PrinterHelper {
   }
 
   static String getItemIdFromUrl(String url) {
-    var uri = Uri.dataFromString(url);
-    var itemId = uri.pathSegments[3];
-    return itemId;
+    try {
+      var uri = Uri.dataFromString(url);
+      var itemId = uri.pathSegments[3];
+      return itemId;
+    } catch (e) {
+      return '';
+    }
   }
 }
