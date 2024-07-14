@@ -1,3 +1,5 @@
+import 'package:sparepartmanagementsystem_flutter/Helper/date_time_helper.dart';
+
 class VersionTrackerDto {
   final int versionTrackerId;
   final String version;
@@ -17,8 +19,8 @@ class VersionTrackerDto {
     DateTime? createdDateTime,
     this.modifiedBy = '',
     DateTime? modifiedDateTime,
-  }) :  createdDateTime = createdDateTime ?? DateTime.now(),
-        modifiedDateTime = modifiedDateTime ?? DateTime.now();
+  }) :  createdDateTime = createdDateTime ?? DateTimeHelper.minDateTime,
+        modifiedDateTime = modifiedDateTime ?? DateTimeHelper.minDateTime;
 
   factory VersionTrackerDto.fromJson(Map<String, dynamic> json) {
     return VersionTrackerDto(
@@ -27,9 +29,9 @@ class VersionTrackerDto {
       description: json['description'] as String? ?? '',
       physicalLocation: json['physicalLocation'] as String? ?? '',
       createdBy: json['createdBy'] as String? ?? '',
-      createdDateTime: DateTime.tryParse(json['createdDateTime'] as String? ?? '') ?? DateTime.now(),
+      createdDateTime: DateTime.tryParse(json['createdDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
       modifiedBy: json['modifiedBy'] as String? ?? '',
-      modifiedDateTime: DateTime.tryParse(json['modifiedDateTime'] as String? ?? '') ?? DateTime.now(),
+      modifiedDateTime: DateTime.tryParse(json['modifiedDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
     );
   }
 
@@ -40,9 +42,9 @@ class VersionTrackerDto {
       if (description.isNotEmpty) 'description': description,
       if (physicalLocation.isNotEmpty) 'physicalLocation': physicalLocation,
       if (createdBy.isNotEmpty) 'createdBy': createdBy,
-      if (createdDateTime.isAfter(DateTime.now())) 'createdDateTime': createdDateTime.toIso8601String(),
+      if (createdDateTime.isAfter(DateTimeHelper.minDateTime)) 'createdDateTime': createdDateTime.toIso8601String(),
       if (modifiedBy.isNotEmpty) 'modifiedBy': modifiedBy,
-      if (modifiedDateTime.isAfter(DateTime.now())) 'modifiedDateTime': modifiedDateTime.toIso8601String(),
+      if (modifiedDateTime.isAfter(DateTimeHelper.minDateTime)) 'modifiedDateTime': modifiedDateTime.toIso8601String(),
     };
   }
 }

@@ -118,7 +118,7 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
             _goodsReceiptHeader = goodsReceiptHeaderResponse.data!;
             _goodsReceiptHeaderDtoBuilder = GoodsReceiptHeaderDtoBuilder.fromDto(goodsReceiptHeaderResponse.data!);
             if (_goodsReceiptHeaderDtoBuilder.transDate.isAtSameMomentAs(DateTimeHelper.minDateTime)) {
-              _goodsReceiptHeaderDtoBuilder.setTransDate(DateTime.now());
+              _goodsReceiptHeaderDtoBuilder.setTransDate(DateTimeHelper.today);
             }
           });
         }
@@ -486,7 +486,7 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
                   onPressed: _goodsReceiptHeader.isSubmitted == false ? () {
                     showDatePicker(
                       context: context,
-                      initialDate: DateTime.now(),
+                      initialDate: DateTimeHelper.today,
                       firstDate: DateTime(2000),
                       lastDate: DateTime(2100),
                     ).then((value) {
