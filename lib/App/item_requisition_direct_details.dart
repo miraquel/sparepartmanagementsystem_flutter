@@ -65,27 +65,38 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
       });
     }
 
-      // Zebra scanner device, only for Android devices
-      // It is only activated when adding a new item requisition
-      if (Platform.isAndroid)
-      {
-        Environment.zebraMethodChannel.invokeMethod("registerReceiver");
-        Environment.zebraMethodChannel.setMethodCallHandler((call) async {
-          if (call.method == "displayScanResult") {
-            var scanData = call.arguments["scanData"];
-            var itemId = PrinterHelper.getItemIdFromUrl(scanData);
+    // Zebra scanner device, only for Android devices
+    // It is only activated when adding a new item requisition
+    if (Platform.isAndroid)
+    {
+      Environment.zebraMethodChannel.invokeMethod("registerReceiver");
+      Environment.zebraMethodChannel.setMethodCallHandler((call) async {
+        if (call.method == "displayScanResult") {
+          var scanData = call.arguments["scanData"];
+          var itemId = PrinterHelper.getItemIdFromUrl(scanData);
+          if (widget.inventReqDto == null && itemId.isNotEmpty) {
             await _getInventTable(itemId);
           }
-          if (call.method == "showToast") {
-            _scaffoldMessenger.showSnackBar(SnackBar(
-              content: Text(call.arguments as String),
-            ));
+          else if (_inventReqDto.itemId.isNotEmpty) {
+            _getInventSumWithWarehouse(scanData);
           }
-          return null;
-        });
-      }
-      // end - Zebra scanner device
+          else if (itemId.isEmpty) {
+            _scaffoldMessenger.showSnackBar(
+              const SnackBar(
+                content: Text("Item must be selected first to scan location"),
+              ),
+            );
+          }
+        }
+        if (call.method == "showToast") {
+          _scaffoldMessenger.showSnackBar(SnackBar(
+            content: Text(call.arguments as String),
+          ));
+        }
+        return null;
+      });
     }
+    // end - Zebra scanner device
   }
 
   @override
@@ -125,6 +136,11 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
         setState(() {
           _inventReqDto.setItemId(item.itemId);
           _inventReqDto.setProductName(item.productName);
+          _inventReqDto.setInventSiteId('');
+          _inventReqDto.setInventLocationId('');
+          _inventReqDto.setWmsLocationId('');
+          _inventReqDto.setQty(0);
+          _maxQuantity = 0;
         });
       }
     }
@@ -150,6 +166,34 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
         setState(() {
           _maxQuantity = response.data!.first.availPhysical;
         });
+      }
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _getInventSumWithWarehouse(String wmsLocationId) async {
+    try {
+      setState(() => _isLoading = true);
+      _inventSumSearchDto = InventSumSearchDto(itemId: _inventReqDto.itemId, inventLocationId: Environment.userWarehouseDto.inventLocationId, wMSLocationId: wmsLocationId);
+      final response = await _gmkSMSServiceGroupDAL.getInventSumList(_inventSumSearchDto);
+      response.data!.removeWhere((element) => element.availPhysical == 0);
+      if (response.success) {
+        if (response.data!.isEmpty) {
+          _scaffoldMessenger.showSnackBar(
+            const SnackBar(
+              content: Text("No available stock in this location"),
+            ),
+          );
+        }
+        else {
+          setState(() {
+            _inventReqDto.setInventSiteId(Environment.userWarehouseDto.inventSiteId);
+            _inventReqDto.setInventLocationId(Environment.userWarehouseDto.inventLocationId);
+            _inventReqDto.setWmsLocationId(wmsLocationId);
+            _maxQuantity = response.data!.first.availPhysical;
+          });
+        }
       }
     } finally {
       setState(() => _isLoading = false);
@@ -222,6 +266,9 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text('Work Order: ${widget.workOrderLineDto.woid}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        const Text('You can scan the Item and the location', style: TextStyle(fontSize: 16)),
+                        const SizedBox(height: 15),
                         // add form fields here
                         TextFormField(
                           controller: TextEditingController(text: _inventReqDto.itemId),

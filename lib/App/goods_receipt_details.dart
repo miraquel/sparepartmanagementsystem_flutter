@@ -51,6 +51,8 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
   var _vendPackingSlipJour = VendPackingSlipJourDto();
   final _controllers = <TextEditingController>[];
 
+  bool get _isModified => _goodsReceiptHeaderDtoBuilder.build().compare(_goodsReceiptHeader);
+
   @override
   void initState() {
     super.initState();
@@ -229,7 +231,7 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
     // create 2 tabs, one for the header and one for the lines
     var transDateTextController = TextEditingController(text: DateFormat("dd/MM/yyyy").format(_goodsReceiptHeaderDtoBuilder.transDate));
     return PopScope(
-      canPop: _goodsReceiptHeaderDtoBuilder.isSubmitted == false ? _canPop : true,
+      canPop: _canPop || _isModified,
       onPopInvoked: (bool didPop) {
         if (!didPop) {
           showDialog(
@@ -265,7 +267,8 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
             child: const Icon(Icons.add),
           ) : null,
           appBar: AppBar(
-            title: Text('Goods Receipt Details${_goodsReceiptHeaderDtoBuilder.build().compare(_goodsReceiptHeader) ? '' : ' *'}'),
+            title: Text('Goods Receipt Details${_isModified ? '' : ' *'}', style: const TextStyle(fontSize: 16)),
+            toolbarHeight: 50,
             bottom: TabBar(
               controller: _tabController,
               tabs: const <Widget>[
@@ -283,7 +286,7 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
                   icon: const Icon(Icons.send),
                   onPressed:  _goodsReceiptHeader.isSubmitted == false && _goodsReceiptHeaderDtoBuilder.goodsReceiptLines.isNotEmpty ? () async {
                     // confirmation dialog
-                    if (!_goodsReceiptHeaderDtoBuilder.build().compare(_goodsReceiptHeader)) {
+                    if (!_isModified) {
                       _scaffoldMessenger.showSnackBar(const SnackBar(
                         content: Text('Goods receipt header has been modified, please save first'),
                       ));
