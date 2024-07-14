@@ -183,64 +183,74 @@ class _ItemRequisitionDirectListState extends State<ItemRequisitionDirectList> {
         ),
         body: RefreshIndicator(
           onRefresh: _loadItemRequisitionList,
-          child: Center(
-            child: _inventReqDtoBuilder.isEmpty && !_isLoading
-              ? const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('No item requisition found', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                    Text('Click the plus icon to add a new item requisition', style: TextStyle(fontSize: 15), textAlign: TextAlign.center),
-                  ],
-              ) : ListView.separated(
-                itemBuilder: (context, index) {
-                  final inventReqDto = _inventReqDtoBuilder[index];
-                  return ListTile(
-                    title: Text("Item Id: ${inventReqDto.itemId}"),
-                    minLeadingWidth: 0,
-                    onLongPress: _inventReqDtoBuilder.where((element) => element.process == NoYes.no).isEmpty ? null : () {
-                      setState(() {
-                        _isDeleting = true;
-                        if (inventReqDto.process == NoYes.no) {
-                          inventReqDto.setIsSelected(true);
-                        }
-                      });
-                    },
-                    onTap: _isDeleting && inventReqDto.process == NoYes.no ? () {
-                      setState(() => inventReqDto.setIsSelected(!inventReqDto.isSelected));
-                    } : null,
-                    leading: _isDeleting && inventReqDto.process == NoYes.no ? Checkbox(
-                      value: inventReqDto.isSelected,
-                      onChanged: (value) async {
-                        if (value == null) return;
-                        setState(() => inventReqDto.setIsSelected(value));
-                      },
-                    ) : null,
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Item Name: ${inventReqDto.productName}"),
-                        Text("Preparer: ${inventReqDto.preparerUserId}"),
-                      ],
-                    ),
-                    trailing: inventReqDto.process == NoYes.yes ? const Column(
-                      children: [
-                        Icon(Icons.check, color: Colors.green),
-                        Text("Processed"),
-                      ],
-                    ) : _isDeleting ? null : IconButton(
-                      padding: EdgeInsets.zero,
-                      icon: const Icon(Icons.chevron_right),
-                      tooltip: 'Edit',
-                      onPressed: () async {
-                        await _navigator.pushNamed('/itemRequisitionDirectDetails', arguments: { 'workOrderLineDto': widget.workOrderLineDto, 'inventReqDto': inventReqDto.build() });
-                        await _loadItemRequisitionList();
-                      },
-                    )
-                  );
-                },
-                separatorBuilder: (context, index) => const Divider(),
-                itemCount: _inventReqDtoBuilder.length
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 15),
+                child: Text('Work Order: ${widget.workOrderLineDto.woid}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
+              Expanded(
+                child: Center(
+                  child: _inventReqDtoBuilder.isEmpty && !_isLoading
+                    ? const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('No item requisition found', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                          Text('Click the plus icon to add a new item requisition', style: TextStyle(fontSize: 15), textAlign: TextAlign.center),
+                        ],
+                    ) : ListView.separated(
+                      itemBuilder: (context, index) {
+                        final inventReqDto = _inventReqDtoBuilder[index];
+                        return ListTile(
+                          title: Text("Item Id: ${inventReqDto.itemId}"),
+                          minLeadingWidth: 0,
+                          onLongPress: _inventReqDtoBuilder.where((element) => element.process == NoYes.no).isEmpty ? null : () {
+                            setState(() {
+                              _isDeleting = true;
+                              if (inventReqDto.process == NoYes.no) {
+                                inventReqDto.setIsSelected(true);
+                              }
+                            });
+                          },
+                          onTap: () async {
+                            if (_isDeleting && inventReqDto.process == NoYes.no) {
+                              setState(() => inventReqDto.setIsSelected(!inventReqDto.isSelected));
+                            }
+                            else if (inventReqDto.process == NoYes.no) {
+                              await _navigator.pushNamed('/itemRequisitionDirectDetails', arguments: { 'workOrderLineDto': widget.workOrderLineDto, 'inventReqDto': inventReqDto.build() });
+                              await _loadItemRequisitionList();
+                            }
+                          },
+                          leading: _isDeleting && inventReqDto.process == NoYes.no ? Checkbox(
+                            value: inventReqDto.isSelected,
+                            onChanged: (value) async {
+                              if (value == null) return;
+                              setState(() => inventReqDto.setIsSelected(value));
+                            },
+                          ) : null,
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Item Name: ${inventReqDto.productName}"),
+                              Text("Preparer: ${inventReqDto.preparerUserId}"),
+                            ],
+                          ),
+                          trailing: inventReqDto.process == NoYes.yes ? const Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.check, color: Colors.green),
+                              Text("Processed", style: TextStyle(fontSize: 10)),
+                            ],
+                          ) : null,
+                        );
+                      },
+                      separatorBuilder: (context, index) => const Divider(),
+                      itemCount: _inventReqDtoBuilder.length
+                    ),
+                ),
+              ),
+            ],
           ),
         )
       ),

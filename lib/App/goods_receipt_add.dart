@@ -35,10 +35,6 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
   var _isLoading = false;
   var _canPop = false;
 
-  // form fields
-  // var _purchTableDto = PurchTableDto();
-  // var _purchLineDtoList = <PurchLineDto>[];
-
   // builder
   final _goodsReceiptHeaderDtoBuilder = GoodsReceiptHeaderDtoBuilder();
 
@@ -197,6 +193,7 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
           child: Scaffold(
             appBar: AppBar(
               title: const Text('New Goods Receipt'),
+              toolbarHeight: 50,
               actions: [
                 IconButton(
                   onPressed: !_goodsReceiptHeaderDtoBuilder.isDefault() ? () {
@@ -337,7 +334,6 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
                 return null;
               },
               readOnly: true,
-              onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setTransDate(DateTime.tryParse(value) ?? DateTime.now()),
             ),
             TextField(
               controller: TextEditingController(text: _goodsReceiptHeaderDtoBuilder.description),
