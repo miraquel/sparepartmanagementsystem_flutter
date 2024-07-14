@@ -61,7 +61,9 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
     else {
       setState(() {
         _inventReqDto.setAgswoRecId(widget.workOrderLineDto.recId);
+        _inventReqDto.setRequiredDate(DateTimeHelper.today);
       });
+    }
 
       // Zebra scanner device, only for Android devices
       // It is only activated when adding a new item requisition
@@ -288,7 +290,7 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
                         ],
                         const SizedBox(height: 10),
                         TextFormField(
-                          controller: TextEditingController(text: _inventReqDto.requiredDate.isAfter(DateTimeHelper.minDateTime) ? DateFormat('dd MMMM yyyy').format(_inventReqDto.requiredDate) : DateFormat('dd MMMM yyyy').format(DateTime.now())),
+                          controller: TextEditingController(text: DateFormat('dd MMMM yyyy').format(_inventReqDto.requiredDate)),
                           decoration: const InputDecoration(
                             labelText: 'Required Date',
                             suffixIcon: Icon(Icons.calendar_today),
@@ -303,9 +305,9 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
                           onTap: () async {
                             final date = await showDatePicker(
                               context: context,
-                              initialDate: _inventReqDto.requiredDate.isAfter(DateTimeHelper.minDateTime) ? _inventReqDto.requiredDate : DateTime.now(),
-                              firstDate: DateTime.now(),
-                              lastDate: DateTime.now().add(const Duration(days: 365)),
+                              initialDate: _inventReqDto.requiredDate.isAfter(DateTimeHelper.minDateTime) ? _inventReqDto.requiredDate : DateTimeHelper.today,
+                              firstDate: DateTimeHelper.today,
+                              lastDate: DateTimeHelper.today.add(const Duration(days: 365)),
                             );
                             if (date != null) {
                               setState(() => _inventReqDto.setRequiredDate(date));

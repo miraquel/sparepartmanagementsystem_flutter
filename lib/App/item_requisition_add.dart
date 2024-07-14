@@ -151,9 +151,9 @@ class _ItemRequisitionAddState extends State<ItemRequisitionAdd> {
                         onTap: () async {
                           final date = await showDatePicker(
                             context: context,
-                            initialDate: _itemRequisitionDtoBuilder.requiredDate.isAfter(DateTimeHelper.minDateTime) ? _itemRequisitionDtoBuilder.requiredDate : DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime.now().add(const Duration(days: 365)),
+                            initialDate: _itemRequisitionDtoBuilder.requiredDate.isAfter(DateTimeHelper.minDateTime) ? _itemRequisitionDtoBuilder.requiredDate : DateTimeHelper.today,
+                            firstDate: DateTimeHelper.today,
+                            lastDate: DateTimeHelper.today.add(const Duration(days: 365)),
                           );
                           if (date != null) {
                             setState(() => _itemRequisitionDtoBuilder.setRequiredDate(date));

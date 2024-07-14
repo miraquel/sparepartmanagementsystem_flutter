@@ -50,6 +50,8 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
       _scaffoldMessenger = ScaffoldMessenger.of(context);
     });
 
+    _goodsReceiptHeaderDtoBuilder.setTransDate(DateTimeHelper.today);
+
     // Zebra scanner device, only for Android devices
     // It is only activated when adding a new item requisition
     if (Platform.isAndroid)
@@ -310,7 +312,7 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
               onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setPackingSlipId(value),
             ),
             TextFormField(
-              controller: TextEditingController(text: DateFormat("dd/MM/yyyy").format(_goodsReceiptHeaderDtoBuilder.transDate.isAtSameMomentAs(DateTimeHelper.minDateTime) ? DateTime.now() : _goodsReceiptHeaderDtoBuilder.transDate)),
+              controller: TextEditingController(text: DateFormat("dd/MM/yyyy").format(_goodsReceiptHeaderDtoBuilder.transDate)),
               onTap: _transDatePicker,
               decoration: InputDecoration(
                 labelText: 'Receipt Date',
@@ -322,6 +324,18 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d{4}-\d{2}-\d{2}')),
               ],
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a valid date';
+                }
+                if (DateTime.tryParse(value) == null) {
+                  return 'Please enter a valid date';
+                }
+                if (DateTime.tryParse(value)!.isAtSameMomentAs(DateTimeHelper.minDateTime)) {
+                  return 'Please enter a valid date';
+                }
+                return null;
+              },
               readOnly: true,
               onChanged: (value) => _goodsReceiptHeaderDtoBuilder.setTransDate(DateTime.tryParse(value) ?? DateTime.now()),
             ),
@@ -369,7 +383,7 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
   void _transDatePicker() {
     showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: DateTimeHelper.today,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     ).then((value) {
