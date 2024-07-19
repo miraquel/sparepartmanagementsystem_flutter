@@ -1,3 +1,4 @@
+import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_line_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/paged_list_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
@@ -15,4 +16,5 @@ abstract class GoodsReceiptDAL {
   Future<ApiResponseDto> updateGoodsReceiptHeaderWithLines(GoodsReceiptHeaderDto goodsReceiptHeader);
   Future<ApiResponseDto<GoodsReceiptHeaderDto>> getGoodsReceiptHeaderByIdWithLines(int goodsReceiptHeaderId);
   Future<ApiResponseDto> postToAX(GoodsReceiptHeaderDto goodsReceiptHeader);
+  Future<ApiResponseDto<String>> getGoodsReceiptLabelTemplate(GoodsReceiptLineDto dto, int copies);
 }

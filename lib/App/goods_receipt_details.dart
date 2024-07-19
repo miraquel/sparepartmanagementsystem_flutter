@@ -717,11 +717,10 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
                       var arguments = await _navigator.pushNamed('/printerList') as Map<String, dynamic>;
                       var printer = arguments['printer'] as BluetoothDevice;
                       var copies = arguments['copies'] as int;
-                      var barcode = PrinterHelper.vendPackingSlipTemplate(
-                          _vendPackingSlipJour,
-                          _vendPackingSlipJour.vendPackingSlipTrans.where((element) => element.itemId == _goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].itemId).single,
-                          copies);
-                      await PrinterHelper.printLabel(printer, barcode);
+                      var labelResponse = await _goodsReceiptHeaderDAL.getGoodsReceiptLabelTemplate(_goodsReceiptHeaderDtoBuilder.goodsReceiptLines[index].build(), copies);
+                      if (labelResponse.success && labelResponse.data != null) {
+                        await PrinterHelper.printLabelFromString(printer, labelResponse.data!);
+                      }
                     },
                     child:
                     const Row(
