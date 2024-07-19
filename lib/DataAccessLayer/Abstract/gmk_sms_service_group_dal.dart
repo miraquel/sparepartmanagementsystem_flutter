@@ -20,6 +20,7 @@ abstract class GMKSMSServiceGroupDAL {
   Future<ApiResponseDto<InventTableDto>> getInventTable(String itemId);
   Future<ApiResponseDto<PagedListDto<InventTableDto>>> getInventTablePagedList(int pageNumber, int pageSize, InventTableSearchDto dto);
   Future<ApiResponseDto<PagedListDto<InventTableDto>>> getRawInventTablePagedList(int pageNumber, int pageSize, InventTableSearchDto dto);
+  Future<ApiResponseDto<String>> getInventTableLabelTemplate(InventTableDto dto, int copies);
   Future<String> getImageFromNetworkUri(String networkUri);
   Future<String> getImageWithResolutionFromNetworkUri(String networkUri, int maxLength);
   Future<ApiResponseDto<PagedListDto<PurchTableDto>>> getPurchTablePagedList(int pageNumber, int pageSize, PurchTableSearchDto dto);

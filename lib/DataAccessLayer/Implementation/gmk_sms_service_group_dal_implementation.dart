@@ -176,4 +176,11 @@ class GMKSMSServiceGroupDALImplementation implements GMKSMSServiceGroupDAL {
         response.data as Map<String, dynamic>,
         (json) => VendPackingSlipJourDto.fromJson(json));
   }
+
+  @override
+  Future<ApiResponseDto<String>> getInventTableLabelTemplate(InventTableDto dto, int copies) async {
+    final response = await _dio.get(ApiPath.getInventTableLabelTemplate, queryParameters: { ...dto.toJson(), 'copies': copies });
+    var responseBody = response.data as Map<String, dynamic>;
+    return ApiResponseDto<String>.fromJson(responseBody, (json) => json as String);
+  }
 }
