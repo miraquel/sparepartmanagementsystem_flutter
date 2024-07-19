@@ -1,7 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:logger/logger.dart';
+import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/gmk_sms_service_group_dal.dart';
+import 'package:sparepartmanagementsystem_flutter/Helper/printer_helper.dart';
 
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
@@ -17,6 +20,7 @@ class InventoryMasterDetails extends StatefulWidget {
 }
 
 class _InventoryMasterDetailsState extends State<InventoryMasterDetails> {
+  final _gmkSMSServiceGroupDAL = locator<GMKSMSServiceGroupDAL>();
   final _logger = locator<Logger>();
   late NavigatorState _navigator;
 
@@ -41,14 +45,21 @@ class _InventoryMasterDetailsState extends State<InventoryMasterDetails> {
               expandedHeight: 200.0,
               floating: false,
               pinned: true,
-              // actions: [
-              //   IconButton(
-              //     icon: const Icon(Icons.edit),
-              //     onPressed: () {
-              //       // Navigator.pushNamed(context, '/inventoryMasterEdit', arguments: widget.inventTableDto);
-              //     },
-              //   ),
-              // ],
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.print),
+                  onPressed: () async {
+                    // print label
+                    var arguments = await _navigator.pushNamed('/printerList') as Map<String, dynamic>;
+                    var printer = arguments['printer'] as BluetoothDevice;
+                    var copies = arguments['copies'] as int;
+                    var labelResponse = await _gmkSMSServiceGroupDAL.getInventTableLabelTemplate(widget.inventTableDto, copies);
+                    if (labelResponse.success && labelResponse.data != null) {
+                      await PrinterHelper.printLabelFromString(printer, labelResponse.data!);
+                    }
+                  },
+                ),
+              ],
               flexibleSpace: FlexibleSpaceBar(
                 title: GestureDetector(
                   onTap: () {
