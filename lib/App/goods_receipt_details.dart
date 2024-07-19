@@ -93,6 +93,7 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
             return null;
           }
           var scanData = call.arguments["scanData"];
+          scanData = scanData.replaceAll(RegExp(r'\s+'), '');
           await _getWMSLocation(scanData, _goodsReceiptLineDtoBuilderScan!);
           _goodsReceiptLineDtoBuilderScan = null;
         }
