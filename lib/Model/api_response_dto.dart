@@ -16,9 +16,9 @@ class ApiResponseDto<T> {
   factory ApiResponseDto.fromJson(Map<String, dynamic> json, [Function(dynamic)? create]) => ApiResponseDto<T>(
     data: create != null && json['data'] != null ? create(json['data']) : null,
     error: json['error'] ?? '',
-    errorMessages: json['errorMessages'] ?? [],
+    errorMessages: json['errorMessages'] != null ? json['errorMessages'].map<String>((e) => e as String).toList() : [],
     message: json['message'] ?? '',
-    success: json['success'] as bool
+    success: json['success'] as bool? ?? false
   );
 
   Map<String, dynamic> toJson() => {
