@@ -118,7 +118,7 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
   Future<void> _fetchData() async {
     try {
       setState(() => _isLoading = true);
-      final goodsReceiptHeaderResponse = await _goodsReceiptHeaderDAL.getGoodsReceiptHeaderByIdWithLines(widget.goodsReceiptHeaderId!);
+      final goodsReceiptHeaderResponse = await _goodsReceiptHeaderDAL.getGoodsReceiptHeaderByIdWithLines(widget.goodsReceiptHeaderId ?? _goodsReceiptHeader.goodsReceiptHeaderId);
       if (goodsReceiptHeaderResponse.success) {
         setState(() {
           _goodsReceiptHeader = goodsReceiptHeaderResponse.data!;
