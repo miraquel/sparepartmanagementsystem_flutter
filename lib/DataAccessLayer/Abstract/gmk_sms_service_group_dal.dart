@@ -33,5 +33,5 @@ abstract class GMKSMSServiceGroupDAL {
   Future<ApiResponseDto<List<WorkOrderLineAxDto>>> getWorkOrderLineList(String workOrderHeaderId);
   Future<ApiResponseDto<List<InventLocationDto>>> getInventLocationList(InventLocationDto dto);
   Future<ApiResponseDto<List<DimensionDto>>> getDimensionList(String dimensionName);
-  Future<ApiResponseDto<VendPackingSlipJourDto>> getVendPackingSlipJourWithLines(String packingSlipId);
+  Future<ApiResponseDto<VendPackingSlipJourDto>> getVendPackingSlipJourWithLines(VendPackingSlipJourDto dto);
 }
