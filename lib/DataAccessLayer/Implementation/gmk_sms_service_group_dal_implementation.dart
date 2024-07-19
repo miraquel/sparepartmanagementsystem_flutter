@@ -170,8 +170,8 @@ class GMKSMSServiceGroupDALImplementation implements GMKSMSServiceGroupDAL {
   }
 
   @override
-  Future<ApiResponseDto<VendPackingSlipJourDto>> getVendPackingSlipJourWithLines(String packingSlipId) async {
-    final response = await _dio.get(ApiPath.getVendPackingSlipJourWithLines, queryParameters: {'packingSlipId': packingSlipId});
+  Future<ApiResponseDto<VendPackingSlipJourDto>> getVendPackingSlipJourWithLines(VendPackingSlipJourDto dto) async {
+    final response = await _dio.get(ApiPath.getVendPackingSlipJourWithLines, queryParameters: {...dto.toJson()});
     return ApiResponseDto<VendPackingSlipJourDto>.fromJson(
         response.data as Map<String, dynamic>,
         (json) => VendPackingSlipJourDto.fromJson(json));
