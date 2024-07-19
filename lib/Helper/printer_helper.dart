@@ -22,6 +22,19 @@ class PrinterHelper {
     }
   }
 
+  static Future<void> printLabelFromString(BluetoothDevice bluetoothDevice, String data) async {
+    await bluetoothDevice.connect();
+    var services = await bluetoothDevice.discoverServices();
+    var printerWriter = services[2].characteristics[1];
+    try {
+      final profile = await CapabilityProfile.load();
+      final generator = Generator(PaperSize.mm58, profile);
+      await printerWriter.write(generator.rawBytes(data.codeUnits));
+    } catch (e) {
+      _logger.e(e);
+    }
+  }
+
   static List<String> vendPackingSlipTemplate(VendPackingSlipJourDto vendPackingSlipJour, VendPackingSlipTransDto vendPackingSlipTrans, int copies) {
     var itemName = <String>[];
 

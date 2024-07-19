@@ -6,6 +6,7 @@ import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/goods
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_line_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/paged_list_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 
@@ -105,5 +106,12 @@ class GoodsReceiptDALImplementation implements GoodsReceiptDAL {
     final response = await _dio.post(ApiPath.addAndReturnGoodsReceiptHeaderWithLines, data: goodsReceiptHeader);
     var responseBody = response.data as Map<String, dynamic>;
     return ApiResponseDto<GoodsReceiptHeaderDto>.fromJson(responseBody, (json) => GoodsReceiptHeaderDto.fromJson(json as Map<String, dynamic>));
+  }
+
+  @override
+  Future<ApiResponseDto<String>> getGoodsReceiptLabelTemplate(GoodsReceiptLineDto dto, int copies) async {
+    final response = await _dio.get(ApiPath.getGoodsReceiptLabelTemplate, queryParameters: {...dto.toJson(), 'copies': copies});
+    var responseBody = response.data as Map<String, dynamic>;
+    return ApiResponseDto<String>.fromJson(responseBody, (json) => json as String);
   }
 }
