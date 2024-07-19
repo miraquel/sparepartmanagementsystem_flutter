@@ -59,19 +59,18 @@ class DioLoggingInterceptors extends Interceptor {
     }
 
     if (err.response?.statusCode == 400 || err.response?.statusCode == 500) {
-      // create a safe conversion of error response data to ApiResponseDto
-      try {
-        var errorResponse = ApiResponseDto.fromJson(err.response?.data, (json) => json);
-        var snackBar = SnackBar(
-          content: Text(errorResponse.errorMessages.first),
-          duration: const Duration(seconds: 5),
-        );
-        ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(snackBar);
-        logger.e(errorResponse.errorMessages.join());
-      } catch (e) {
-        logger.e(err.response?.data);
-      }
-
+      var errorResponse = ApiResponseDto.fromJson(err.response!.data);
+      var errorMessage = errorResponse.errorMessages.first;
+      // replace Info: with ℹ Info:
+      errorMessage = errorMessage.replaceAll("Info:", "ℹ Info:");
+      // replace Warning: with ⚠ Warning:
+      errorMessage = errorMessage.replaceAll("Warning:", "⚠ Warning:");
+      // replace Error: with ❌ Error:
+      errorMessage = errorMessage.replaceAll("Error:", "❌ Error:");
+      // assign error message back to error response
+      errorResponse.errorMessages[0] = errorMessage;
+      err.response!.data = errorResponse.toJson();
+      logger.e(err.response?.data);
       return handler.reject(err);
     }
 

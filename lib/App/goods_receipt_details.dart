@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -7,7 +8,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:sparepartmanagementsystem_flutter/App/confirmation_dialog.dart';
 import 'package:sparepartmanagementsystem_flutter/Helper/printer_helper.dart';
-import 'package:sparepartmanagementsystem_flutter/Model/vend_packing_slip_jour_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:unicons/unicons.dart';
 
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
@@ -45,6 +46,8 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
   late TabController _tabController;
   int tabIndex = 0;
   GoodsReceiptLineDtoBuilder? _goodsReceiptLineDtoBuilderScan;
+  var errorPost = false;
+  var errorMessage = "";
 
   var _goodsReceiptHeader = GoodsReceiptHeaderDto();
   var _goodsReceiptHeaderDtoBuilder = GoodsReceiptHeaderDtoBuilder();
@@ -135,9 +138,10 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
       // final purchLineResponse = await _gmkSMSServiceGroupDAL.getPurchLineList(goodsReceiptHeaderResponse.data!.purchId);
       // if (purchLineResponse.success) {
       // }
-    } catch (error) {
+    } on DioException catch (error) {
+      var errorResponse = ApiResponseDto.fromJson(error.response!.data);
       _scaffoldMessenger.showSnackBar(SnackBar(
-        content: Text('Error fetching goods receipt header details: $error')
+        content: Text('Error fetching goods receipt header details: ${errorResponse.errorMessages.first}')
       ));
     } finally {
       setState(() => _isLoading = false);
@@ -157,8 +161,10 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
         throw Exception('response is received but not successful');
       }
     } catch (error) {
+    } on DioException catch (error) {
+      var errorResponse = ApiResponseDto.fromJson(error.response!.data);
       _scaffoldMessenger.showSnackBar(SnackBar(
-        content: Text('Error saving goods receipt header to AX: $error')
+        content: Text('Error saving goods receipt details: ${errorResponse.errorMessages.first}')
       ));
     } finally {
       setState(() => _isLoading = false);
@@ -174,8 +180,16 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
           content: Text('Goods receipt header posted to AX')
         ));
       }
-    }
-    finally {
+    } on DioException catch (error) {
+      var errorResponse = ApiResponseDto.fromJson(error.response!.data);
+      // _scaffoldMessenger.showSnackBar(SnackBar(
+      //     content: Text(errorResponse.errorMessages.first)
+      // ));
+      setState(() {
+        errorPost = true;
+        errorMessage = errorResponse.errorMessages.first;
+      });
+    } finally {
       setState(() => _isLoading = false);
     }
   }
@@ -445,6 +459,37 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // dismissible message
+          if (errorPost)
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(errorMessage),
+                      ),
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            // Update the state to dismiss the card
+                            setState(() {
+                              errorPost = false;
+                              errorMessage = "";
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ),
           const Padding(
             padding: EdgeInsets.only(left: 16, top: 16),
             child: Text(
