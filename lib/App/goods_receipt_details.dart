@@ -51,7 +51,6 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
 
   var _goodsReceiptHeader = GoodsReceiptHeaderDto();
   var _goodsReceiptHeaderDtoBuilder = GoodsReceiptHeaderDtoBuilder();
-  var _vendPackingSlipJour = VendPackingSlipJourDto();
   final _controllers = <TextEditingController>[];
 
   bool get _isModified => _goodsReceiptHeaderDtoBuilder.build().compare(_goodsReceiptHeader);
@@ -128,10 +127,6 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
           }
         });
       }
-      if (_goodsReceiptHeaderDtoBuilder.isSubmitted == true) {
-        final vendPackingSlipJour = await _gmkSMSServiceGroupDAL.getVendPackingSlipJourWithLines(_goodsReceiptHeaderDtoBuilder.packingSlipId);
-        setState(() => _vendPackingSlipJour = vendPackingSlipJour.data!);
-      }
       // final purchTableResponse = await _gmkSMSServiceGroupDAL.getPurchTable(goodsReceiptHeaderResponse.data!.purchId);
       // if (purchTableResponse.success) {
       // }
@@ -160,7 +155,6 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
       else {
         throw Exception('response is received but not successful');
       }
-    } catch (error) {
     } on DioException catch (error) {
       var errorResponse = ApiResponseDto.fromJson(error.response!.data);
       _scaffoldMessenger.showSnackBar(SnackBar(
