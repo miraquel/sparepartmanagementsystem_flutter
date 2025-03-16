@@ -1,4 +1,4 @@
-package com.gandummas.sms_system.sparepartmanagementsystem_flutter
+package com.gandummas.sparepartmanagementsystem_flutter
 
 import android.content.BroadcastReceiver
 import android.content.Context
