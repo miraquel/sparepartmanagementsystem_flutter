@@ -314,9 +314,8 @@ class _UserEditState extends State<UserEdit> with SingleTickerProviderStateMixin
                           return null;
                         },
                         popupProps: PopupPropsMultiSelection.menu(
-                          isFilterOnline: true,
                           showSearchBox: true,
-                          itemBuilder: (BuildContext context, InventLocationDto item, bool isSelected) {
+                          itemBuilder: (BuildContext context, InventLocationDto item, bool isDisabled, bool isSelected) {
                             return Container(
                               margin: const EdgeInsets.symmetric(horizontal: 8),
                               decoration: !isSelected
@@ -336,7 +335,7 @@ class _UserEditState extends State<UserEdit> with SingleTickerProviderStateMixin
                             );
                           },
                         ),
-                        asyncItems: (String searchTerm) async {
+                        items: (String searchTerm, props) async {
                           var searchDto = InventLocationDto(inventLocationId: searchTerm);
                           var response = await _gmkSMSServiceGroupDAL.getInventLocationList(searchDto);
                           var data = response.data?.map((e) => e).toList();
@@ -345,8 +344,8 @@ class _UserEditState extends State<UserEdit> with SingleTickerProviderStateMixin
                         dropdownBuilder: (context, selectedItem) {
                           return selectedItem != null ? Text(selectedItem.inventLocationId) : const Text('Select Warehouse');
                         },
-                        dropdownDecoratorProps: const DropDownDecoratorProps(
-                          dropdownSearchDecoration: InputDecoration(
+                        decoratorProps: const DropDownDecoratorProps(
+                          decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             label: Text('Warehouse'),
                           ),

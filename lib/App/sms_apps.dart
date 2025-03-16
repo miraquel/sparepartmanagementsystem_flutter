@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sparepartmanagementsystem_flutter/App/MobileScanner/barcode_scanner_with_scan_window.dart';
 
 import 'package:sparepartmanagementsystem_flutter/App/goods_receipt_line_add.dart';
 import 'package:sparepartmanagementsystem_flutter/App/home.dart';
@@ -87,6 +88,7 @@ class SMSApps extends StatelessWidget {
         '/zebraScannerSettings': (context) => const ZebraScannerSettings(),
         '/zebraScannerTest': (context) => const ZebraScannerTest(),
         '/printerList': (context) => const PrinterList(),
+        '/mobileScanner':(context) => const BarcodeScannerWithScanWindow(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/userEdit') {
@@ -129,7 +131,7 @@ class SMSApps extends StatelessWidget {
                 );
               },
             );
-          };
+          }
         }
         if (settings.name == '/goodsReceiptLineAdd') {
           final args = settings.arguments as GoodsReceiptHeaderDto;

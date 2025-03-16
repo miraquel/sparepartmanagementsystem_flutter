@@ -131,8 +131,9 @@ class _HomeState extends State<Home> {
                         }
                         return null;
                       },
+                      compareFn: (item, selectedItem) => item == selectedItem,
                       popupProps: PopupPropsMultiSelection.menu(
-                        itemBuilder: (BuildContext context, UserWarehouseDto item, bool isSelected) {
+                        itemBuilder: (BuildContext context, UserWarehouseDto item, bool isDisabled, bool isSelected) {
                           return Container(
                             margin: const EdgeInsets.symmetric(horizontal: 8),
                             decoration: !isSelected
@@ -153,7 +154,7 @@ class _HomeState extends State<Home> {
                           );
                         },
                       ),
-                      asyncItems: (String searchTerm) async {
+                      items: (String searchTerm, props) async {
                         var response = await _userWarehouseDAL.getUserWarehouseByUserId(_userId);
                         var data = response.data?.map((e) => e).toList();
                         return data ?? [];
@@ -161,8 +162,8 @@ class _HomeState extends State<Home> {
                       dropdownBuilder: (context, selectedItem) {
                         return selectedItem != null ? Text("${selectedItem.inventLocationId} - ${selectedItem.name}") : const Text('Select warehouse');
                       },
-                      dropdownDecoratorProps: const DropDownDecoratorProps(
-                        dropdownSearchDecoration: InputDecoration(
+                      decoratorProps: const DropDownDecoratorProps(
+                        decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           label: Text('Warehouse'),
                         ),

@@ -69,7 +69,7 @@ class _InventoryMasterDetailsState extends State<InventoryMasterDetails> {
                     padding: const EdgeInsets.only(left: 8, right: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: Colors.black.withOpacity(0.8),
+                      color: Colors.black.withValues(alpha: 0.8),
                     ),
                     child: Text('Item Id: ${widget.inventTableDto.itemId}', style: const TextStyle(color: Colors.white)),
                   ),
@@ -149,6 +149,10 @@ class _InventoryMasterDetailsState extends State<InventoryMasterDetails> {
                   ListTile(
                     title: const Text('Production Type', style: TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text(widget.inventTableDto.productionType),
+                  ),
+                  ListTile(
+                    title: const Text('Tracking Dimension Group Name', style: TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(widget.inventTableDto.trackingDimensionGroupName),
                   ),
                 ],
               ),

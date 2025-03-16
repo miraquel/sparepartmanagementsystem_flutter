@@ -280,7 +280,7 @@ class _WorkOrderDirectLineDetailsState extends State<WorkOrderDirectLineDetails>
             ? Text(selectedItem.value)
             : const SizedBox();
       },
-      asyncItems: (String searchTerm) async {
+      items: (String searchTerm, props) async {
         var result =
             await _gmkSMSServiceGroupDAL.getDimensionList(dimensionName);
         return result.data!;
@@ -293,7 +293,7 @@ class _WorkOrderDirectLineDetailsState extends State<WorkOrderDirectLineDetails>
         fit: FlexFit.loose,
         constraints: const BoxConstraints(maxHeight: 300),
         itemBuilder:
-            (BuildContext context, DimensionDto item, bool isSelected) {
+            (BuildContext context, DimensionDto item, bool isDisabled, bool isSelected) {
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: 8),
             decoration: !isSelected
@@ -311,8 +311,8 @@ class _WorkOrderDirectLineDetailsState extends State<WorkOrderDirectLineDetails>
           );
         },
       ),
-      dropdownDecoratorProps: DropDownDecoratorProps(
-          dropdownSearchDecoration: InputDecoration(
+      decoratorProps: DropDownDecoratorProps(
+          decoration: InputDecoration(
               labelText: dimensionName,
               hintText: "Select $dimensionName",
               border: const OutlineInputBorder())),

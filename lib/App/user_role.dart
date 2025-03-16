@@ -87,7 +87,8 @@ class _UserRoleState extends State<UserRole> {
                     }
                     return null;
                   },
-                  asyncItems: (String searchTerm) => _roleDAL.getAllRole().then((value) {
+                  compareFn: (item, selectedItem) => item == selectedItem,
+                  items: (String searchTerm, props) => _roleDAL.getAllRole().then((value) {
                     setState(() => _newRoles = value.data!);
                     return _newRoles.map((e) => e.roleName).toList();
                   }),
@@ -105,7 +106,7 @@ class _UserRoleState extends State<UserRole> {
                     fit: FlexFit.loose,
                     constraints: BoxConstraints(maxHeight: 300),
                   ),
-                  dropdownDecoratorProps: const DropDownDecoratorProps(dropdownSearchDecoration: InputDecoration(labelText: "Role", hintText: "Select role")),
+                  decoratorProps: const DropDownDecoratorProps(decoration: InputDecoration(labelText: "Role", hintText: "Select role")),
                 ),
                 const SizedBox(height: 15),
                 ElevatedButton(

@@ -91,10 +91,10 @@ class _RowLevelAccessAddState extends State<RowLevelAccessAdd> {
                               }
                               return null;
                             },
+                            compareFn: (item, selectedItem) => item == selectedItem,
                             popupProps: PopupPropsMultiSelection.menu(
-                              isFilterOnline: true,
                               showSearchBox: true,
-                              itemBuilder: (BuildContext context, dynamic item, bool isSelected) {
+                              itemBuilder: (BuildContext context, dynamic item, bool isDisabled, bool isSelected) {
                                 var activeDirectory = item as UserDto;
                                 return Container(
                                   margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -121,7 +121,7 @@ class _RowLevelAccessAddState extends State<RowLevelAccessAdd> {
                                 );
                               },
                             ),
-                            asyncItems: (String searchTerm) async {
+                            items: (String searchTerm, props) async {
                               var response = await _userDAL.getUser();
                               var data = response.data?.map((e) => e).toList();
                               return data ?? [];
@@ -129,8 +129,8 @@ class _RowLevelAccessAddState extends State<RowLevelAccessAdd> {
                             dropdownBuilder: (context, selectedItem) {
                               return selectedItem != null ? Text(selectedItem.username) : const Text('Select User');
                             },
-                            dropdownDecoratorProps: const DropDownDecoratorProps(
-                              dropdownSearchDecoration: InputDecoration(
+                            decoratorProps: const DropDownDecoratorProps(
+                              decoration: InputDecoration(
                                 border: OutlineInputBorder(),
                                 label: Text('Username'),
                               ),
