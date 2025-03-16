@@ -1,6 +1,6 @@
 # sparepartmanagementsystem_flutter
 
-Sparepart Management System V2
+Sparepart Management System v2
 
 ## Getting Started
 
