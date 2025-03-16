@@ -4,14 +4,12 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:logger/logger.dart';
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
 import 'package:sparepartmanagementsystem_flutter/Helper/printer_helper.dart';
-import 'package:sparepartmanagementsystem_flutter/Helper/scanner_helper.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/api_response_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/environment.dart';
@@ -132,7 +130,11 @@ class _InventoryMasterListState extends State<InventoryMasterList> {
     String barcodeScanRes;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode('#ff6666', 'Cancel', true, ScanMode.BARCODE);
+      var barcode = await Navigator.pushNamed(context, '/mobileScanner');
+      if (barcode == null || barcode.toString().isEmpty) {
+        return;
+      }
+      barcodeScanRes = barcode.toString();
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
     }

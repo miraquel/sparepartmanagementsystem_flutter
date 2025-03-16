@@ -150,10 +150,11 @@ class _UserCreateEditState extends State<UserCreateEdit> {
                               return null;
                             },
                             selectedItem: selectedUsername,
-                            asyncItems: (String searchTerm) => _userDAL.getUsersFromActiveDirectory().then((value) {
+                            items: (String searchTerm, props) => _userDAL.getUsersFromActiveDirectory().then((value) {
                               setState(() => _activeDirectoryUsers = value.data!);
                               return _activeDirectoryUsers.map((e) => e.username).toList();
                             }),
+                            compareFn: (item, selectedItem) => item == selectedItem,
                             enabled: !_isLoading && !_isEdit,
                             onChanged: (value) {
                               var selectedUser = _activeDirectoryUsers[_activeDirectoryUsers.indexWhere((element) => element.username == value)];
@@ -170,8 +171,8 @@ class _UserCreateEditState extends State<UserCreateEdit> {
                               fit: FlexFit.loose,
                               constraints: BoxConstraints(maxHeight: 300),
                             ),
-                            dropdownDecoratorProps: const DropDownDecoratorProps(
-                                dropdownSearchDecoration: InputDecoration(
+                            decoratorProps: const DropDownDecoratorProps(
+                                decoration: InputDecoration(
                                   labelText: "Username",
                                   hintText: "Select username",
                                 )

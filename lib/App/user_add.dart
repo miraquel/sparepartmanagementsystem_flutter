@@ -139,9 +139,8 @@ class _AddUserStepState extends State<AddUserStep> {
               return null;
             },
             popupProps: PopupPropsMultiSelection.menu(
-              isFilterOnline: true,
               showSearchBox: true,
-              itemBuilder: (BuildContext context, ActiveDirectoryDto item, bool isSelected) {
+              itemBuilder: (BuildContext context, ActiveDirectoryDto item, bool isDisabled, bool isSelected) {
                 return Container(
                   margin: const EdgeInsets.symmetric(horizontal: 8),
                   decoration: !isSelected
@@ -167,7 +166,7 @@ class _AddUserStepState extends State<AddUserStep> {
                 );
               },
             ),
-            asyncItems: (String searchTerm) async {
+            items: (String searchTerm, props) async {
               var response = await _userDAL.getUsersFromActiveDirectory(searchTerm);
               var data = response.data?.map((e) => e).toList();
               return data ?? [];
@@ -175,8 +174,8 @@ class _AddUserStepState extends State<AddUserStep> {
             dropdownBuilder: (context, selectedItem) {
               return selectedItem != null ? Text(selectedItem.username) : const Text('Select User');
             },
-            dropdownDecoratorProps: const DropDownDecoratorProps(
-              dropdownSearchDecoration: InputDecoration(
+            decoratorProps: const DropDownDecoratorProps(
+              decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 label: Text('Username'),
               ),
@@ -366,9 +365,8 @@ class _AddUserWarehouseStepState extends State<AddUserWarehouseStep> {
                           return null;
                         },
                         popupProps: PopupPropsMultiSelection.menu(
-                          isFilterOnline: true,
                           showSearchBox: true,
-                          itemBuilder: (BuildContext context, InventLocationDto item, bool isSelected) {
+                          itemBuilder: (BuildContext context, InventLocationDto item, bool isDisabled, bool isSelected) {
                             return Container(
                               margin: const EdgeInsets.symmetric(horizontal: 8),
                               decoration: !isSelected
@@ -388,7 +386,7 @@ class _AddUserWarehouseStepState extends State<AddUserWarehouseStep> {
                             );
                           },
                         ),
-                        asyncItems: (String searchTerm) async {
+                        items: (String searchTerm, props) async {
                           var searchDto = InventLocationDto(inventLocationId: searchTerm);
                           var response = await _gmkSMSServiceGroupDAL.getInventLocationList(searchDto);
                           var data = response.data?.map((e) => e).toList();
@@ -397,8 +395,8 @@ class _AddUserWarehouseStepState extends State<AddUserWarehouseStep> {
                         dropdownBuilder: (context, selectedItem) {
                           return selectedItem != null ? Text(selectedItem.inventLocationId) : const Text('Select Warehouse');
                         },
-                        dropdownDecoratorProps: const DropDownDecoratorProps(
-                          dropdownSearchDecoration: InputDecoration(
+                        decoratorProps: const DropDownDecoratorProps(
+                          decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             label: Text('Warehouse'),
                           ),

@@ -1,11 +1,6 @@
-import 'dart:ui';
-
-import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 
 class PrinterList extends StatefulWidget {

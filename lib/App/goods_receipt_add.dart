@@ -169,7 +169,7 @@ class _GoodsReceiptAddState extends State<GoodsReceiptAdd> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: _canPop,
-      onPopInvoked: (bool didPop) {
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
         if (!didPop) {
           showDialog(
             context: context,

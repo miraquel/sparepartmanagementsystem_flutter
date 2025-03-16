@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:sparepartmanagementsystem_flutter/App/confirmation_dialog.dart';
@@ -193,7 +192,11 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
     String barcodeScanRes;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode('#ff6666', 'Cancel', true, ScanMode.BARCODE);
+      var barcode = await Navigator.pushNamed(context, '/mobileScanner');
+      if (barcode == null || barcode.toString().isEmpty) {
+        return;
+      }
+      barcodeScanRes = barcode.toString();
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
     }
@@ -241,7 +244,7 @@ class _GoodsReceiptDetailsState extends State<GoodsReceiptDetails> with TickerPr
     var transDateTextController = TextEditingController(text: DateFormat("dd/MM/yyyy").format(_goodsReceiptHeaderDtoBuilder.transDate));
     return PopScope(
       canPop: _canPop || _isModified,
-      onPopInvoked: (bool didPop) {
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
         if (!didPop) {
           showDialog(
             context: context,

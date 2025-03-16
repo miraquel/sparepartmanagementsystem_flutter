@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:intl/intl.dart';
 import 'package:sparepartmanagementsystem_flutter/App/confirmation_dialog.dart';
 
@@ -109,7 +108,11 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
     String barcodeScanRes;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode('#ff6666', 'Cancel', true, ScanMode.BARCODE);
+      var barcode = await Navigator.pushNamed(context, '/mobileScanner');
+      if (barcode == null || barcode.toString().isEmpty) {
+        return;
+      }
+      barcodeScanRes = barcode.toString();
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
     }
@@ -298,9 +301,12 @@ class _ItemRequisitionDirectDetailsState extends State<ItemRequisitionDirectDeta
                                   icon: const Icon(UniconsLine.qrcode_scan),
                                   onPressed: () async {
                                     // barcode scanner
-                                    final barcode = await FlutterBarcodeScanner.scanBarcode('#ff6666', 'Cancel', true, ScanMode.BARCODE);
+                                    final barcode = await Navigator.pushNamed(context, '/mobileScanner');
+                                    if (barcode == null || barcode.toString().isEmpty) {
+                                      return;
+                                    }
                                     if (barcode != '-1') {
-                                      _getInventTable(barcode);
+                                      _getInventTable(barcode.toString());
                                     }
                                   },
                                 ),

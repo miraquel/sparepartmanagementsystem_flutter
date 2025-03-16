@@ -38,7 +38,7 @@ void serviceLocatorSetup() {
           lineLength: 120,
           colors: true,
           printEmojis: true,
-          printTime: true,
+          dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
           stackTraceBeginIndex: 0
       ));
   locator.registerSingleton<Logger>(logger);

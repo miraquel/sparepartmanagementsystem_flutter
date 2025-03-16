@@ -22,7 +22,7 @@ class LoadingOverlay extends StatelessWidget {
                     AbsorbPointer(
                       absorbing: true,
                       child: ModalBarrier(
-                        color: Colors.grey.withOpacity(0.5),
+                        color: Colors.grey.withValues(alpha: 0.5),
                       ),
                     ),
                     Center(
