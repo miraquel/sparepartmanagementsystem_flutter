@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
@@ -30,6 +32,18 @@ class DioLoggingInterceptors extends Interceptor {
         var dio = Dio();
         dio.options = _dio.options;
         dio.options.baseUrl = Environment.baseUrl;
+
+        // Ignore HTTPS certificate validation if enableHttps is disabled
+        if (!Environment.enableHttps) {
+          dio.httpClientAdapter = IOHttpClientAdapter(
+            createHttpClient: () {
+              final client = HttpClient();
+              client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+              return client;
+            },
+          );
+        }
+
         var refreshTokenResponse = await dio.post(ApiPath.refreshToken, data: { 'refreshToken': refreshTokenLocal });
 
         ApiResponseDto<TokenDto> refreshToken = ApiResponseDto.fromJson(refreshTokenResponse.data, (json) => TokenDto.fromJson(json));

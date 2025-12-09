@@ -144,10 +144,12 @@ class _BaseUrlDialogState extends State<BaseUrlDialog> {
   final _baseUrlController = TextEditingController(text: Environment.baseUrl);
   late NavigatorState _navigator;
   var _isLoading = false;
+  late bool _enableHttps;
 
   @override
   void initState() {
     super.initState();
+    _enableHttps = Environment.enableHttps;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _navigator = Navigator.of(context);
     });
@@ -160,14 +162,34 @@ class _BaseUrlDialogState extends State<BaseUrlDialog> {
       child: AlertDialog(
         title: const Text('Parameters'),
         // multi-line text field to enter base URL
-        content: TextField(
-          controller: _baseUrlController,
-          maxLines: null,
-          keyboardType: TextInputType.multiline,
-          decoration: const InputDecoration(
-            hintText: 'Enter base URL',
-            border: OutlineInputBorder(),
-            label: Text('Base URL'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _baseUrlController,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                decoration: const InputDecoration(
+                  hintText: 'Enter base URL',
+                  border: OutlineInputBorder(),
+                  label: Text('Base URL'),
+                ),
+              ),
+            const SizedBox(height: 16),
+            CheckboxListTile(
+              title: const Text('Enable HTTPS Certificate'),
+              subtitle: const Text('Enable SSL certificate validation (recommended)'),
+              value: _enableHttps,
+              onChanged: (bool? value) {
+                setState(() {
+                  _enableHttps = value ?? true;
+                });
+              },
+              controlAffinity: ListTileControlAffinity.leading,
+              contentPadding: EdgeInsets.zero,
+            ),
+            ],
           ),
         ),
         actions: <Widget>[
@@ -183,11 +205,15 @@ class _BaseUrlDialogState extends State<BaseUrlDialog> {
                 context: navigatorKey.currentContext!,
                 builder: (BuildContext context) {
                   return ConfirmationDialog(
-                    title: const Text('Reset Base URL'),
-                    content: const Text('Are you sure you want to reset the base URL?'),
+                    title: const Text('Reset Parameters'),
+                    content: const Text('Are you sure you want to reset the base URL and enable HTTPS flag?'),
                     onConfirm: () async {
                       await Environment.clearBaseUrl();
-                      setState(() => _baseUrlController.text = Environment.baseUrl);
+                      await Environment.saveEnableHttps(true);
+                      setState(() {
+                        _baseUrlController.text = Environment.baseUrl;
+                        _enableHttps = true;
+                      });
                     },
                   );
                 },
@@ -200,6 +226,7 @@ class _BaseUrlDialogState extends State<BaseUrlDialog> {
             onPressed: () async {
               setState(() => _isLoading = true);
               await Environment.saveBaseUrl(_baseUrlController.text);
+              await Environment.saveEnableHttps(_enableHttps);
               setState(() => _isLoading = false);
               _navigator.pop();
             },
