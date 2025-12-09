@@ -4,6 +4,7 @@ import 'package:logger/logger.dart';
 import 'package:sparepartmanagementsystem_flutter/App/loading_overlay.dart';
 
 import 'package:sparepartmanagementsystem_flutter/App/shimmer.dart';
+import 'package:sparepartmanagementsystem_flutter/environment.dart';
 import 'package:sparepartmanagementsystem_flutter/Helper/auth_helper.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/user_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_dal.dart';
@@ -64,22 +65,24 @@ class _SettingsState extends State<Settings> {
       //backgroundColor: Colors.grey[200],
       body: LoadingOverlay(
         isLoading: _isWaitingLogout,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  masthead(),
-                  const SizedBox(height: 20),
-                  content(),
-                ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    masthead(),
+                    const SizedBox(height: 20),
+                    content(),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -183,6 +186,28 @@ class _SettingsState extends State<Settings> {
             leading: const SizedBox(
               height: double.infinity,
               child: Icon(Icons.print, size: 25)
+            ),
+            minLeadingWidth: 0,
+          ),
+          ListTile(
+            title: const Text('Enable HTTPS Certificate', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            subtitle: const Text(
+              'Enable SSL certificate validation (recommended)',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.black,
+              ),
+            ),
+            trailing: Switch(
+              value: Environment.enableHttps,
+              onChanged: (value) async {
+                await Environment.saveEnableHttps(value);
+                setState(() {});
+              },
+            ),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.security, size: 25)
             ),
             minLeadingWidth: 0,
           ),

@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
@@ -24,11 +26,43 @@ import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/work_order_dal_implementation.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Implementation/work_order_direct_dal_implementation.dart';
 import 'package:sparepartmanagementsystem_flutter/dio_logging_interceptor.dart';
+import 'package:sparepartmanagementsystem_flutter/environment.dart';
 import 'package:sparepartmanagementsystem_flutter/route_observer_extension.dart';
 
 GetIt locator = GetIt.instance;
 final routeObserver = RouteObserverExtension();
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+void _registerDioFactory() {
+  if (locator.isRegistered<Dio>()) {
+    locator.unregister<Dio>();
+  }
+
+  locator.registerFactory<Dio>(() {
+    var dio = Dio();
+    dio.options.connectTimeout = const Duration(seconds: 120);
+    dio.options.receiveTimeout = const Duration(seconds: 120);
+    dio.options.contentType = 'application/json';
+    dio.interceptors.add(DioLoggingInterceptors(dio, navigatorKey: navigatorKey));
+
+    // Ignore HTTPS certificate validation if enableHttps is disabled
+    if (!Environment.enableHttps) {
+      dio.httpClientAdapter = IOHttpClientAdapter(
+        createHttpClient: () {
+          final client = HttpClient();
+          client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+          return client;
+        },
+      );
+    }
+
+    return dio;
+  });
+}
+
+void reregisterDio() {
+  _registerDioFactory();
+}
 
 void serviceLocatorSetup() {
   final logger = Logger(
@@ -42,14 +76,7 @@ void serviceLocatorSetup() {
           stackTraceBeginIndex: 0
       ));
   locator.registerSingleton<Logger>(logger);
-  locator.registerFactory<Dio>(() {
-    var dio = Dio();
-    dio.options.connectTimeout = const Duration(seconds: 120);
-    dio.options.receiveTimeout = const Duration(seconds: 120);
-    dio.options.contentType = 'application/json';
-    dio.interceptors.add(DioLoggingInterceptors(dio, navigatorKey: navigatorKey));
-    return dio;
-  });
+  _registerDioFactory();
 
   locator.registerFactory<GMKSMSServiceGroupDAL>(() => GMKSMSServiceGroupDALImplementation());
   locator.registerFactory<UserDAL>(() => UserDALImplementation());

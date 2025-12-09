@@ -150,10 +150,10 @@ class _InventoryMasterDetailsState extends State<InventoryMasterDetails> {
                     title: const Text('Production Type', style: TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text(widget.inventTableDto.productionType),
                   ),
-                  ListTile(
-                    title: const Text('Tracking Dimension Group Name', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text(widget.inventTableDto.trackingDimensionGroupName),
-                  ),
+                  // ListTile(
+                  //   title: const Text('Tracking Dimension Group Name', style: TextStyle(fontWeight: FontWeight.bold)),
+                  //   subtitle: Text(widget.inventTableDto.trackingDimensionGroupName),
+                  // ),
                 ],
               ),
             ),
