@@ -18,6 +18,8 @@ class GoodsReceiptLineDtoBuilder {
   double _lineAmount = 0;
   String _inventLocationId = '';
   String _wMSLocationId = '';
+  String _inventBatchId = '';
+  String _trackingDimensionGroupName = '';
   String _createdBy = '';
   DateTime _createdDateTime = DateTimeHelper.minDateTime;
   String _modifiedBy = '';
@@ -40,6 +42,8 @@ class GoodsReceiptLineDtoBuilder {
   double      get lineAmount => _lineAmount;
   String      get inventLocationId => _inventLocationId;
   String      get wMSLocationId => _wMSLocationId;
+  String      get inventBatchId => _inventBatchId;
+  String      get trackingDimensionGroupName => _trackingDimensionGroupName;
   String      get createdBy => _createdBy;
   DateTime    get createdDateTime => _createdDateTime;
   String      get modifiedBy => _modifiedBy;
@@ -62,6 +66,8 @@ class GoodsReceiptLineDtoBuilder {
       .setLineAmount(goodsReceiptLineDto.lineAmount)
       .setInventLocationId(goodsReceiptLineDto.inventLocationId)
       .setWMSLocationId(goodsReceiptLineDto.wMSLocationId)
+      .setInventBatchId(goodsReceiptLineDto.inventBatchId)
+      .setTrackingDimensionGroupName(goodsReceiptLineDto.trackingDimensionGroupName)
       .setCreatedBy(goodsReceiptLineDto.createdBy)
       .setCreatedDateTime(goodsReceiptLineDto.createdDateTime)
       .setModifiedBy(goodsReceiptLineDto.modifiedBy)
@@ -166,6 +172,16 @@ class GoodsReceiptLineDtoBuilder {
     return this;
   }
 
+  GoodsReceiptLineDtoBuilder setInventBatchId(String inventBatchId) {
+    _inventBatchId = inventBatchId;
+    return this;
+  }
+
+  GoodsReceiptLineDtoBuilder setTrackingDimensionGroupName(String trackingDimensionGroupName) {
+    _trackingDimensionGroupName = trackingDimensionGroupName;
+    return this;
+  }
+
   GoodsReceiptLineDtoBuilder setCreatedBy(String createdBy) {
     _createdBy = createdBy;
     return this;
@@ -235,6 +251,8 @@ class GoodsReceiptLineDtoBuilder {
       lineAmount: _lineAmount,
       inventLocationId: _inventLocationId,
       wMSLocationId: _wMSLocationId,
+      inventBatchId: _inventBatchId,
+      trackingDimensionGroupName: _trackingDimensionGroupName,
       createdBy: _createdBy,
       createdDateTime: _createdDateTime,
       modifiedBy: _modifiedBy,

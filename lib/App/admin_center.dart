@@ -69,6 +69,31 @@ class _AdminCenterState extends State<AdminCenter> {
             ),
             minLeadingWidth: 0,
           ),
+          // Operation Template
+          ListTile(
+            onTap: () {
+              Navigator.pushNamed(context, '/operationTypeList');
+            },
+            title: const Text('Operation Type'),
+            subtitle: const Text('List all operation types'),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.settings, size: 30)
+            ),
+            minLeadingWidth: 0,
+          ),
+          ListTile(
+            onTap: () {
+              Navigator.pushNamed(context, '/operationTemplateList');
+            },
+            title: const Text('Operation Template'),
+            subtitle: const Text('List all operation templates'),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.settings_applications, size: 30)
+            ),
+            minLeadingWidth: 0,
+          ),
         ],
       ),
     );

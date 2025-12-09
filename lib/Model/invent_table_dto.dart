@@ -6,6 +6,7 @@ class InventTableDto {
   final String productType;
   final String productionType;
   final String image;
+  final String trackingDimensionGroupName;
 
   InventTableDto({
     this.itemId = '',
@@ -15,6 +16,7 @@ class InventTableDto {
     this.productType = '',
     this.productionType = '',
     this.image = '',
+    this.trackingDimensionGroupName = '',
   });
 
   factory InventTableDto.fromJson(Map<String, dynamic> json) => InventTableDto(
@@ -25,6 +27,7 @@ class InventTableDto {
     productType: json['productType'] as String,
     productionType: json['productionType'] as String,
     image: json['image'] as String,
+    trackingDimensionGroupName: json['trackingDimensionGroupName'] as String,
   );
 
   Map<String, dynamic> toJson() => {
@@ -35,5 +38,6 @@ class InventTableDto {
     if (productType.isNotEmpty) 'productType': productType,
     if (productionType.isNotEmpty) 'productionType': productionType,
     if (image.isNotEmpty) 'image': image,
+    if (trackingDimensionGroupName.isNotEmpty) 'trackingDimensionGroupName': trackingDimensionGroupName,
   };
 }

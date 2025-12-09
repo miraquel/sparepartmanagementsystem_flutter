@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:sparepartmanagementsystem_flutter/App/sms_apps.dart';
@@ -9,5 +10,5 @@ void main() async {
   await Environment.initialize();
   serviceLocatorSetup();
   await GetIt.I.allReady();
-  runApp(const SMSApps());
+  runApp(ProviderScope(child: const SMSApps()));
 }

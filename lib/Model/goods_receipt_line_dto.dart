@@ -17,6 +17,8 @@ class GoodsReceiptLineDto
   final double lineAmount;
   final String inventLocationId;
   final String wMSLocationId;
+  final String inventBatchId;
+  final String trackingDimensionGroupName;
   final String createdBy;
   final DateTime createdDateTime;
   final String modifiedBy;
@@ -37,6 +39,8 @@ class GoodsReceiptLineDto
     this.lineAmount = 0,
     this.inventLocationId = '',
     this.wMSLocationId = '',
+    this.inventBatchId = '',
+    this.trackingDimensionGroupName = '',
     this.createdBy = '',
     DateTime? createdDateTime,
     this.modifiedBy = '',
@@ -59,6 +63,8 @@ class GoodsReceiptLineDto
     lineAmount: json['lineAmount'] as double? ?? 0,
     inventLocationId: json['inventLocationId'] as String? ?? '',
     wMSLocationId: json['wmsLocationId'] as String? ?? '',
+    inventBatchId: json['inventBatchId'] as String? ?? '',
+    trackingDimensionGroupName: json['trackingDimensionGroupName'] as String? ?? '',
     createdBy: json['createdBy'] as String? ?? '',
     createdDateTime: DateTime.tryParse(json['createdDateTime'] as String? ?? '') ?? DateTimeHelper.minDateTime,
     modifiedBy: json['modifiedBy'] as String? ?? '',
@@ -80,6 +86,8 @@ class GoodsReceiptLineDto
     if (lineAmount > 0) 'lineAmount': lineAmount,
     if (inventLocationId.isNotEmpty) 'inventLocationId': inventLocationId,
     if (wMSLocationId.isNotEmpty) 'wmsLocationId': wMSLocationId,
+    if (inventBatchId.isNotEmpty) 'inventBatchId': inventBatchId,
+    if (trackingDimensionGroupName.isNotEmpty) 'trackingDimensionGroupName': trackingDimensionGroupName,
     if (createdBy.isNotEmpty) 'createdBy': createdBy,
     if (createdDateTime.isAfter(DateTimeHelper.minDateTime)) 'createdDateTime': createdDateTime.toIso8601String(),
     if (modifiedBy.isNotEmpty) 'modifiedBy': modifiedBy,
@@ -99,5 +107,7 @@ class GoodsReceiptLineDto
     purchPrice == other.purchPrice &&
     lineAmount == other.lineAmount &&
     inventLocationId == other.inventLocationId &&
-    wMSLocationId == other.wMSLocationId;
+    wMSLocationId == other.wMSLocationId &&
+    inventBatchId == other.inventBatchId &&
+    trackingDimensionGroupName == other.trackingDimensionGroupName;
 }

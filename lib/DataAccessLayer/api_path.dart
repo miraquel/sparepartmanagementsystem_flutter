@@ -144,4 +144,78 @@ class ApiPath {
   static const String getVersionTrackerByParams                     = '/api/v1/VersionTrackerService/GetVersionTrackerByParams';
   static const String getLatestVersionTracker                       = '/api/v1/VersionTrackerService/GetLatestVersionTracker';
   static const String getVersionFeed                                = '/api/v1/VersionTrackerService/GetVersionFeed';
+
+  // Work Request
+  static const String getWorkRequestPagedList                       = '/api/v1/WorkRequestService/GetWorkRequestPagedList';
+  static const String getWorkRequest                                = '/api/v1/WorkRequestService/GetWorkRequest';
+  static const String updateAcceptedWorkRequest                     = '/api/v1/WorkRequestService/UpdateAcceptedWorkRequest';
+  static const String createWorkOrderTable                          = '/api/v1/WorkRequestService/CreateWorkOrderTable';
+  static const String getConditionList                              = '/api/v1/WorkRequestService/GetConditionList';
+  static const String getTaskList                                   = '/api/v1/WorkRequestService/GetTaskList';
+  static const String updateWorkRequest                             = '/api/v1/WorkRequestService/UpdateWorkRequest';
+  static const String validateWrkCtrId                              = '/api/v1/WorkRequestService/ValidateWrkCtrId';
+
+  // Operation Type
+  static const String addOperationType                              = '/api/v1/OperationTypeService/Add';
+  static const String deleteOperationType                           = '/api/v1/OperationTypeService/Delete';
+  static const String getAllOperationType                           = '/api/v1/OperationTypeService/GetAll';
+  static const String updateOperationType                           = '/api/v1/OperationTypeService/Update';
+  static const String getOperationTypeById                          = '/api/v1/OperationTypeService/GetById';
+  static const String getOperationTypeByParams                      = '/api/v1/OperationTypeService/GetByParams';
+
+  // Operation Template
+  static const String addOperationTemplate                          = '/api/v1/OperationTemplateService/Add';
+  static const String deleteOperationTemplate                       = '/api/v1/OperationTemplateService/Delete';
+  static const String getAllOperationTemplates                      = '/api/v1/OperationTemplateService/GetAll';
+  static const String updateOperationTemplate                       = '/api/v1/OperationTemplateService/Update';
+  static const String getOperationTemplateById                      = '/api/v1/OperationTemplateService/GetById';
+  static const String getOperationTemplateByParams                  = '/api/v1/OperationTemplateService/GetByParams';
+
+  // Operation Template Column
+  static const String addOperationTemplateColumn                    = '/api/v1/OperationTemplateColumnService/Add';
+  static const String deleteOperationTemplateColumn                 = '/api/v1/OperationTemplateColumnService/Delete';
+  static const String getAllOperationTemplateColumns                = '/api/v1/OperationTemplateColumnService/GetAll';
+  static const String updateOperationTemplateColumn                 = '/api/v1/OperationTemplateColumnService/Update';
+  static const String getOperationTemplateColumnById                = '/api/v1/OperationTemplateColumnService/GetById';
+  static const String getOperationTemplateColumnByParams            = '/api/v1/OperationTemplateColumnService/GetByParams';
+
+  // Operation Template Row
+  static const String addOperationTemplateRow                       = '/api/v1/OperationTemplateRowService/Add';
+  static const String deleteOperationTemplateRow                    = '/api/v1/OperationTemplateRowService/Delete';
+  static const String getAllOperationTemplateRows                   = '/api/v1/OperationTemplateRowService/GetAll';
+  static const String updateOperationTemplateRow                    = '/api/v1/OperationTemplateRowService/Update';
+  static const String getOperationTemplateRowById                   = '/api/v1/OperationTemplateRowService/GetById';
+  static const String getOperationTemplateRowByParams               = '/api/v1/OperationTemplateRowService/GetByParams';
+
+  // Operation Entry Header
+  static const String addOperationEntryHeader                       = '/api/v1/OperationEntryHeaderService/Add';
+  static const String deleteOperationEntryHeader                    = '/api/v1/OperationEntryHeaderService/Delete';
+  static const String getAllOperationEntryHeaders                   = '/api/v1/OperationEntryHeaderService/GetAll';
+  static const String updateOperationEntryHeader                    = '/api/v1/OperationEntryHeaderService/Update';
+  static const String getOperationEntryHeaderById                   = '/api/v1/OperationEntryHeaderService/GetById';
+  static const String getOperationEntryHeaderByParams               = '/api/v1/OperationEntryHeaderService/GetByParams';
+
+  // Operation Entry Line
+  static const String addOperationEntryLine                         = '/api/v1/OperationEntryLineService/Add';
+  static const String deleteOperationEntryLine                      = '/api/v1/OperationEntryLineService/Delete';
+  static const String getAllOperationEntryLines                     = '/api/v1/OperationEntryLineService/GetAll';
+  static const String updateOperationEntryLine                      = '/api/v1/OperationEntryLineService/Update';
+  static const String getOperationEntryLineById                     = '/api/v1/OperationEntryLineService/GetById';
+  static const String getOperationEntryLineByParams                 = '/api/v1/OperationEntryLineService/GetByParams';
+
+  // Operation Entry Verification
+  static const String addOperationEntryVerification                 = '/api/v1/OperationEntryVerificationService/Add';
+  static const String deleteOperationEntryVerification              = '/api/v1/OperationEntryVerificationService/Delete';
+  static const String getAllOperationEntryVerifications             = '/api/v1/OperationEntryVerificationService/GetAll';
+  static const String updateOperationEntryVerification              = '/api/v1/OperationEntryVerificationService/Update';
+  static const String getOperationEntryVerificationById             = '/api/v1/OperationEntryVerificationService/GetById';
+  static const String getOperationEntryVerificationByParams         = '/api/v1/OperationEntryVerificationService/GetByParams';
+
+  // Operation Template Verificator
+  static const String addOperationTemplateVerificator               = '/api/v1/OperationTemplateVerificatorService/Add';
+  static const String deleteOperationTemplateVerificator            = '/api/v1/OperationTemplateVerificatorService/Delete';
+  static const String getAllOperationTemplateVerificators           = '/api/v1/OperationTemplateVerificatorService/GetAll';
+  static const String updateOperationTemplateVerificator            = '/api/v1/OperationTemplateVerificatorService/Update';
+  static const String getOperationTemplateVerificatorById           = '/api/v1/OperationTemplateVerificatorService/GetById';
+  static const String getOperationTemplateVerificatorByParams       = '/api/v1/OperationTemplateVerificatorService/GetByParams';
 }

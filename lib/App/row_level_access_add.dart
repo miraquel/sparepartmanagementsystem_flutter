@@ -84,7 +84,7 @@ class _RowLevelAccessAddState extends State<RowLevelAccessAdd> {
                         const SizedBox(height: 10),
                         Padding(
                           padding: const EdgeInsets.only(bottom: 10),
-                          child: DropdownSearch(
+                          child: DropdownSearch<UserDto>(
                             validator:(value) {
                               if (value == null) {
                                 return 'Please select username';
@@ -129,12 +129,6 @@ class _RowLevelAccessAddState extends State<RowLevelAccessAdd> {
                             dropdownBuilder: (context, selectedItem) {
                               return selectedItem != null ? Text(selectedItem.username) : const Text('Select User');
                             },
-                            decoratorProps: const DropDownDecoratorProps(
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                label: Text('Username'),
-                              ),
-                            ),
                             enabled: !_isLoading,
                             onChanged: (value) {
                               value as UserDto;

@@ -1,5 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sparepartmanagementsystem_flutter/App/MobileScanner/barcode_scanner_with_scan_window.dart';
+import 'package:sparepartmanagementsystem_flutter/App/OperationEntryHeader/operation_entry_header_category.dart';
+import 'package:sparepartmanagementsystem_flutter/App/OperationEntryHeader/operation_entry_header_list.dart';
+import 'package:sparepartmanagementsystem_flutter/App/OperationEntryLine/operation_entry_line_details.dart';
+import 'package:sparepartmanagementsystem_flutter/App/OperationTemplate/operation_template_details.dart';
+import 'package:sparepartmanagementsystem_flutter/App/OperationTemplate/operation_template_list.dart';
+import 'package:sparepartmanagementsystem_flutter/App/OperationTemplateColumn/operation_template_column_detail.dart';
+import 'package:sparepartmanagementsystem_flutter/App/OperationTemplateColumn/operation_template_column_list.dart';
+import 'package:sparepartmanagementsystem_flutter/App/OperationTemplateRow/operation_template_row_details.dart';
+import 'package:sparepartmanagementsystem_flutter/App/OperationTemplateRow/operation_template_row_list.dart';
+import 'package:sparepartmanagementsystem_flutter/App/OperationTemplateVerificator/operation_template_verificator_details.dart';
+import 'package:sparepartmanagementsystem_flutter/App/OperationTemplateVerificator/operation_template_verificator_list.dart';
+import 'package:sparepartmanagementsystem_flutter/App/OperationType/operation_type_details.dart';
+import 'package:sparepartmanagementsystem_flutter/App/OperationType/operation_type_list.dart';
+import 'package:sparepartmanagementsystem_flutter/App/WorkRequest/work_request_details.dart';
+import 'package:sparepartmanagementsystem_flutter/App/WorkRequest/work_request_list.dart';
 
 import 'package:sparepartmanagementsystem_flutter/App/goods_receipt_line_add.dart';
 import 'package:sparepartmanagementsystem_flutter/App/home.dart';
@@ -43,17 +60,23 @@ import 'package:sparepartmanagementsystem_flutter/App/zebra_scanner_settings.dar
 import 'package:sparepartmanagementsystem_flutter/App/zebra_scanner_test.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/goods_receipt_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/invent_table_dto.dart';
+import 'package:sparepartmanagementsystem_flutter/Model/operation_type_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_header_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/work_order_line_dto.dart';
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 import 'package:sparepartmanagementsystem_flutter/Model/user_dto.dart';
 
-class SMSApps extends StatelessWidget {
+import 'OperationEntryHeader/operation_entry_header_details.dart';
+
+class SMSApps extends ConsumerWidget {
   const SMSApps({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
+      localizationsDelegates: [
+        FlutterQuillLocalizations.delegate
+      ],
       title: 'SparePart Management System',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -89,6 +112,10 @@ class SMSApps extends StatelessWidget {
         '/zebraScannerTest': (context) => const ZebraScannerTest(),
         '/printerList': (context) => const PrinterList(),
         '/mobileScanner':(context) => const BarcodeScannerWithScanWindow(),
+        '/workRequestList': (context) => const WorkRequestList(),
+        '/operationTypeList': (context) => const OperationTypeList(),
+        '/operationTemplateList': (context) => const OperationTemplateList(),
+        '/operationEntryHeaderCategory': (context) => const OperationEntryHeaderCategory(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/userEdit') {
@@ -265,6 +292,139 @@ class SMSApps extends StatelessWidget {
             },
           );
         }
+        if (settings.name == '/workRequestDetails')
+        {
+          final args = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) {
+              return WorkRequestDetails(
+                agseamWrId: args,
+              );
+            },
+          );
+        }
+        if (settings.name == '/operationTypeDetails')
+        {
+          final args = settings.arguments as int? ?? 0;
+          return MaterialPageRoute(
+            builder: (context) {
+              return OperationTypeDetails(operationTypeId: args);
+            },
+          );
+        }
+        if (settings.name == '/operationTemplateDetails')
+        {
+          final args = settings.arguments as int? ?? 0;
+          return MaterialPageRoute(
+            builder: (context) {
+              return OperationTemplateDetails(operationTemplateId: args);
+            },
+          );
+        }
+        if (settings.name == '/operationTemplateRowList')
+        {
+          final args = settings.arguments as int? ?? 0;
+          return MaterialPageRoute(
+            builder: (context) {
+              return OperationTemplateRowList(operationTemplateId: args);
+            },
+          );
+        }
+        if (settings.name == '/operationTemplateRowDetails')
+        {
+          final args = settings.arguments as Map<String, dynamic>;
+          var operationTemplateRowId = args['operationTemplateRowId'] as int? ?? 0;
+          var operationTemplateId = args['operationTemplateId'] as int? ?? 0;
+          return MaterialPageRoute(
+            builder: (context) {
+              return OperationTemplateRowDetails(
+                operationTemplateRowId: operationTemplateRowId,
+                operationTemplateId: operationTemplateId,
+              );
+            },
+          );
+        }
+        if (settings.name == '/operationTemplateColumnList')
+        {
+          final args = settings.arguments as int? ?? 0;
+          return MaterialPageRoute(
+            builder: (context) {
+              return OperationTemplateColumnList(operationTemplateId: args);
+            },
+          );
+        }
+        if (settings.name == '/operationTemplateColumnDetails')
+        {
+          final args = settings.arguments as Map<String, dynamic>;
+          var operationTemplateColumnId = args['operationTemplateColumnId'] as int? ?? 0;
+          var operationTemplateId = args['operationTemplateId'] as int? ?? 0;
+          return MaterialPageRoute(
+            builder: (context) {
+              return OperationTemplateColumnDetails(
+                operationTemplateColumnId: operationTemplateColumnId,
+                operationTemplateId: operationTemplateId,
+              );
+            },
+          );
+        }
+        if (settings.name == '/operationTemplateVerificatorList')
+        {
+          final args = settings.arguments as int? ?? 0;
+          return MaterialPageRoute(
+            builder: (context) {
+              return OperationTemplateVerificatorList(operationTemplateId: args);
+            },
+          );
+        }
+        if (settings.name == '/operationTemplateVerificatorDetails')
+        {
+          final args = settings.arguments as Map<String, dynamic>;
+          var operationTemplateVerificatorId = args['operationTemplateVerificatorId'] as int? ?? 0;
+          var operationTemplateId = args['operationTemplateId'] as int? ?? 0;
+          return MaterialPageRoute(
+            builder: (context) {
+              return OperationTemplateVerificatorDetails(
+                operationTemplateVerificatorId: operationTemplateVerificatorId,
+                operationTemplateId: operationTemplateId,
+              );
+            },
+          );
+        }
+        if (settings.name == '/operationEntryHeaderDetails')
+        {
+          final args = settings.arguments as int? ?? 0;
+          return MaterialPageRoute(
+            builder: (context) {
+              return OperationEntryHeaderDetails(operationEntryHeaderId: args);
+            },
+          );
+        }
+        if (settings.name == '/operationEntryLineDetails')
+        {
+          final args = settings.arguments as Map<String, dynamic>;
+          var operationEntryHeaderId = args['operationEntryHeaderId'] as int? ?? 0;
+          var operationTemplateRowId = args['operationTemplateRowId'] as int? ?? 0;
+          return MaterialPageRoute(
+            builder: (context) {
+              return OperationEntryLineDetails(
+                operationEntryHeaderId: operationEntryHeaderId,
+                operationTemplateRowId: operationTemplateRowId,
+              );
+            },
+          );
+        }
+        if (settings.name == '/operationEntryHeaderList')
+        {
+          final args = settings.arguments as OperationTypeDto;
+          return MaterialPageRoute(
+            builder: (context) {
+              return OperationEntryHeaderList(
+                operationType: args,
+              );
+            },
+          );
+        }
+
         return null;
       }
     );

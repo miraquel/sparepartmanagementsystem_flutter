@@ -274,6 +274,7 @@ class _WorkOrderDirectLineDetailsState extends State<WorkOrderDirectLineDetails>
         }
         return null;
       },
+      compareFn: (item, selectedItem) => item == selectedItem,
       selectedItem: DimensionDto(value: selectedDimension),
       dropdownBuilder: (context, selectedItem) {
         return selectedItem != null

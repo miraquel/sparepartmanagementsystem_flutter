@@ -14,12 +14,18 @@ class Environment {
   static String _version = '';
   static const MethodChannel _zebraMethodChannel = MethodChannel('com.gandummas.sms_flutter.channel.process.data');
   static String _masterSecretKey = '';
+  static const TextStyle _floatingLabelStyle = TextStyle(
+    color: Colors.black,
+    fontSize: 20,
+    fontWeight: FontWeight.w500,
+  );
 
   static String get baseUrl => _baseUrl;
   static UserWarehouseDto get userWarehouseDto => _userWarehouseDto;
   static String get version => _version;
   static MethodChannel get zebraMethodChannel => _zebraMethodChannel;
   static String get masterSecretKey => _masterSecretKey;
+  static TextStyle get floatingLabelStyle => _floatingLabelStyle;
 
   static Future<void> initialize() async {
     WidgetsFlutterBinding.ensureInitialized();

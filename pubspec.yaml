@@ -47,13 +47,20 @@ dependencies:
   intl: ^0.20.2
   photo_view: ^0.15.0
   unicons: ^3.0.0
-  upgrader: ^11.3.1
+  upgrader: ^11.4.0
   package_info_plus: ^8.0.0
   otp: ^3.1.4
   flutter_blue_plus: ^1.32.8
   esc_pos_utils_plus: ^2.0.3
   qr_flutter: ^4.1.0
   mobile_scanner: ^6.0.7
+  freezed_annotation: ^3.0.0
+  json_annotation: ^4.9.0
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+  collection: ^1.19.1
+  flutter_quill: ^11.4.2
+  vsc_quill_delta_to_html: ^1.0.5
 
 dev_dependencies:
   flutter_test:
@@ -65,6 +72,12 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  build_runner: ^2.4.15
+  freezed: ^3.0.6
+  json_serializable: ^6.9.5
+  riverpod_generator: ^2.6.5
+  custom_lint: ^0.7.5
+  riverpod_lint: ^2.6.5
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

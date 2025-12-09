@@ -1,7 +1,9 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sparepartmanagementsystem_flutter/App/status_bar.dart';
 import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/api_path.dart';
+import 'package:sparepartmanagementsystem_flutter/Provider/snackbar_message.dart';
 import 'package:unicons/unicons.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -12,14 +14,14 @@ import 'package:sparepartmanagementsystem_flutter/DataAccessLayer/Abstract/user_
 import 'package:sparepartmanagementsystem_flutter/service_locator_setup.dart';
 import 'package:upgrader/upgrader.dart';
 
-class Home extends StatefulWidget {
+class Home extends ConsumerStatefulWidget {
   const Home({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  ConsumerState<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends ConsumerState<Home> {
   final _userWarehouseDAL = locator<UserWarehouseDAL>();
   final _storage = const FlutterSecureStorage();
   late ScaffoldMessengerState _scaffoldMessenger;
@@ -82,8 +84,140 @@ class _HomeState extends State<Home> {
     }
   }
 
+  // List<HomeWidgetOptions> menus = [
+  //   HomeWidgetOptions(
+  //     'Inventory Master',
+  //     20,
+  //     '/inventoryMaster',
+  //     Icon(
+  //       UniconsLine.box,
+  //       color: Colors.blue,
+  //       size: 80,
+  //     )
+  //   ),
+  //   HomeWidgetOptions(
+  //     'Goods Receipt',
+  //     12,
+  //     '/goodsReceiptHeaderList',
+  //     Icon(
+  //       UniconsLine.truck_loading,
+  //       color: Colors.blue,
+  //       size: 35,
+  //     ),
+  //   ),
+  //   HomeWidgetOptions(
+  //     'Work Request',
+  //     12,
+  //     '/workRequestList',
+  //     Icon(
+  //       UniconsLine.bell,
+  //       color: Colors.blue,
+  //       size: 35,
+  //     ),
+  //   ),
+  //   HomeWidgetOptions(
+  //     'Work Order',
+  //     12,
+  //     '/workOrderDirectList',
+  //     Icon(
+  //       UniconsLine.wrench,
+  //       color: Colors.blue,
+  //       size: 35,
+  //     ),
+  //   ),
+  //   // Utility Control
+  //   HomeWidgetOptions(
+  //     'Utility Control',
+  //     12,
+  //     '/operationEntryHeaderList',
+  //     Icon(
+  //       UniconsLine.schedule,
+  //       color: Colors.blue,
+  //       size: 35,
+  //     ),
+  //   ),
+  //   // Check Equipment
+  //   HomeWidgetOptions(
+  //     'Check Equipment',
+  //     12,
+  //     '/checkEquipment',
+  //     Icon(
+  //       UniconsLine.check_circle,
+  //       color: Colors.blue,
+  //       size: 35,
+  //     ),
+  //   ),
+  //   // Check Machine Cleaning
+  //   HomeWidgetOptions(
+  //     'Check Machine Cleaning',
+  //     10,
+  //     '/checkMachineCleaning',
+  //     Icon(
+  //       UniconsLine.check_circle,
+  //       color: Colors.blue,
+  //       size: 35,
+  //     ),
+  //   ),
+  // ];
+
+  List<HomeWidgetOptions> menus = [
+    HomeWidgetOptions(
+        'Inventory Master',
+        20,
+        '/inventoryMaster',
+        UniconsLine.box,
+    ),
+    HomeWidgetOptions(
+      'Goods Receipt',
+      12,
+      '/goodsReceiptHeaderList',
+      UniconsLine.truck_loading,
+    ),
+    HomeWidgetOptions(
+      'Work Request',
+      12,
+      '/workRequestList',
+      UniconsLine.bell,
+    ),
+    HomeWidgetOptions(
+      'Work Order',
+      12,
+      '/workOrderDirectList',
+      UniconsLine.wrench,
+    ),
+    // Utility Control
+    HomeWidgetOptions(
+      'Utility Control',
+      12,
+      '/operationEntryHeaderCategory',
+      UniconsLine.schedule,
+    ),
+    // Check Equipment
+    HomeWidgetOptions(
+      'Check Equipment',
+      12,
+      '/checkEquipment',
+      UniconsLine.check_circle,
+    ),
+    // Check Machine Cleaning
+    HomeWidgetOptions(
+      'Check Machine Cleaning',
+      10,
+      '/checkMachineCleaning',
+      UniconsLine.check_circle,
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
+    ref.listen<String?>(snackbarMessageProvider, (prev, next) {
+      if (next != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(next)),
+        );
+      }
+    });
+
     return LoadingOverlay(
       isLoading: _isLoading,
       child: Scaffold(
@@ -175,141 +309,67 @@ class _HomeState extends State<Home> {
                       },
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        // const Text(
-                        //   'Welcome to Spare Part Management System',
-                        //   style: TextStyle(
-                        //     fontSize: 20,
-                        //     fontWeight: FontWeight.bold,
-                        //   ),
-                        // ),
-                        // const SizedBox(height: 5),
-                        // const Text(
-                        //   'Please select the menu to start',
-                        //   style: TextStyle(
-                        //     fontSize: 15,
-                        //     fontWeight: FontWeight.normal,
-                        //   ),
-                        // ),
-                        const SizedBox(height: 15),
-                        Material(
-                          type: MaterialType.transparency,
-                          child: InkWell(
-                            onTap: () async {
-                              await Navigator.pushNamed(context, '/inventoryMaster');
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(10),
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.blue,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: const Column(
-                                children: [
-                                  Icon(
-                                    UniconsLine.box,
-                                    color: Colors.blue,
-                                    size: 50,
-                                  ),
-                                  Text(
-                                    'Inventory Master',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        double iconSize = constraints.maxWidth * 0.1; // 40% of cell width
+                        double fontSize = constraints.maxWidth * 0.025; // 12% of cell width
+                        double circularRadius = constraints.maxWidth * 0.03; // 20% of cell width
+
+                        return GridView.count(
+                          //physics: const NeverScrollableScrollPhysics(),
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 20,
+                          mainAxisSpacing: 20,
+                          padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+                          children: menus
+                              .map((menu) =>
+                              Material(
+                                type: MaterialType.transparency,
+                                child: InkWell(
+                                  onTap: () async {
+                                    await Navigator.pushNamed(context, menu.route);
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.blue,
+                                        width: 2,
+                                      ),
+                                      borderRadius: BorderRadius.circular(circularRadius),
+                                    ),
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            menu.icon,
+                                            color: Colors.blue,
+                                            size: iconSize,
+                                          ),
+                                          Flexible(
+                                            child: Text(
+                                              menu.title,
+                                              textAlign: TextAlign.center,
+                                              overflow: TextOverflow.visible,
+                                              style: TextStyle(
+                                                color: Colors.blue,
+                                                fontSize: fontSize,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        Material(
-                          type: MaterialType.transparency,
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/goodsReceiptHeaderList');
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(10),
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.blue,
-                                  width: 2,
                                 ),
-                                borderRadius: BorderRadius.circular(5),
                               ),
-                              child: const Column(
-                                children: [
-                                  Icon(
-                                    UniconsLine.truck_loading,
-                                    color: Colors.blue,
-                                    size: 50,
-                                  ),
-                                  Text(
-                                    'Goods Receipt',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        Material(
-                          type: MaterialType.transparency,
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/workOrderDirectList');
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(10),
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.blue,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: const Column(
-                                children: [
-                                  Icon(
-                                    UniconsLine.wrench,
-                                    color: Colors.blue,
-                                    size: 50,
-                                  ),
-                                  Text(
-                                    'Work Order',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                          ).toList(),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -321,4 +381,16 @@ class _HomeState extends State<Home> {
         ),
       );
   }
+
+
+}
+
+class HomeWidgetOptions {
+  final String title;
+  // title font size
+  final double titleFontSize;
+  final String route;
+  final IconData icon;
+
+  const HomeWidgetOptions(this.title, this.titleFontSize, this.route, this.icon);
 }

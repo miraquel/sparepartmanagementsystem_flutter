@@ -1,0 +1,4 @@
+enum ListActionType {
+  view,
+  delete,
+}
